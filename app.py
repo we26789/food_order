@@ -8,6 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
 from functools import wraps
+from sqlalchemy import func
 import os
 import random
 import socket
@@ -27,7 +28,6 @@ DB_NAME = 'family_menu'
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# --------------------- 图片上传配置 ---------------------
 UPLOAD_FOLDER = os.path.join(basedir, 'static', 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 if not os.path.exists(UPLOAD_FOLDER):
@@ -110,7 +110,6 @@ with app.app_context():
         db.session.add(User(username='Customer', password_hash=generate_password_hash('123456'), role='customer'))
     db.session.commit()
 
-    # 将推荐菜谱同步到 dish 表（如果不存在）
     recipes = RecommendedRecipe.query.all()
     for r in recipes:
         if not Dish.query.filter_by(name=r.dish_name).first():
@@ -185,12 +184,26 @@ def index():
     dishes = Dish.query.order_by(Dish.created_at.desc()).all()
     return render_template('index.html', dishes=dishes)
 
-# --------------------- 厨师：订单汇总 ---------------------
+# --------------------- 厨师：订单汇总（支持日期过滤） ---------------------
 @app.route('/orders')
 @role_required('cooker')
 def orders():
-    order_list = OrderItem.query.order_by(OrderItem.created_at.asc()).all()
-    return render_template('orders.html', orders=order_list)
+    date_str = request.args.get('date', '')
+    if date_str:
+        try:
+            date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
+        except:
+            flash('日期格式错误', 'danger')
+            return redirect(url_for('orders'))
+        order_list = OrderItem.query.filter(
+            func.date(OrderItem.created_at) == date_obj
+        ).order_by(OrderItem.created_at.asc()).all()
+    else:
+        today = datetime.now().date()
+        order_list = OrderItem.query.filter(
+            func.date(OrderItem.created_at) == today
+        ).order_by(OrderItem.created_at.asc()).all()
+    return render_template('orders.html', orders=order_list, selected_date=date_str)
 
 @app.route('/orders/complete/<int:order_id>', methods=['POST'])
 @role_required('cooker')
@@ -213,6 +226,30 @@ def reject_order(order_id):
         db.session.commit()
         flash(f'订单 #{order.id} 已拒绝', 'info')
     return redirect(url_for('orders'))
+
+# --------------------- 顾客：订单历史 ---------------------
+@app.route('/order_history')
+@role_required('customer')
+def order_history():
+    date_str = request.args.get('date', '')
+    customer = current_user.username
+    if date_str:
+        try:
+            date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
+        except:
+            flash('日期格式错误', 'danger')
+            return redirect(url_for('order_history'))
+        orders = OrderItem.query.filter(
+            OrderItem.customer == customer,
+            func.date(OrderItem.created_at) == date_obj
+        ).order_by(OrderItem.created_at.asc()).all()
+    else:
+        today = datetime.now().date()
+        orders = OrderItem.query.filter(
+            OrderItem.customer == customer,
+            func.date(OrderItem.created_at) == today
+        ).order_by(OrderItem.created_at.asc()).all()
+    return render_template('order_history.html', orders=orders, selected_date=date_str)
 
 # --------------------- 厨师：添加菜品 ---------------------
 @app.route('/dish/add', methods=['GET', 'POST'])
@@ -242,14 +279,12 @@ def add_dish():
         return redirect(url_for('list_dishes'))
     return render_template('add_dish.html')
 
-# --------------------- 厨师：已有菜品列表 ---------------------
 @app.route('/dish/list')
 @role_required('cooker')
 def list_dishes():
     dishes = Dish.query.order_by(Dish.created_at.desc()).all()
     return render_template('list_dishes.html', dishes=dishes)
 
-# --------------------- 厨师：删除菜品 ---------------------
 @app.route('/dish/delete', methods=['POST'])
 @role_required('cooker')
 def delete_dish():
@@ -262,7 +297,6 @@ def delete_dish():
         flash(f'菜品 "{dish.name}" 及关联订单已删除', 'info')
     return redirect(url_for('list_dishes'))
 
-# --------------------- 厨师：更换菜品图片 ---------------------
 @app.route('/dish/update_image/<int:dish_id>', methods=['POST'])
 @role_required('cooker')
 def update_dish_image(dish_id):
@@ -286,7 +320,6 @@ def update_dish_image(dish_id):
     flash(f'菜品 "{dish.name}" 图片已更新', 'success')
     return redirect(url_for('list_dishes'))
 
-# --------------------- 清空所有订单 ---------------------
 @app.route('/orders/clear', methods=['POST'])
 @role_required('cooker')
 def clear_orders():
@@ -295,14 +328,12 @@ def clear_orders():
     flash(f'已清空所有订单（共 {num} 条）', 'info')
     return redirect(url_for('orders'))
 
-# --------------------- 菜谱推荐（厨师/顾客均可） ---------------------
 @app.route('/recipe/recommend')
 @login_required
 def recipe_recommend():
     categories = TasteCategory.query.order_by(TasteCategory.sort_order).all()
     return render_template('recipe_recommend.html', categories=categories)
 
-# --------------------- 顾客：随机点菜 ---------------------
 @app.route('/random')
 @role_required('customer')
 def random_order():
@@ -312,15 +343,10 @@ def random_order():
     if not (breakfasts and lunches and dinners):
         flash('菜谱数据不足，无法生成随机点菜', 'warning')
         return redirect(url_for('index'))
-
     random_breakfast = random.choice(breakfasts)
     random_lunch = random.choice(lunches)
     random_dinner = random.choice(dinners)
-
-    return render_template('random_order.html',
-                           breakfast=random_breakfast,
-                           lunch=random_lunch,
-                           dinner=random_dinner)
+    return render_template('random_order.html', breakfast=random_breakfast, lunch=random_lunch, dinner=random_dinner)
 
 @app.route('/random/order', methods=['POST'])
 @role_required('customer')
@@ -328,7 +354,6 @@ def submit_random_order():
     action = request.form.get('action')
     customer = current_user.username
     note = request.form.get('note', '').strip()
-
     if action == 'all':
         breakfast_id = request.form.get('breakfast_id', type=int)
         lunch_id = request.form.get('lunch_id', type=int)
@@ -338,16 +363,11 @@ def submit_random_order():
             if recipe:
                 dish = Dish.query.filter_by(name=recipe.dish_name).first()
                 if dish:
-                    order = OrderItem(
-                        dish_id=dish.id,
-                        customer=customer,
-                        quantity=1,
-                        note=f'{recipe.meal_type} 随机{f": {note}" if note else ""}'
-                    )
+                    order = OrderItem(dish_id=dish.id, customer=customer, quantity=1,
+                                      note=f'{recipe.meal_type} 随机{f": {note}" if note else ""}')
                     db.session.add(order)
         db.session.commit()
         flash('✅ 已一键下单今日三餐！', 'success')
-
     elif action == 'single':
         selected_meal = request.form.get('meal_type')
         recipe_id = request.form.get('recipe_id', type=int)
@@ -356,18 +376,13 @@ def submit_random_order():
             if recipe:
                 dish = Dish.query.filter_by(name=recipe.dish_name).first()
                 if dish:
-                    order = OrderItem(
-                        dish_id=dish.id,
-                        customer=customer,
-                        quantity=1,
-                        note=f'{selected_meal} 单独{f": {note}" if note else ""}'
-                    )
+                    order = OrderItem(dish_id=dish.id, customer=customer, quantity=1,
+                                      note=f'{selected_meal} 单独{f": {note}" if note else ""}')
                     db.session.add(order)
                     db.session.commit()
                     flash(f'✅ 已单独下单 {selected_meal}：{dish.name}', 'success')
     else:
         flash('无效操作', 'danger')
-
     return redirect(url_for('random_order'))
 
 # --------------------- 启动 ---------------------

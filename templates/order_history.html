@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="cook-layout">
+    <div class="sidebar" style="background:#2c3e50;">
+        <h3>👤 顾客菜单</h3>
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}">🍽️ 点菜</a>
+            <a href="{{ url_for('recipe_recommend') }}">📖 菜谱推荐</a>
+            <a href="{{ url_for('random_order') }}">🎲 随机点菜</a>
+            <a href="{{ url_for('order_history') }}">📜 我的订单</a>
+        </div>
+        <div class="user-info">
+            {{ current_user.username }}<br>
+            <a href="{{ url_for('change_password') }}">修改密码</a> |
+            <a href="{{ url_for('logout') }}">退出</a>
+        </div>
+    </div>
+    <div class="main-content">
+        <h2>📜 我的订单</h2>
+        
+        <!-- 日期选择 -->
+        <form method="GET" action="{{ url_for('order_history') }}" style="margin-bottom:20px; display:flex; gap:10px; align-items:center;">
+            <label for="order-date" style="font-weight:600;">选择日期：</label>
+            <input type="date" id="order-date" name="date" value="{{ selected_date or '' }}" style="padding:8px 12px; border-radius:20px; border:1px solid #ddd;">
+            <button type="submit" class="btn">查看</button>
+            <a href="{{ url_for('order_history') }}" class="btn" style="background:#7f8c8d;">今天</a>
+        </form>
+
+        {% if orders %}
+        <table class="order-table">
+            <thead>
+                <tr>
+                    <th>单号</th>
+                    <th>菜品</th>
+                    <th>数量</th>
+                    <th>备注</th>
+                    <th>时间</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for order in orders %}
+            <tr>
+                <td><strong>#{{ order.id }}</strong></td>
+                <td>{{ order.dish.name }}</td>
+                <td>{{ order.quantity }}</td>
+                <td>{{ order.note or '-' }}</td>
+                <td>{{ order.created_at.strftime('%H:%M') }}</td>
+                <td>
+                    {% if order.status == 'pending' %}
+                        <span class="badge badge-danger">未出餐</span>
+                    {% elif order.status == 'completed' %}
+                        <span class="badge badge-success">已出餐</span>
+                    {% elif order.status == 'rejected' %}
+                        <span class="badge badge-warning" title="{{ order.reject_reason }}">已拒绝</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div style="text-align:center; padding:60px; color:#aaa;">
+            <h3>📭 这一天还没有订单</h3>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+    .badge-danger { background: #ffe0e0; color: #c0392b; }
+    .badge-success { background: #d5f5e3; color: #27ae60; }
+    .badge-warning { background: #fdebd0; color: #e67e22; }
+</style>
+{% endblock %}
