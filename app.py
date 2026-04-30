@@ -1,4 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+import os
+import random
+import socket
+import requests
+import json
+from datetime import datetime
+from functools import wraps
+
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import (
     LoginManager, UserMixin, login_user, logout_user,
@@ -6,19 +14,18 @@ from flask_login import (
 )
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from datetime import datetime
-from functools import wraps
 from sqlalchemy import func
-import os
-import random
-import socket
+from dotenv import load_dotenv
+
+# ---------- 加载 .env 环境变量 ----------
+load_dotenv()
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-strong-secret-key-change-me'
 
-# --------------------- 数据库配置（MySQL） ---------------------
+# ---------- 数据库配置（MySQL） ----------
 DB_USER = 'root'
 DB_PASS = '123456'
 DB_HOST = '127.0.0.1'
@@ -38,7 +45,11 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message = '请先登录'
 
-# --------------------- 数据模型 ---------------------
+# ---------- DeepSeek API 配置 ----------
+DEEPSEEK_API_KEY = os.getenv('DEEPSEEK_API_KEY')
+DEEPSEEK_BASE_URL = 'https://api.deepseek.com/v1'
+
+# ---------- 数据模型 ----------
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
@@ -60,7 +71,7 @@ class OrderItem(db.Model):
     quantity = db.Column(db.Integer, default=1)
     note = db.Column(db.String(200))
     status = db.Column(db.String(20), default='pending')
-    daily_seq = db.Column(db.Integer, default=0)          # 每日序号
+    daily_seq = db.Column(db.Integer, default=0)
     reject_reason = db.Column(db.String(200), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.now)
 
@@ -81,12 +92,11 @@ class RecommendedRecipe(db.Model):
     dish_name = db.Column(db.String(80), nullable=False)
     description = db.Column(db.String(300))
 
-# --------------------- Flask-Login 用户加载 ---------------------
+# ---------- 登录管理 ----------
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# --------------------- 权限装饰器 ---------------------
 def role_required(role):
     def decorator(func):
         @wraps(func)
@@ -102,7 +112,7 @@ def role_required(role):
         return wrapper
     return decorator
 
-# --------------------- 初始化数据库 & 默认用户 & 同步推荐菜品 ---------------------
+# ---------- 初始化数据库 & 默认用户 ----------
 with app.app_context():
     db.create_all()
     if not User.query.filter_by(username='Cooker').first():
@@ -111,13 +121,14 @@ with app.app_context():
         db.session.add(User(username='Customer', password_hash=generate_password_hash('123456'), role='customer'))
     db.session.commit()
 
+    # 同步推荐菜品到 dish 表
     recipes = RecommendedRecipe.query.all()
     for r in recipes:
         if not Dish.query.filter_by(name=r.dish_name).first():
             db.session.add(Dish(name=r.dish_name, description=r.description))
     db.session.commit()
 
-# --------------------- 登录/登出/改密 ---------------------
+# ---------- 通用路由 ----------
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -164,7 +175,7 @@ def change_password():
             return redirect(url_for('login'))
     return render_template('change_password.html')
 
-# --------------------- 顾客：点菜页面 ---------------------
+# ---------- 顾客：点菜 ----------
 @app.route('/', methods=['GET', 'POST'])
 @role_required('customer')
 def index():
@@ -177,7 +188,6 @@ def index():
         if not dish:
             flash('菜品不存在', 'danger')
             return redirect(url_for('index'))
-        # 计算今日最大 daily_seq
         today = datetime.now().date()
         max_seq = db.session.query(func.max(OrderItem.daily_seq)).filter(
             func.date(OrderItem.created_at) == today
@@ -192,7 +202,7 @@ def index():
     dishes = Dish.query.order_by(Dish.created_at.desc()).all()
     return render_template('index.html', dishes=dishes)
 
-# --------------------- 厨师：订单汇总（支持日期过滤） ---------------------
+# ---------- 厨师：订单汇总 ----------
 @app.route('/orders')
 @role_required('cooker')
 def orders():
@@ -224,7 +234,7 @@ def complete_order(order_id):
     if order:
         order.status = 'completed'
         db.session.commit()
-        flash(f'订单 #{order.daily_seq} 已出餐', 'success')   # 使用 daily_seq
+        flash(f'订单 #{order.daily_seq} 已出餐', 'success')
     return redirect(url_for('orders'))
 
 @app.route('/orders/reject/<int:order_id>', methods=['POST'])
@@ -236,10 +246,10 @@ def reject_order(order_id):
         order.status = 'rejected'
         order.reject_reason = reason if reason else '无理由'
         db.session.commit()
-        flash(f'订单 #{order.daily_seq} 已拒绝', 'info')      # 使用 daily_seq
+        flash(f'订单 #{order.daily_seq} 已拒绝', 'info')
     return redirect(url_for('orders'))
 
-# --------------------- 顾客：订单历史 ---------------------
+# ---------- 顾客：订单历史 ----------
 @app.route('/order_history')
 @role_required('customer')
 def order_history():
@@ -267,7 +277,7 @@ def order_history():
         return render_template('order_history.html', orders=orders,
                                selected_date=today_str, today=today_str)
 
-# --------------------- 厨师：添加菜品 ---------------------
+# ---------- 厨师：菜品管理 ----------
 @app.route('/dish/add', methods=['GET', 'POST'])
 @role_required('cooker')
 def add_dish():
@@ -347,14 +357,14 @@ def clear_orders():
     flash(f'已清空今日所有订单（共 {num} 条）', 'info')
     return redirect(url_for('orders'))
 
-# --------------------- 菜谱推荐 ---------------------
+# ---------- 菜谱推荐 ----------
 @app.route('/recipe/recommend')
 @login_required
 def recipe_recommend():
     categories = TasteCategory.query.order_by(TasteCategory.sort_order).all()
     return render_template('recipe_recommend.html', categories=categories)
 
-# --------------------- 顾客：随机点菜 ---------------------
+# ---------- 顾客：随机点菜 ----------
 @app.route('/random')
 @role_required('customer')
 def random_order():
@@ -377,7 +387,6 @@ def submit_random_order():
     note = request.form.get('note', '').strip()
     today = datetime.now().date()
 
-    # 获取今日当前最大 daily_seq
     base_seq = db.session.query(func.max(OrderItem.daily_seq)).filter(
         func.date(OrderItem.created_at) == today
     ).scalar() or 0
@@ -429,7 +438,92 @@ def submit_random_order():
 
     return redirect(url_for('random_order'))
 
-# --------------------- 启动 ---------------------
+# ==================== AI 智能点菜 ====================
+@app.route('/ai_assistant')
+@role_required('customer')
+def ai_assistant():
+    return render_template('ai_assistant.html')
+
+@app.route('/ai_assistant/chat', methods=['POST'])
+@role_required('customer')
+def ai_assistant_chat():
+    user_message = request.json.get('message', '').strip()
+    if not user_message:
+        return jsonify({'error': '消息不能为空'}), 400
+
+    dishes = Dish.query.all()
+    dish_list = [f"{d.id}. {d.name} - {d.description or ''}" for d in dishes]
+    dish_context = "\n".join(dish_list) if dish_list else "暂无菜品"
+
+    system_prompt = f"""你是一个家庭点菜助手。根据用户的描述，从以下菜品中精确匹配最符合的菜品。
+只返回 JSON 格式的结果，不要任何额外文字。
+如果找到匹配项，返回：{{"recommendations":[{{"dish_id": 菜品ID, "name": "菜品名", "quantity": 数量, "reason": "推荐理由"}}]}}
+如果没有完全匹配，你可以推荐最接近的，但必须从上述列表中选取，并说明原因。
+注意：数量默认为1，除非用户明确指定。"""
+
+    try:
+        response = requests.post(
+            f'{DEEPSEEK_BASE_URL}/chat/completions',
+            headers={
+                'Authorization': f'Bearer {DEEPSEEK_API_KEY}',
+                'Content-Type': 'application/json'
+            },
+            json={
+                "model": "deepseek-chat",
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": f"现有菜品：\n{dish_context}\n\n用户需求：{user_message}"}
+                ],
+                "temperature": 0.1,
+                "max_tokens": 500,
+                "response_format": {"type": "json_object"}
+            },
+            timeout=30
+        )
+        data = response.json()
+        content = data['choices'][0]['message']['content']
+        result = json.loads(content)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': f'AI 服务暂时不可用：{str(e)}'}), 500
+
+@app.route('/ai_assistant/order', methods=['POST'])
+@role_required('customer')
+def ai_assistant_order():
+    data = request.get_json()
+    items = data.get('items', [])
+    if not items:
+        return jsonify({'error': '没有下单项'}), 400
+
+    customer = current_user.username
+    today = datetime.now().date()
+    base_seq = db.session.query(func.max(OrderItem.daily_seq)).filter(
+        func.date(OrderItem.created_at) == today
+    ).scalar() or 0
+
+    ordered = []
+    seq = base_seq
+    for item in items:
+        dish_id = item.get('dish_id')
+        quantity = item.get('quantity', 1)
+        note = item.get('note', 'AI 推荐')
+        dish = Dish.query.get(dish_id)
+        if not dish:
+            continue
+        seq += 1
+        order = OrderItem(
+            dish_id=dish.id,
+            customer=customer,
+            quantity=quantity,
+            note=note,
+            daily_seq=seq
+        )
+        db.session.add(order)
+        ordered.append(dish.name)
+    db.session.commit()
+    return jsonify({'success': True, 'count': len(ordered), 'dishes': ordered})
+
+# ---------- 启动 ----------
 def get_local_ip():
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="cook-layout">
+    <div class="sidebar" style="background:#2c3e50;">
+        <h3>👤 顾客菜单</h3>
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}">🍽️ 点菜</a>
+            <a href="{{ url_for('recipe_recommend') }}">📖 菜谱推荐</a>
+            <a href="{{ url_for('random_order') }}">🎲 随机点菜</a>
+            <a href="{{ url_for('order_history') }}">📜 我的订单</a>
+            <a href="{{ url_for('ai_assistant') }}">🤖 智能点菜</a>
+        </div>
+        <div class="user-info">
+            {{ current_user.username }}<br>
+            <a href="{{ url_for('change_password') }}">修改密码</a> |
+            <a href="{{ url_for('logout') }}">退出</a>
+        </div>
+    </div>
+    <div class="main-content">
+        <h2>🤖 智能点菜助手</h2>
+        <p style="color:#777; margin-bottom:20px;">告诉我想吃什么，我帮你从菜单中推荐并下单</p>
+
+        <!-- 对话区 -->
+        <div id="chatBox" style="border:1px solid #ddd; border-radius:16px; padding:20px; background:white; min-height:200px; margin-bottom:20px; max-height:400px; overflow-y:auto;">
+            <div class="ai-message"><strong>🤖 助手：</strong> 你好！你想吃点什么？比如“来点辣的”、“清淡的午餐”</div>
+        </div>
+
+        <!-- 输入区 -->
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="userInput" placeholder="我想吃..." style="flex:1; padding:12px; border-radius:25px; border:1px solid #ddd;">
+            <button class="btn" onclick="sendMessage()">发送</button>
+        </div>
+
+        <!-- 推荐结果及下单按钮（动态生成） -->
+        <div id="recommendationArea" style="margin-top:20px;"></div>
+    </div>
+</div>
+
+<style>
+    .ai-message { margin-bottom:12px; padding:10px; background:#f0f8ff; border-radius:12px; }
+    .user-message { margin-bottom:12px; padding:10px; background:#ffeaa7; border-radius:12px; text-align:right; }
+    .recommend-card {
+        background: white;
+        border-radius: 12px;
+        padding: 15px;
+        margin: 10px 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .loading { text-align:center; padding:20px; color:#999; }
+</style>
+
+<script>
+    function appendMessage(role, text) {
+        const box = document.getElementById('chatBox');
+        const div = document.createElement('div');
+        div.className = role === 'user' ? 'user-message' : 'ai-message';
+        div.innerHTML = `<strong>${role === 'user' ? '👤 你' : '🤖 助手'}：</strong> ${text}`;
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('userInput');
+        const message = input.value.trim();
+        if (!message) return;
+        appendMessage('user', message);
+        input.value = '';
+
+        const loading = document.createElement('div');
+        loading.className = 'loading';
+        loading.textContent = 'AI 正在为你挑选...';
+        document.getElementById('chatBox').appendChild(loading);
+
+        try {
+            const response = await fetch('/ai_assistant/chat', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message: message})
+            });
+            const data = await response.json();
+            loading.remove();
+
+            if (data.error) {
+                appendMessage('ai', `❌ ${data.error}`);
+                return;
+            }
+
+            const recs = data.recommendations;
+            if (!recs || recs.length === 0) {
+                appendMessage('ai', '😕 没找到完全匹配的菜品，试试换个说法？');
+                return;
+            }
+
+            appendMessage('ai', `✨ 为你找到 ${recs.length} 个推荐：`);
+            showRecommendations(recs);
+        } catch (err) {
+            loading.remove();
+            appendMessage('ai', '❌ 网络错误，请稍后重试');
+        }
+    }
+
+    function showRecommendations(recs) {
+        const area = document.getElementById('recommendationArea');
+        area.innerHTML = '<h3>📋 推荐菜品</h3>';
+        recs.forEach(r => {
+            const card = document.createElement('div');
+            card.className = 'recommend-card';
+            card.innerHTML = `
+                <div>
+                    <strong>${r.name}</strong> x ${r.quantity || 1}
+                    <br><small style="color:#666;">${r.reason || ''}</small>
+                </div>
+                <div style="display:flex; gap:5px;">
+                    <button class="btn btn-sm" onclick="orderSingle(${r.dish_id}, ${r.quantity || 1})">下单此项</button>
+                </div>
+            `;
+            area.appendChild(card);
+        });
+
+        // 一键全下单按钮
+        const allBtn = document.createElement('button');
+        allBtn.className = 'btn btn-success';
+        allBtn.style = 'background:#27ae60; margin-top:10px;';
+        allBtn.textContent = '✅ 全部下单';
+        allBtn.onclick = () => orderAll(recs);
+        area.appendChild(allBtn);
+    }
+
+    async function orderSingle(dishId, qty) {
+        const items = [{dish_id: dishId, quantity: qty, note: '智能推荐'}];
+        await placeOrder(items);
+    }
+
+    async function orderAll(recs) {
+        const items = recs.map(r => ({dish_id: r.dish_id, quantity: r.quantity || 1, note: '智能推荐'}));
+        await placeOrder(items);
+    }
+
+    async function placeOrder(items) {
+        try {
+            const res = await fetch('/ai_assistant/order', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({items: items})
+            });
+            const data = await res.json();
+            if (data.success) {
+                appendMessage('ai', `✅ 已下单：${data.dishes.join(', ')}`);
+                document.getElementById('recommendationArea').innerHTML = '';
+            } else {
+                appendMessage('ai', '❌ 下单失败，请重试');
+            }
+        } catch (e) {
+            appendMessage('ai', '❌ 网络错误');
+        }
+    }
+
+    // 回车发送
+    document.getElementById('userInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') sendMessage();
+    });
+</script>
+{% endblock %}
