@@ -18,7 +18,7 @@
     </div>
     <div class="main-content">
         <h2>🤖 智能点菜助手</h2>
-        <p style="color:#777; margin-bottom:20px;">告诉我想吃什么，我帮你从菜单中推荐并下单</p>
+        <p style="color:#777; margin-bottom:20px;">告诉我你想吃什么，我帮你从菜单中推荐并下单</p>
 
         <!-- 对话区 -->
         <div id="chatBox" style="border:1px solid #ddd; border-radius:16px; padding:20px; background:white; min-height:200px; margin-bottom:20px; max-height:400px; overflow-y:auto;">
@@ -31,8 +31,20 @@
             <button class="btn" onclick="sendMessage()">发送</button>
         </div>
 
-        <!-- 推荐结果及下单按钮（动态生成） -->
+        <!-- 推荐结果及下单按钮 -->
         <div id="recommendationArea" style="margin-top:20px;"></div>
+    </div>
+</div>
+
+<!-- 备注弹窗 -->
+<div id="noteModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:3000; justify-content:center; align-items:center;">
+    <div style="background:white; border-radius:16px; padding:25px; width:400px; max-width:90%;">
+        <h3>📝 口味备注</h3>
+        <textarea id="noteText" rows="3" style="width:100%; padding:10px; border-radius:10px; border:1px solid #ddd; margin:15px 0;" placeholder="如：少辣、不要葱..."></textarea>
+        <div style="display:flex; gap:10px; justify-content:flex-end;">
+            <button class="btn" onclick="closeNoteModal()">取消</button>
+            <button class="btn btn-danger" onclick="submitWithNote()">确认下单</button>
+        </div>
     </div>
 </div>
 
@@ -53,114 +65,189 @@
 </style>
 
 <script>
-    function appendMessage(role, text) {
-        const box = document.getElementById('chatBox');
-        const div = document.createElement('div');
-        div.className = role === 'user' ? 'user-message' : 'ai-message';
-        div.innerHTML = `<strong>${role === 'user' ? '👤 你' : '🤖 助手'}：</strong> ${text}`;
-        box.appendChild(div);
-        box.scrollTop = box.scrollHeight;
-    }
+let currentRecommendations = [];
 
-    async function sendMessage() {
-        const input = document.getElementById('userInput');
-        const message = input.value.trim();
-        if (!message) return;
-        appendMessage('user', message);
-        input.value = '';
+function appendMessage(role, text) {
+    const box = document.getElementById('chatBox');
+    const div = document.createElement('div');
+    div.className = role === 'user' ? 'user-message' : 'ai-message';
+    div.innerHTML = `<strong>${role === 'user' ? '👤 你' : '🤖 助手'}：</strong> ${text}`;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+}
 
-        const loading = document.createElement('div');
-        loading.className = 'loading';
-        loading.textContent = 'AI 正在为你挑选...';
-        document.getElementById('chatBox').appendChild(loading);
+async function sendMessage() {
+    const input = document.getElementById('userInput');
+    const message = input.value.trim();
+    if (!message) return;
+    appendMessage('user', message);
+    input.value = '';
 
-        try {
-            const response = await fetch('/ai_assistant/chat', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({message: message})
-            });
-            const data = await response.json();
-            loading.remove();
+    const loading = document.createElement('div');
+    loading.className = 'loading';
+    loading.textContent = 'AI 正在为你挑选...';
+    document.getElementById('chatBox').appendChild(loading);
 
-            if (data.error) {
-                appendMessage('ai', `❌ ${data.error}`);
-                return;
-            }
-
-            const recs = data.recommendations;
-            if (!recs || recs.length === 0) {
-                appendMessage('ai', '😕 没找到完全匹配的菜品，试试换个说法？');
-                return;
-            }
-
-            appendMessage('ai', `✨ 为你找到 ${recs.length} 个推荐：`);
-            showRecommendations(recs);
-        } catch (err) {
-            loading.remove();
-            appendMessage('ai', '❌ 网络错误，请稍后重试');
-        }
-    }
-
-    function showRecommendations(recs) {
-        const area = document.getElementById('recommendationArea');
-        area.innerHTML = '<h3>📋 推荐菜品</h3>';
-        recs.forEach(r => {
-            const card = document.createElement('div');
-            card.className = 'recommend-card';
-            card.innerHTML = `
-                <div>
-                    <strong>${r.name}</strong> x ${r.quantity || 1}
-                    <br><small style="color:#666;">${r.reason || ''}</small>
-                </div>
-                <div style="display:flex; gap:5px;">
-                    <button class="btn btn-sm" onclick="orderSingle(${r.dish_id}, ${r.quantity || 1})">下单此项</button>
-                </div>
-            `;
-            area.appendChild(card);
+    try {
+        const response = await fetch('/ai_assistant/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({message: message})
         });
+        const data = await response.json();
+        loading.remove();
 
-        // 一键全下单按钮
-        const allBtn = document.createElement('button');
-        allBtn.className = 'btn btn-success';
-        allBtn.style = 'background:#27ae60; margin-top:10px;';
-        allBtn.textContent = '✅ 全部下单';
-        allBtn.onclick = () => orderAll(recs);
-        area.appendChild(allBtn);
-    }
-
-    async function orderSingle(dishId, qty) {
-        const items = [{dish_id: dishId, quantity: qty, note: '智能推荐'}];
-        await placeOrder(items);
-    }
-
-    async function orderAll(recs) {
-        const items = recs.map(r => ({dish_id: r.dish_id, quantity: r.quantity || 1, note: '智能推荐'}));
-        await placeOrder(items);
-    }
-
-    async function placeOrder(items) {
-        try {
-            const res = await fetch('/ai_assistant/order', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({items: items})
-            });
-            const data = await res.json();
-            if (data.success) {
-                appendMessage('ai', `✅ 已下单：${data.dishes.join(', ')}`);
-                document.getElementById('recommendationArea').innerHTML = '';
-            } else {
-                appendMessage('ai', '❌ 下单失败，请重试');
-            }
-        } catch (e) {
-            appendMessage('ai', '❌ 网络错误');
+        if (data.error) {
+            appendMessage('ai', `❌ ${data.error}`);
+            return;
         }
-    }
 
-    // 回车发送
-    document.getElementById('userInput').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') sendMessage();
+        const recs = data.recommendations;
+        if (!recs || recs.length === 0) {
+            appendMessage('ai', '😕 没找到完全匹配的菜品，试试换个说法？');
+            return;
+        }
+
+        currentRecommendations = recs;
+        appendMessage('ai', `✨ 为你找到 ${recs.length} 个推荐：`);
+        showRecommendations(recs);
+    } catch (err) {
+        loading.remove();
+        appendMessage('ai', '❌ 网络错误，请稍后重试');
+    }
+}
+
+function showRecommendations(recs) {
+    const area = document.getElementById('recommendationArea');
+    area.innerHTML = '<h3>📋 推荐菜品</h3>';
+    recs.forEach((r, index) => {
+        const card = document.createElement('div');
+        card.className = 'recommend-card';
+        card.innerHTML = `
+            <div>
+                <strong>${r.name}</strong> x ${r.quantity || 1}
+                <br><small style="color:#666;">${r.reason || ''}</small>
+                ${r.note ? `<br><small style="color:#e67e22;">备注: ${r.note}</small>` : ''}
+            </div>
+            <div style="display:flex; gap:5px;">
+                <button class="btn btn-sm" onclick="handleOrderSingle(${index})">下单此项</button>
+            </div>
+        `;
+        area.appendChild(card);
     });
+
+    const allBtn = document.createElement('button');
+    allBtn.className = 'btn btn-success';
+    allBtn.style = 'background:#27ae60; margin-top:10px;';
+    allBtn.textContent = '✅ 全部下单';
+    allBtn.onclick = () => handleOrderAll();
+    area.appendChild(allBtn);
+}
+
+function handleOrderSingle(index) {
+    const item = currentRecommendations[index];
+    if (item.note && item.note.trim() !== '') {
+        // 已有备注，直接下单
+        placeOrder([{
+            dish_id: item.dish_id,
+            quantity: item.quantity || 1,
+            note: item.note
+        }]);
+    } else {
+        // 无备注，弹出备注框
+        openNoteModalForSingle(index);
+    }
+}
+
+function handleOrderAll() {
+    const allHaveNote = currentRecommendations.every(item => item.note && item.note.trim() !== '');
+    if (allHaveNote) {
+        const items = currentRecommendations.map(item => ({
+            dish_id: item.dish_id,
+            quantity: item.quantity || 1,
+            note: item.note
+        }));
+        placeOrder(items);
+    } else {
+        openNoteModalForAll();
+    }
+}
+
+let pendingSingleIndex = null;
+
+function openNoteModalForSingle(index) {
+    pendingSingleIndex = index;
+    document.getElementById('noteText').value = '';
+    document.getElementById('noteModal').style.display = 'flex';
+    document.getElementById('noteText').focus();
+}
+
+function openNoteModalForAll() {
+    pendingSingleIndex = 'all';
+    document.getElementById('noteText').value = '';
+    document.getElementById('noteModal').style.display = 'flex';
+    document.getElementById('noteText').focus();
+}
+
+function closeNoteModal() {
+    document.getElementById('noteModal').style.display = 'none';
+    pendingSingleIndex = null;
+}
+
+function submitWithNote() {
+    const noteText = document.getElementById('noteText').value.trim();
+    if (pendingSingleIndex === 'all') {
+        const unifiedNote = noteText || 'AI推荐';
+        const items = currentRecommendations.map(item => ({
+            dish_id: item.dish_id,
+            quantity: item.quantity || 1,
+            note: unifiedNote
+        }));
+        placeOrder(items);
+    } else if (pendingSingleIndex !== null && pendingSingleIndex >= 0) {
+        const item = currentRecommendations[pendingSingleIndex];
+        const finalNote = noteText || item.note || 'AI推荐';
+        placeOrder([{
+            dish_id: item.dish_id,
+            quantity: item.quantity || 1,
+            note: finalNote
+        }]);
+    }
+    closeNoteModal();
+}
+
+async function placeOrder(items) {
+    try {
+        const res = await fetch('/ai_assistant/order', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({items: items})
+        });
+        const data = await res.json();
+        if (data.success) {
+            appendMessage('ai', `✅ 已下单：${data.dishes.join(', ')}`);
+            document.getElementById('recommendationArea').innerHTML = '';
+            currentRecommendations = [];
+        } else {
+            appendMessage('ai', '❌ 下单失败，请重试');
+        }
+    } catch (e) {
+        appendMessage('ai', '❌ 网络错误');
+    }
+}
+
+// 键盘事件
+document.getElementById('userInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') sendMessage();
+});
+document.getElementById('noteModal').addEventListener('click', function(e) {
+    if (e.target === this) closeNoteModal();
+});
+document.getElementById('noteText').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        submitWithNote();
+    }
+});
 </script>
 {% endblock %}
