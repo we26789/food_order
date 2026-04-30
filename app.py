@@ -17,6 +17,7 @@ from werkzeug.utils import secure_filename
 from sqlalchemy import func
 from dotenv import load_dotenv
 
+ai_cache = {}
 # ---------- 加载 .env 环境变量 ----------
 load_dotenv()
 
@@ -234,6 +235,8 @@ def complete_order(order_id):
     if order:
         order.status = 'completed'
         db.session.commit()
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'success': True, 'order_id': order.id})
         flash(f'订单 #{order.daily_seq} 已出餐', 'success')
     return redirect(url_for('orders'))
 
@@ -246,6 +249,8 @@ def reject_order(order_id):
         order.status = 'rejected'
         order.reject_reason = reason if reason else '无理由'
         db.session.commit()
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'success': True, 'order_id': order.id, 'reason': order.reject_reason})
         flash(f'订单 #{order.daily_seq} 已拒绝', 'info')
     return redirect(url_for('orders'))
 
@@ -451,17 +456,29 @@ def ai_assistant_chat():
     if not user_message:
         return jsonify({'error': '消息不能为空'}), 400
 
-    dishes = Dish.query.all()
-    dish_list = [f"{d.id}. {d.name} - {d.description or ''}" for d in dishes]
-    dish_context = "\n".join(dish_list) if dish_list else "暂无菜品"
+    # 缓存检查
+    cache_key = user_message.lower().replace(' ', '')
+    if cache_key in ai_cache:
+        return jsonify(ai_cache[cache_key])
 
-    system_prompt = f"""你是一个家庭点菜助手。根据用户的描述，从以下菜品中精确匹配最符合的菜品。
-只返回 JSON 格式的结果，不要任何额外文字。
-返回格式：{{"recommendations":[{{"dish_id": 菜品ID, "name": "菜品名", "quantity": 数量, "reason": "推荐理由", "note": "备注(可选)"}}]}}
-如果没有完全匹配，你可以推荐最接近的，但必须从上述列表中选取，并说明原因。
-注意：数量默认为1，除非用户明确指定。
-如果用户提出了口味要求（如少辣、加醋、不要葱等），请将要求放入对应菜品的 "note" 字段中。
-如果用户没有提任何特殊要求，则不要包含 "note" 字段，或设为空字符串。"""
+    # 构造完整的菜品列表（包含描述，让 AI 能区分面条、米饭等）
+    dishes = Dish.query.all()
+    dish_items = []
+    for d in dishes:
+        desc = d.description or ''
+        dish_items.append(f"{d.id}. {d.name} - {desc}")
+    dish_context = "\n".join(dish_items) if dish_items else "暂无菜品"
+
+    # 详细且严格的系统提示
+    system_prompt = """你是一个精确的家庭点菜 AI 助手。你需要根据用户的请求，从当前菜品列表中挑选菜品。
+
+要求：
+1. 只返回 JSON，格式：{"recommendations":[{"dish_id": ID, "name": "菜名", "quantity": 1, "reason": "简短理由", "note": "备注"}]}
+2. 严格遵循用户的数量要求。例如“要4个”就返回恰好4个，“要2个”返回2个。
+3. 严格遵守用户的排除条件。如果用户说“不要面”、“不吃猪肉”等，绝对不要选择含有该食材的菜品。
+4. 如果用户给出了统一的口味或要求（例如“不加葱”、“少盐”），请将该要求填入每个推荐菜品的 "note" 字段。
+5. 如果没有特殊的数量或排除要求，请推荐 2~3 个最匹配的菜品。
+6. 只返回 JSON，不要解释或任何其他文字。"""
 
     try:
         response = requests.post(
@@ -474,10 +491,10 @@ def ai_assistant_chat():
                 "model": "deepseek-chat",
                 "messages": [
                     {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": f"现有菜品：\n{dish_context}\n\n用户需求：{user_message}"}
+                    {"role": "user", "content": f"现有菜品：\n{dish_context}\n\n用户请求：{user_message}"}
                 ],
                 "temperature": 0.1,
-                "max_tokens": 500,
+                "max_tokens": 600,
                 "response_format": {"type": "json_object"}
             },
             timeout=30
@@ -485,9 +502,18 @@ def ai_assistant_chat():
         data = response.json()
         content = data['choices'][0]['message']['content']
         result = json.loads(content)
+
+        # 确保 note 字段存在
+        for rec in result.get('recommendations', []):
+            if 'note' not in rec:
+                rec['note'] = ''
+
+        # 存入缓存
+        ai_cache[cache_key] = result
         return jsonify(result)
     except Exception as e:
         return jsonify({'error': f'AI 服务暂时不可用：{str(e)}'}), 500
+
 
 @app.route('/ai_assistant/order', methods=['POST'])
 @role_required('customer')

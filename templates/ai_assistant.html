@@ -7,8 +7,9 @@
             <a href="{{ url_for('index') }}">🍽️ 点菜</a>
             <a href="{{ url_for('recipe_recommend') }}">📖 菜谱推荐</a>
             <a href="{{ url_for('random_order') }}">🎲 随机点菜</a>
-            <a href="{{ url_for('order_history') }}">📜 我的订单</a>
             <a href="{{ url_for('ai_assistant') }}">🤖 智能点菜</a>
+            <a href="{{ url_for('order_history') }}">📜 我的订单</a>
+            
         </div>
         <div class="user-info">
             {{ current_user.username }}<br>
@@ -75,11 +76,12 @@ function appendMessage(role, text) {
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
 }
-
+let isSending = false;
 async function sendMessage() {
     const input = document.getElementById('userInput');
     const message = input.value.trim();
     if (!message) return;
+    isSending = true;
     appendMessage('user', message);
     input.value = '';
 
@@ -114,6 +116,9 @@ async function sendMessage() {
     } catch (err) {
         loading.remove();
         appendMessage('ai', '❌ 网络错误，请稍后重试');
+    }
+    finally {
+        isSending = false;
     }
 }
 

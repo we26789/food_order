@@ -32,31 +32,34 @@
             <thead>
                 <tr>
                     <th>单号</th>
-                    <th>顾客名称</th>
+                    <th>谁点的</th>
                     <th>菜品</th>
                     <th>数量</th>
                     <th>备注</th>
-                    <th>下单时间</th>
+                    <th>时间</th>
                     <th>状态</th>
                     <th>操作</th>
                 </tr>
             </thead>
             <tbody>
             {% for order in orders %}
-            <tr id="order-{{ order.id }}">
+            <tr id="order-{{ order.id }}" data-order-id="{{ order.id }}" data-daily-seq="{{ order.daily_seq }}">
                 <td><strong>#{{ order.daily_seq }}</strong></td>
                 <td>{{ order.customer }}</td>
                 <td>{{ order.dish.name }}</td>
                 <td>{{ order.quantity }}</td>
                 <td>{{ order.note or '-' }}</td>
                 <td>{{ order.created_at.strftime('%H:%M') }}</td>
-                <td>
+                <td class="status-cell">
                     {% if order.status == 'pending' %}
                         <span class="badge badge-danger">未出餐</span>
                     {% elif order.status == 'completed' %}
                         <span class="badge badge-success">已出餐</span>
                     {% elif order.status == 'rejected' %}
-                        <span class="badge badge-warning" title="{{ order.reject_reason }}">已拒绝</span>
+                        <span class="badge badge-warning">已拒绝</span>
+                        {% if order.reject_reason %}
+                            <br><small class="reject-reason-text" style="color:#e67e22;">理由: {{ order.reject_reason }}</small>
+                        {% endif %}
                     {% endif %}
                 </td>
                 <td class="order-actions">
@@ -65,7 +68,7 @@
                         <button class="btn btn-sm btn-reject" data-order-id="{{ order.id }}" style="background:#f39c12; border:none; padding:4px 12px; color:white;">拒绝出餐</button>
                     {% else %}
                         {% if order.status == 'rejected' and order.reject_reason %}
-                            <small style="color:#e67e22;">理由: {{ order.reject_reason }}</small>
+                            <small class="reject-reason-text" style="color:#e67e22;">理由: {{ order.reject_reason }}</small>
                         {% endif %}
                     {% endif %}
                 </td>
@@ -88,9 +91,7 @@
         <p>确定该订单已出餐吗？</p>
         <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
             <button class="btn" onclick="closeCompleteModal()">取消</button>
-            <form id="completeForm" method="POST" action="">
-                <button type="submit" class="btn" style="background:#27ae60;">确认</button>
-            </form>
+            <button class="btn" id="confirmCompleteBtn" style="background:#27ae60;">确认</button>
         </div>
     </div>
 </div>
@@ -103,10 +104,7 @@
         <textarea id="rejectReason" rows="3" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; margin-bottom:15px;" placeholder="例如：食材不足、顾客取消..."></textarea>
         <div style="display:flex; gap:10px; justify-content:flex-end;">
             <button class="btn" onclick="closeRejectModal()">取消</button>
-            <form id="rejectForm" method="POST" action="">
-                <input type="hidden" name="reason" id="rejectReasonInput">
-                <button type="submit" class="btn" style="background:#f39c12;">确认拒绝</button>
-            </form>
+            <button class="btn" id="confirmRejectBtn" style="background:#f39c12;">确认拒绝</button>
         </div>
     </div>
 </div>
@@ -120,41 +118,106 @@
 </style>
 
 <script>
-    var orderTable = document.getElementById('order-table');
-    if (orderTable) {
-        orderTable.addEventListener('click', function(e) {
-            var target = e.target;
-            if (target.classList.contains('btn-complete')) {
-                openCompleteModal(target.getAttribute('data-order-id'));
-            }
-            if (target.classList.contains('btn-reject')) {
-                openRejectModal(target.getAttribute('data-order-id'));
-            }
+// 全局当前操作的订单 ID
+let currentOrderId = null;
+// 操作类型 complete / reject
+let currentAction = null;
+
+// 事件委托监听按钮
+document.getElementById('order-table').addEventListener('click', function(e) {
+    const target = e.target;
+    if (target.classList.contains('btn-complete')) {
+        currentOrderId = target.getAttribute('data-order-id');
+        currentAction = 'complete';
+        openCompleteModal();
+    } else if (target.classList.contains('btn-reject')) {
+        currentOrderId = target.getAttribute('data-order-id');
+        currentAction = 'reject';
+        openRejectModal();
+    }
+});
+
+// ---------- 确认出餐弹窗 ----------
+function openCompleteModal() {
+    document.getElementById('completeModal').style.display = 'flex';
+}
+function closeCompleteModal() {
+    document.getElementById('completeModal').style.display = 'none';
+    currentOrderId = null;
+}
+
+// ---------- 拒绝出餐弹窗 ----------
+function openRejectModal() {
+    document.getElementById('rejectModal').style.display = 'flex';
+    document.getElementById('rejectReason').value = '';
+    document.getElementById('rejectReason').focus();
+}
+function closeRejectModal() {
+    document.getElementById('rejectModal').style.display = 'none';
+    currentOrderId = null;
+}
+
+// ---------- Ajax 提交 ----------
+async function submitAction() {
+    if (!currentOrderId || !currentAction) return;
+    
+    const url = currentAction === 'complete' 
+        ? `/orders/complete/${currentOrderId}`
+        : `/orders/reject/${currentOrderId}`;
+    
+    const formData = new FormData();
+    if (currentAction === 'reject') {
+        const reason = document.getElementById('rejectReason').value.trim();
+        formData.append('reason', reason);
+    }
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'  // 标识为 Ajax 请求
+            },
+            body: formData
         });
+        const data = await response.json();
+        if (data.success) {
+            // 更新当前行状态
+            const row = document.getElementById(`order-${currentOrderId}`);
+            if (!row) return;
+            
+            const statusCell = row.querySelector('.status-cell');
+            const actionsCell = row.querySelector('.order-actions');
+            
+            if (currentAction === 'complete') {
+                statusCell.innerHTML = '<span class="badge badge-success">已出餐</span>';
+                actionsCell.innerHTML = '';
+            } else {
+                let html = '<span class="badge badge-warning">已拒绝</span>';
+                if (data.reason) {
+                    html += `<br><small style="color:#e67e22;">理由: ${data.reason}</small>`;
+                }
+                statusCell.innerHTML = html;
+                actionsCell.innerHTML = data.reason ? `<small style="color:#e67e22;">理由: ${data.reason}</small>` : '';
+            }
+        }
+    } catch (err) {
+        console.error('提交失败', err);
+    } finally {
+        closeCompleteModal();
+        closeRejectModal();
     }
-    function openCompleteModal(orderId) {
-        document.getElementById('completeForm').action = '/orders/complete/' + orderId;
-        document.getElementById('completeModal').style.display = 'flex';
-    }
-    function closeCompleteModal() {
-        document.getElementById('completeModal').style.display = 'none';
-    }
-    function openRejectModal(orderId) {
-        document.getElementById('rejectForm').action = '/orders/reject/' + orderId;
-        document.getElementById('rejectReason').value = '';
-        document.getElementById('rejectModal').style.display = 'flex';
-    }
-    function closeRejectModal() {
-        document.getElementById('rejectModal').style.display = 'none';
-    }
-    document.getElementById('completeModal').addEventListener('click', function(e) {
-        if (e.target === this) closeCompleteModal();
-    });
-    document.getElementById('rejectModal').addEventListener('click', function(e) {
-        if (e.target === this) closeRejectModal();
-    });
-    document.getElementById('rejectForm').addEventListener('submit', function(e) {
-        document.getElementById('rejectReasonInput').value = document.getElementById('rejectReason').value;
-    });
+}
+
+// 绑定确认按钮
+document.getElementById('confirmCompleteBtn').addEventListener('click', submitAction);
+document.getElementById('confirmRejectBtn').addEventListener('click', submitAction);
+
+// 点击遮罩关闭弹窗
+document.getElementById('completeModal').addEventListener('click', function(e) {
+    if (e.target === this) closeCompleteModal();
+});
+document.getElementById('rejectModal').addEventListener('click', function(e) {
+    if (e.target === this) closeRejectModal();
+});
 </script>
 {% endblock %}
