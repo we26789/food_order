@@ -41,7 +41,7 @@
             <tbody>
             {% for order in orders %}
             <tr>
-                <td><strong>#{{ order.id }}</strong></td>
+                <td><strong>#{{ order.daily_seq }}</strong></td>
                 <td>{{ order.dish.name }}</td>
                 <td>{{ order.quantity }}</td>
                 <td>{{ order.note or '-' }}</td>

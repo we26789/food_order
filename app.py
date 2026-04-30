@@ -60,6 +60,7 @@ class OrderItem(db.Model):
     quantity = db.Column(db.Integer, default=1)
     note = db.Column(db.String(200))
     status = db.Column(db.String(20), default='pending')
+    daily_seq = db.Column(db.Integer, default=0)          # 每日序号
     reject_reason = db.Column(db.String(200), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.now)
 
@@ -163,7 +164,7 @@ def change_password():
             return redirect(url_for('login'))
     return render_template('change_password.html')
 
-# --------------------- 顾客：点菜页面（侧栏） ---------------------
+# --------------------- 顾客：点菜页面 ---------------------
 @app.route('/', methods=['GET', 'POST'])
 @role_required('customer')
 def index():
@@ -176,10 +177,17 @@ def index():
         if not dish:
             flash('菜品不存在', 'danger')
             return redirect(url_for('index'))
-        order = OrderItem(dish_id=dish.id, customer=customer_name, quantity=quantity, note=note)
+        # 计算今日最大 daily_seq
+        today = datetime.now().date()
+        max_seq = db.session.query(func.max(OrderItem.daily_seq)).filter(
+            func.date(OrderItem.created_at) == today
+        ).scalar() or 0
+        new_seq = max_seq + 1
+        order = OrderItem(dish_id=dish.id, customer=customer_name, quantity=quantity,
+                          note=note, daily_seq=new_seq)
         db.session.add(order)
         db.session.commit()
-        flash(f'成功下单：{dish.name} x {quantity}', 'success')
+        flash(f'成功下单：{dish.name} x {quantity} (单号 #{new_seq})', 'success')
         return redirect(url_for('index'))
     dishes = Dish.query.order_by(Dish.created_at.desc()).all()
     return render_template('index.html', dishes=dishes)
@@ -208,7 +216,7 @@ def orders():
         ).order_by(OrderItem.created_at.asc()).all()
         return render_template('orders.html', orders=order_list,
                                selected_date=today_str, today=today_str)
-                               
+
 @app.route('/orders/complete/<int:order_id>', methods=['POST'])
 @role_required('cooker')
 def complete_order(order_id):
@@ -216,7 +224,7 @@ def complete_order(order_id):
     if order:
         order.status = 'completed'
         db.session.commit()
-        flash(f'订单 #{order.id} 已出餐', 'success')
+        flash(f'订单 #{order.daily_seq} 已出餐', 'success')   # 使用 daily_seq
     return redirect(url_for('orders'))
 
 @app.route('/orders/reject/<int:order_id>', methods=['POST'])
@@ -228,7 +236,7 @@ def reject_order(order_id):
         order.status = 'rejected'
         order.reject_reason = reason if reason else '无理由'
         db.session.commit()
-        flash(f'订单 #{order.id} 已拒绝', 'info')
+        flash(f'订单 #{order.daily_seq} 已拒绝', 'info')      # 使用 daily_seq
     return redirect(url_for('orders'))
 
 # --------------------- 顾客：订单历史 ---------------------
@@ -239,7 +247,6 @@ def order_history():
     customer = current_user.username
     today = datetime.now().date()
     today_str = today.strftime('%Y-%m-%d')
-
     if date_str:
         try:
             date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
@@ -259,6 +266,7 @@ def order_history():
         ).order_by(OrderItem.created_at.asc()).all()
         return render_template('order_history.html', orders=orders,
                                selected_date=today_str, today=today_str)
+
 # --------------------- 厨师：添加菜品 ---------------------
 @app.route('/dish/add', methods=['GET', 'POST'])
 @role_required('cooker')
@@ -331,17 +339,22 @@ def update_dish_image(dish_id):
 @app.route('/orders/clear', methods=['POST'])
 @role_required('cooker')
 def clear_orders():
-    num = OrderItem.query.delete()
+    today = datetime.now().date()
+    num = OrderItem.query.filter(
+        func.date(OrderItem.created_at) == today
+    ).delete()
     db.session.commit()
-    flash(f'已清空所有订单（共 {num} 条）', 'info')
+    flash(f'已清空今日所有订单（共 {num} 条）', 'info')
     return redirect(url_for('orders'))
 
+# --------------------- 菜谱推荐 ---------------------
 @app.route('/recipe/recommend')
 @login_required
 def recipe_recommend():
     categories = TasteCategory.query.order_by(TasteCategory.sort_order).all()
     return render_template('recipe_recommend.html', categories=categories)
 
+# --------------------- 顾客：随机点菜 ---------------------
 @app.route('/random')
 @role_required('customer')
 def random_order():
@@ -362,20 +375,36 @@ def submit_random_order():
     action = request.form.get('action')
     customer = current_user.username
     note = request.form.get('note', '').strip()
+    today = datetime.now().date()
+
+    # 获取今日当前最大 daily_seq
+    base_seq = db.session.query(func.max(OrderItem.daily_seq)).filter(
+        func.date(OrderItem.created_at) == today
+    ).scalar() or 0
+
     if action == 'all':
         breakfast_id = request.form.get('breakfast_id', type=int)
         lunch_id = request.form.get('lunch_id', type=int)
         dinner_id = request.form.get('dinner_id', type=int)
+
+        seq_counter = base_seq
         for rid in [breakfast_id, lunch_id, dinner_id]:
             recipe = RecommendedRecipe.query.get(rid)
             if recipe:
                 dish = Dish.query.filter_by(name=recipe.dish_name).first()
                 if dish:
-                    order = OrderItem(dish_id=dish.id, customer=customer, quantity=1,
-                                      note=f'{recipe.meal_type} 随机{f": {note}" if note else ""}')
+                    seq_counter += 1
+                    order = OrderItem(
+                        dish_id=dish.id,
+                        customer=customer,
+                        quantity=1,
+                        note=f'{recipe.meal_type} 随机{f": {note}" if note else ""}',
+                        daily_seq=seq_counter
+                    )
                     db.session.add(order)
         db.session.commit()
-        flash('✅ 已一键下单今日三餐！', 'success')
+        flash(f'✅ 已一键下单今日三餐！(单号 #{base_seq+1} ~ #{seq_counter})', 'success')
+
     elif action == 'single':
         selected_meal = request.form.get('meal_type')
         recipe_id = request.form.get('recipe_id', type=int)
@@ -384,13 +413,20 @@ def submit_random_order():
             if recipe:
                 dish = Dish.query.filter_by(name=recipe.dish_name).first()
                 if dish:
-                    order = OrderItem(dish_id=dish.id, customer=customer, quantity=1,
-                                      note=f'{selected_meal} 单独{f": {note}" if note else ""}')
+                    new_seq = base_seq + 1
+                    order = OrderItem(
+                        dish_id=dish.id,
+                        customer=customer,
+                        quantity=1,
+                        note=f'{selected_meal} 单独{f": {note}" if note else ""}',
+                        daily_seq=new_seq
+                    )
                     db.session.add(order)
                     db.session.commit()
-                    flash(f'✅ 已单独下单 {selected_meal}：{dish.name}', 'success')
+                    flash(f'✅ 已单独下单 {selected_meal}：{dish.name} (单号 #{new_seq})', 'success')
     else:
         flash('无效操作', 'danger')
+
     return redirect(url_for('random_order'))
 
 # --------------------- 启动 ---------------------

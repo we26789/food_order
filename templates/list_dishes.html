@@ -58,9 +58,9 @@
         {% endif %}
 
         <hr>
-        <h3>🧹 清空所有订单</h3>
-        <form method="POST" action="{{ url_for('clear_orders') }}" onsubmit="return confirm('确定要删除所有已点的订单吗？此操作不可恢复。');">
-            <button type="submit" class="btn btn-danger">清空全部订单</button>
+        <h3>🧹 清空今日订单</h3>
+        <form method="POST" action="{{ url_for('clear_orders') }}" onsubmit="return confirm('确定要删除今日所有订单吗？此操作不可恢复。');">
+            <button type="submit" class="btn btn-danger">清空今日订单</button>
         </form>
     </div>
 </div>
