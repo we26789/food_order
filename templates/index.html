@@ -1,52 +1,56 @@
 {% extends "base.html" %}
 {% block content %}
-<!-- 顾客专用顶部导航 -->
-<nav class="customer-nav">
-    <a href="{{ url_for('index') }}">🍽️ 菜单</a>
-    <div style="display: flex; gap: 15px; align-items: center;">
-        <span style="color: white;">👤 {{ current_user.username }}</span>
-        <a href="{{ url_for('change_password') }}" style="font-size:14px;">修改密码</a>
-        <a href="{{ url_for('logout') }}" style="font-size:14px;">退出</a>
+<div class="cook-layout">
+    <div class="sidebar" style="background:#2c3e50;">
+        <h3>👤 顾客菜单</h3>
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}">🍽️ 点菜</a>
+            <a href="{{ url_for('recipe_recommend') }}">📖 菜谱推荐</a>
+            <a href="{{ url_for('random_order') }}">🎲 随机点菜</a>
+        </div>
+        <div class="user-info">
+            {{ current_user.username }}<br>
+            <a href="{{ url_for('change_password') }}">修改密码</a> |
+            <a href="{{ url_for('logout') }}">退出</a>
+        </div>
     </div>
-</nav>
-
-<div class="container">
-    <h2 style="margin-bottom:20px;">🍽️ 点菜菜单 — 欢迎 {{ current_user.username }}</h2>
-
-    {% if dishes %}
-        {% for dish in dishes %}
-        <div class="card">
-            {% if dish.image_url %}
-                {% if dish.image_url.startswith('http') %}
-                    <img src="{{ dish.image_url }}" alt="{{ dish.name }}">
+    <div class="main-content">
+        <h2>🍽️ 点菜菜单 — 欢迎 {{ current_user.username }}</h2>
+        {% if dishes %}
+            {% for dish in dishes %}
+            <div class="card">
+                {% if dish.image_url %}
+                    {% if dish.image_url.startswith('http') %}
+                        <img src="{{ dish.image_url }}" alt="{{ dish.name }}">
+                    {% else %}
+                        <img src="{{ url_for('static', filename=dish.image_url) }}" alt="{{ dish.name }}">
+                    {% endif %}
                 {% else %}
-                    <img src="{{ url_for('static', filename=dish.image_url) }}" alt="{{ dish.name }}">
+                    <img src="https://via.placeholder.com/120?text=🍲" alt="占位图">
                 {% endif %}
-            {% else %}
-                <img src="https://via.placeholder.com/120?text=🍲" alt="占位图">
-            {% endif %}
-            <div class="card-content">
-                <h3>{{ dish.name }}</h3>
-                {% if dish.description %}<p>{{ dish.description }}</p>{% endif %}
-                <form method="POST" style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
-                    <div class="form-group" style="margin:0; width:80px;">
-                        <label style="font-size:13px;">数量</label>
-                        <input type="number" name="quantity" value="1" min="1" max="10" required>
-                    </div>
-                    <div class="form-group" style="margin:0; flex:2;">
-                        <label style="font-size:13px;">备注</label>
-                        <input type="text" name="note" placeholder="如：少辣、多放葱...">
-                    </div>
-                    <input type="hidden" name="dish_id" value="{{ dish.id }}">
-                    <button type="submit" class="btn" style="height:40px;">➕ 点这个</button>
-                </form>
+                <div class="card-content">
+                    <h3>{{ dish.name }}</h3>
+                    {% if dish.description %}<p>{{ dish.description }}</p>{% endif %}
+                    <form method="POST" style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+                        <div class="form-group" style="margin:0; width:80px;">
+                            <label style="font-size:13px;">数量</label>
+                            <input type="number" name="quantity" value="1" min="1" max="10">
+                        </div>
+                        <div class="form-group" style="margin:0; flex:2;">
+                            <label style="font-size:13px;">备注</label>
+                            <input type="text" name="note" placeholder="如：少辣、多放葱...">
+                        </div>
+                        <input type="hidden" name="dish_id" value="{{ dish.id }}">
+                        <button type="submit" class="btn">➕ 点这个</button>
+                    </form>
+                </div>
             </div>
-        </div>
-        {% endfor %}
-    {% else %}
-        <div style="text-align:center; padding:60px; color:#aaa;">
-            <h3>😋 厨师还没添加菜品，敬请期待～</h3>
-        </div>
-    {% endif %}
+            {% endfor %}
+        {% else %}
+            <div style="text-align:center; padding:60px; color:#aaa;">
+                <h3>😋 厨师还没添加菜品，敬请期待～</h3>
+            </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
