@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 style="margin-bottom:20px;">📋 已点菜品汇总</h2>
+
+{% if orders %}
+<table class="order-table">
+    <thead>
+        <tr>
+            <th>谁点的</th>
+            <th>菜品</th>
+            <th>数量</th>
+            <th>备注</th>
+            <th>时间</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for order in orders %}
+    <tr>
+        <td>{{ order.customer }}</td>
+        <td>{{ order.dish.name }}</td>
+        <td>{{ order.quantity }}</td>
+        <td>{{ order.note or '-' }}</td>
+        <td>{{ order.created_at.strftime('%H:%M') }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div style="text-align:center; padding:60px; color:#aaa;">
+    <h3>🛒 还没有订单，等待顾客点菜～</h3>
+</div>
+{% endif %}
+{% endblock %}

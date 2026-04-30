@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家庭点菜</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #fef9ef; color: #333; }
+        a { color: #e67e22; text-decoration: none; }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        nav {
+            background: #e67e22; padding: 10px 20px; display: flex; gap: 20px; align-items: center;
+            border-radius: 0 0 15px 15px; margin-bottom: 25px;
+            justify-content: space-between;
+        }
+        nav a { color: white; font-weight: bold; }
+        .flash-msg { padding: 12px; border-radius: 8px; margin-bottom: 15px; font-weight: 500; }
+        .flash-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .flash-warning { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .flash-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .flash-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .card {
+            background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05); display: flex; gap: 20px; align-items: center;
+        }
+        .card img { width: 120px; height: 120px; object-fit: cover; border-radius: 12px; }
+        .card-content { flex: 1; }
+        .card h3 { margin-bottom: 8px; color: #2c3e50; }
+        .card p { color: #7f8c8d; margin-bottom: 15px; }
+        .btn {
+            background: #e67e22; color: white; border: none; padding: 10px 16px;
+            border-radius: 25px; cursor: pointer; font-weight: bold; font-size: 14px;
+            transition: background 0.2s;
+        }
+        .btn:hover { background: #d35400; }
+        .btn-danger { background: #e74c3c; }
+        .btn-danger:hover { background: #c0392b; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 4px; font-weight: 600; color: #555; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 20px;
+            font-size: 14px; outline: none;
+        }
+        .form-group input:focus, .form-group textarea:focus { border-color: #e67e22; }
+        .order-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; }
+        .order-table th, .order-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .order-table th { background: #f5b041; color: white; }
+        hr { border: none; border-top: 1px solid #eee; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div style="display: flex; gap: 20px;">
+            {% if current_user.is_authenticated %}
+                {% if current_user.role == 'customer' %}
+                    <a href="{{ url_for('index') }}">🍽️ 菜单</a>
+                {% else %}
+                    <a href="{{ url_for('orders') }}">📋 订单汇总</a>
+                    <a href="{{ url_for('admin') }}">⚙️ 管理</a>
+                {% endif %}
+            {% else %}
+                <a href="{{ url_for('login') }}">登录</a>
+            {% endif %}
+        </div>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            {% if current_user.is_authenticated %}
+                <span style="color: white;">👤 {{ current_user.username }}</span>
+                <a href="{{ url_for('change_password') }}" style="font-size:14px;">修改密码</a>
+                <a href="{{ url_for('logout') }}" style="font-size:14px;">退出</a>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-msg flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

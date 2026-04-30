@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 style="margin-bottom:20px;">⚙️ 菜品管理</h2>
+
+<h3>➕ 添加新菜品</h3>
+<form method="POST" class="card" style="display:block;">
+    <input type="hidden" name="action" value="add">
+    <div class="form-group">
+        <label>菜名 *</label>
+        <input type="text" name="name" placeholder="例如：红烧排骨" required>
+    </div>
+    <div class="form-group">
+        <label>简介</label>
+        <textarea name="description" rows="2" placeholder="简单描述口味、食材..."></textarea>
+    </div>
+    <div class="form-group">
+        <label>图片链接（可选）</label>
+        <input type="text" name="image_url" placeholder="https://...">
+    </div>
+    <button type="submit" class="btn">添加菜品</button>
+</form>
+
+<hr>
+
+<h3>📋 当前菜品列表</h3>
+{% if dishes %}
+  {% for dish in dishes %}
+  <div class="card">
+      {% if dish.image_url %}
+      <img src="{{ dish.image_url }}" alt="{{ dish.name }}">
+      {% else %}
+      <img src="https://via.placeholder.com/120?text=🍲" alt="占位图">
+      {% endif %}
+      <div class="card-content">
+          <h3>{{ dish.name }}</h3>
+          {% if dish.description %}<p>{{ dish.description }}</p>{% endif %}
+          <form method="POST" onsubmit="return confirm('确定删除该菜品？相关订单也会被删除。');">
+              <input type="hidden" name="action" value="delete">
+              <input type="hidden" name="dish_id" value="{{ dish.id }}">
+              <button type="submit" class="btn btn-danger">🗑️ 删除</button>
+          </form>
+      </div>
+  </div>
+  {% endfor %}
+{% else %}
+  <p style="color:#aaa;">暂无菜品，请添加。</p>
+{% endif %}
+
+<hr>
+<h3>🧹 清空所有订单</h3>
+<form method="POST" onsubmit="return confirm('确定要删除所有已点的订单吗？此操作不可恢复。');">
+    <input type="hidden" name="action" value="clear_orders">
+    <button type="submit" class="btn btn-danger">清空全部订单</button>
+</form>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 style="margin-bottom:20px;">今晚吃什么？快来点菜！</h2>
+
+{% if dishes %}
+  {% for dish in dishes %}
+  <div class="card">
+      {% if dish.image_url %}
+      <img src="{{ dish.image_url }}" alt="{{ dish.name }}">
+      {% else %}
+      <img src="https://via.placeholder.com/120?text=🍲" alt="占位图">
+      {% endif %}
+      <div class="card-content">
+          <h3>{{ dish.name }}</h3>
+          {% if dish.description %}<p>{{ dish.description }}</p>{% endif %}
+          <form method="POST" style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+              <div class="form-group" style="margin:0; flex:1; min-width:80px;">
+                  <label style="font-size:13px;">你的名字</label>
+                  <input type="text" name="customer" placeholder="如：妈妈" required>
+              </div>
+              <div class="form-group" style="margin:0; width:70px;">
+                  <label style="font-size:13px;">数量</label>
+                  <input type="number" name="quantity" value="1" min="1" max="10">
+              </div>
+              <div class="form-group" style="margin:0; flex:2;">
+                  <label style="font-size:13px;">备注（可选）</label>
+                  <input type="text" name="note" placeholder="少辣、多放葱...">
+              </div>
+              <input type="hidden" name="dish_id" value="{{ dish.id }}">
+              <button type="submit" class="btn" style="height:40px;">➕ 点这个</button>
+          </form>
+      </div>
+  </div>
+  {% endfor %}
+{% else %}
+  <div style="text-align:center; padding:60px; color:#aaa;">
+      <h3>😋 还没有菜品，请管理员添加～</h3>
+  </div>
+{% endif %}
+{% endblock %}
