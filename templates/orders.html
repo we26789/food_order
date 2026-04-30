@@ -18,25 +18,53 @@
 
     <div class="main-content">
         <h2>📋 已点菜品汇总</h2>
+
         {% if orders %}
-        <table class="order-table">
+        <table class="order-table" id="order-table">
             <thead>
                 <tr>
-                    <th>谁点的</th>
-                    <th>菜品</th>
+                    <th>单号</th>
+                    <th>顾客</th>
+                    <th>菜品名称</th>
                     <th>数量</th>
                     <th>备注</th>
-                    <th>时间</th>
+                    <th>下单时间</th>
+                    <th>订单状态</th>
+                    <th>操作</th>
                 </tr>
             </thead>
             <tbody>
             {% for order in orders %}
-            <tr>
+            <tr id="order-{{ order.id }}">
+                <td><strong>#{{ order.id }}</strong></td>
                 <td>{{ order.customer }}</td>
                 <td>{{ order.dish.name }}</td>
                 <td>{{ order.quantity }}</td>
                 <td>{{ order.note or '-' }}</td>
                 <td>{{ order.created_at.strftime('%H:%M') }}</td>
+                <td>
+                    {% if order.status == 'pending' %}
+                        <span class="badge badge-danger">未出餐</span>
+                    {% elif order.status == 'completed' %}
+                        <span class="badge badge-success">已出餐</span>
+                    {% elif order.status == 'rejected' %}
+                        <span class="badge badge-warning" title="{{ order.reject_reason }}">已拒绝</span>
+                    {% endif %}
+                </td>
+                <td class="order-actions">
+                    {% if order.status == 'pending' %}
+                        <button class="btn btn-sm btn-complete" 
+                                data-order-id="{{ order.id }}"
+                                style="background:#27ae60; border:none; padding:4px 12px; color:white;">已出餐</button>
+                        <button class="btn btn-sm btn-reject" 
+                                data-order-id="{{ order.id }}"
+                                style="background:#f39c12; border:none; padding:4px 12px; color:white;">拒绝出餐</button>
+                    {% else %}
+                        {% if order.status == 'rejected' and order.reject_reason %}
+                            <small style="color:#e67e22;">理由: {{ order.reject_reason }}</small>
+                        {% endif %}
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
             </tbody>
@@ -48,4 +76,93 @@
         {% endif %}
     </div>
 </div>
+
+<!-- 确认出餐弹窗 -->
+<div id="completeModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:3000; align-items:center; justify-content:center;">
+    <div style="background:white; border-radius:12px; padding:25px; width:350px; text-align:center;">
+        <h3>✅ 确认出餐</h3>
+        <p>确定该订单已出餐吗？</p>
+        <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
+            <button class="btn" onclick="closeCompleteModal()">取消</button>
+            <form id="completeForm" method="POST" action="">
+                <button type="submit" class="btn" style="background:#27ae60;">确认</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 拒绝出餐弹窗 -->
+<div id="rejectModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:3000; align-items:center; justify-content:center;">
+    <div style="background:white; border-radius:12px; padding:25px; width:400px;">
+        <h3>🚫 拒绝出餐</h3>
+        <p>请填写拒绝理由：</p>
+        <textarea id="rejectReason" rows="3" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; margin-bottom:15px;" placeholder="例如：食材不足、顾客取消..."></textarea>
+        <div style="display:flex; gap:10px; justify-content:flex-end;">
+            <button class="btn" onclick="closeRejectModal()">取消</button>
+            <form id="rejectForm" method="POST" action="">
+                <input type="hidden" name="reason" id="rejectReasonInput">
+                <button type="submit" class="btn" style="background:#f39c12;">确认拒绝</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+    .badge-danger { background: #ffe0e0; color: #c0392b; }
+    .badge-success { background: #d5f5e3; color: #27ae60; }
+    .badge-warning { background: #fdebd0; color: #e67e22; }
+    .btn-sm { padding: 4px 12px; font-size: 13px; }
+</style>
+
+<script>
+    var orderTable = document.getElementById('order-table');
+    if (orderTable) {
+        orderTable.addEventListener('click', function(e) {
+            var target = e.target;
+            if (target.classList.contains('btn-complete')) {
+                var orderId = target.getAttribute('data-order-id');
+                openCompleteModal(orderId);
+            }
+            if (target.classList.contains('btn-reject')) {
+                var orderId = target.getAttribute('data-order-id');
+                openRejectModal(orderId);
+            }
+        });
+    }
+
+    function openCompleteModal(orderId) {
+        document.getElementById('completeForm').action = '/orders/complete/' + orderId;
+        document.getElementById('completeModal').style.display = 'flex';
+    }
+    function closeCompleteModal() {
+        document.getElementById('completeModal').style.display = 'none';
+    }
+
+    function openRejectModal(orderId) {
+        document.getElementById('rejectForm').action = '/orders/reject/' + orderId;
+        document.getElementById('rejectReason').value = '';
+        document.getElementById('rejectModal').style.display = 'flex';
+    }
+    function closeRejectModal() {
+        document.getElementById('rejectModal').style.display = 'none';
+    }
+
+    document.getElementById('completeModal').addEventListener('click', function(e) {
+        if (e.target === this) closeCompleteModal();
+    });
+    document.getElementById('rejectModal').addEventListener('click', function(e) {
+        if (e.target === this) closeRejectModal();
+    });
+
+    document.getElementById('rejectForm').addEventListener('submit', function(e) {
+        document.getElementById('rejectReasonInput').value = document.getElementById('rejectReason').value;
+    });
+</script>
 {% endblock %}

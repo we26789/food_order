@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import (
     LoginManager, UserMixin, login_user, logout_user,
@@ -10,6 +10,7 @@ from datetime import datetime
 from functools import wraps
 import os
 import random
+import socket
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -26,6 +27,7 @@ DB_NAME = 'family_menu'
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# --------------------- 图片上传配置 ---------------------
 UPLOAD_FOLDER = os.path.join(basedir, 'static', 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 if not os.path.exists(UPLOAD_FOLDER):
@@ -57,6 +59,8 @@ class OrderItem(db.Model):
     customer = db.Column(db.String(50), nullable=False)
     quantity = db.Column(db.Integer, default=1)
     note = db.Column(db.String(200))
+    status = db.Column(db.String(20), default='pending')
+    reject_reason = db.Column(db.String(200), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.now)
 
 class TasteCategory(db.Model):
@@ -100,7 +104,6 @@ def role_required(role):
 # --------------------- 初始化数据库 & 默认用户 & 同步推荐菜品 ---------------------
 with app.app_context():
     db.create_all()
-    # 默认用户
     if not User.query.filter_by(username='Cooker').first():
         db.session.add(User(username='Cooker', password_hash=generate_password_hash('123456'), role='cooker'))
     if not User.query.filter_by(username='Customer').first():
@@ -186,8 +189,30 @@ def index():
 @app.route('/orders')
 @role_required('cooker')
 def orders():
-    order_list = OrderItem.query.order_by(OrderItem.created_at.desc()).all()
+    order_list = OrderItem.query.order_by(OrderItem.created_at.asc()).all()
     return render_template('orders.html', orders=order_list)
+
+@app.route('/orders/complete/<int:order_id>', methods=['POST'])
+@role_required('cooker')
+def complete_order(order_id):
+    order = OrderItem.query.get(order_id)
+    if order:
+        order.status = 'completed'
+        db.session.commit()
+        flash(f'订单 #{order.id} 已出餐', 'success')
+    return redirect(url_for('orders'))
+
+@app.route('/orders/reject/<int:order_id>', methods=['POST'])
+@role_required('cooker')
+def reject_order(order_id):
+    order = OrderItem.query.get(order_id)
+    if order:
+        reason = request.form.get('reason', '').strip()
+        order.status = 'rejected'
+        order.reject_reason = reason if reason else '无理由'
+        db.session.commit()
+        flash(f'订单 #{order.id} 已拒绝', 'info')
+    return redirect(url_for('orders'))
 
 # --------------------- 厨师：添加菜品 ---------------------
 @app.route('/dish/add', methods=['GET', 'POST'])
@@ -281,7 +306,6 @@ def recipe_recommend():
 @app.route('/random')
 @role_required('customer')
 def random_order():
-    # 随机选一日三餐（从推荐菜谱中早餐、午餐、晚餐各随机一条）
     breakfasts = RecommendedRecipe.query.filter_by(meal_type='breakfast').all()
     lunches = RecommendedRecipe.query.filter_by(meal_type='lunch').all()
     dinners = RecommendedRecipe.query.filter_by(meal_type='dinner').all()
@@ -298,24 +322,28 @@ def random_order():
                            lunch=random_lunch,
                            dinner=random_dinner)
 
-# 处理随机点菜的下单
 @app.route('/random/order', methods=['POST'])
 @role_required('customer')
 def submit_random_order():
-    action = request.form.get('action')  # 'all' or 'single'
+    action = request.form.get('action')
     customer = current_user.username
-    breakfast_id = request.form.get('breakfast_id', type=int)
-    lunch_id = request.form.get('lunch_id', type=int)
-    dinner_id = request.form.get('dinner_id', type=int)
+    note = request.form.get('note', '').strip()
 
     if action == 'all':
-        # 整单下单（三餐各1份）
+        breakfast_id = request.form.get('breakfast_id', type=int)
+        lunch_id = request.form.get('lunch_id', type=int)
+        dinner_id = request.form.get('dinner_id', type=int)
         for rid in [breakfast_id, lunch_id, dinner_id]:
             recipe = RecommendedRecipe.query.get(rid)
             if recipe:
                 dish = Dish.query.filter_by(name=recipe.dish_name).first()
                 if dish:
-                    order = OrderItem(dish_id=dish.id, customer=customer, quantity=1, note=f'{recipe.meal_type} 随机')
+                    order = OrderItem(
+                        dish_id=dish.id,
+                        customer=customer,
+                        quantity=1,
+                        note=f'{recipe.meal_type} 随机{f": {note}" if note else ""}'
+                    )
                     db.session.add(order)
         db.session.commit()
         flash('✅ 已一键下单今日三餐！', 'success')
@@ -328,7 +356,12 @@ def submit_random_order():
             if recipe:
                 dish = Dish.query.filter_by(name=recipe.dish_name).first()
                 if dish:
-                    order = OrderItem(dish_id=dish.id, customer=customer, quantity=1, note=f'{selected_meal} 单独点')
+                    order = OrderItem(
+                        dish_id=dish.id,
+                        customer=customer,
+                        quantity=1,
+                        note=f'{selected_meal} 单独{f": {note}" if note else ""}'
+                    )
                     db.session.add(order)
                     db.session.commit()
                     flash(f'✅ 已单独下单 {selected_meal}：{dish.name}', 'success')
@@ -338,11 +371,23 @@ def submit_random_order():
     return redirect(url_for('random_order'))
 
 # --------------------- 启动 ---------------------
+def get_local_ip():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('8.8.8.8', 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except:
+        return '127.0.0.1'
+
 if __name__ == '__main__':
+    local_ip = get_local_ip()
     print("=" * 40)
     print("家庭点菜系统启动中...")
     print("厨师账号：Cooker   密码：123456")
     print("顾客账号：Customer 密码：123456")
-    print("局域网访问：http://本机IP:5000")
+    print(f"本机访问：http://127.0.0.1:5000")
+    print(f"局域网访问：http://{local_ip}:5000")
     print("=" * 40)
     app.run(debug=True, host='0.0.0.0', port=5000)

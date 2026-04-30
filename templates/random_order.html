@@ -30,43 +30,105 @@
                 <h3>🌙 晚餐：{{ dinner.dish_name }}</h3>
                 <p>{{ dinner.description }}</p>
 
-                <!-- 操作按钮 -->
-                <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
-                    <form method="POST" action="{{ url_for('submit_random_order') }}">
+                <!-- 操作按钮行 -->
+                <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <!-- 一键下单三餐 -->
+                    <form method="POST" action="{{ url_for('submit_random_order') }}" id="form-all" style="margin:0;">
                         <input type="hidden" name="action" value="all">
                         <input type="hidden" name="breakfast_id" value="{{ breakfast.id }}">
                         <input type="hidden" name="lunch_id" value="{{ lunch.id }}">
                         <input type="hidden" name="dinner_id" value="{{ dinner.id }}">
-                        <button type="submit" class="btn btn-danger" style="background:#27ae60;">✅ 一键下单三餐</button>
+                        <input type="hidden" name="note" class="note-input">
+                        <button type="button" class="btn btn-danger" style="background:#27ae60;" onclick="openNoteModal('form-all')">✅ 一键下单三餐</button>
                     </form>
-                    <!-- 单独下单三项 -->
-                    <form method="POST" action="{{ url_for('submit_random_order') }}" style="display:flex; gap:5px;">
+
+                    <!-- 只点早餐 -->
+                    <form method="POST" action="{{ url_for('submit_random_order') }}" id="form-breakfast" style="margin:0;">
                         <input type="hidden" name="action" value="single">
                         <input type="hidden" name="meal_type" value="breakfast">
                         <input type="hidden" name="recipe_id" value="{{ breakfast.id }}">
-                        <button type="submit" class="btn">🌅 只点早餐</button>
+                        <input type="hidden" name="note" class="note-input">
+                        <button type="button" class="btn" onclick="openNoteModal('form-breakfast')">🌅 只点早餐</button>
                     </form>
-                    <form method="POST" action="{{ url_for('submit_random_order') }}" style="display:flex; gap:5px;">
+
+                    <!-- 只点午餐 -->
+                    <form method="POST" action="{{ url_for('submit_random_order') }}" id="form-lunch" style="margin:0;">
                         <input type="hidden" name="action" value="single">
                         <input type="hidden" name="meal_type" value="lunch">
                         <input type="hidden" name="recipe_id" value="{{ lunch.id }}">
-                        <button type="submit" class="btn">☀️ 只点午餐</button>
+                        <input type="hidden" name="note" class="note-input">
+                        <button type="button" class="btn" onclick="openNoteModal('form-lunch')">☀️ 只点午餐</button>
                     </form>
-                    <form method="POST" action="{{ url_for('submit_random_order') }}" style="display:flex; gap:5px;">
+
+                    <!-- 只点晚餐 -->
+                    <form method="POST" action="{{ url_for('submit_random_order') }}" id="form-dinner" style="margin:0;">
                         <input type="hidden" name="action" value="single">
                         <input type="hidden" name="meal_type" value="dinner">
                         <input type="hidden" name="recipe_id" value="{{ dinner.id }}">
-                        <button type="submit" class="btn">🌙 只点晚餐</button>
+                        <input type="hidden" name="note" class="note-input">
+                        <button type="button" class="btn" onclick="openNoteModal('form-dinner')">🌙 只点晚餐</button>
                     </form>
+
+                    <!-- 换一组（刷新） -->
+                    <a href="{{ url_for('random_order') }}" class="btn" style="margin:0;">🔄 换一组</a>
                 </div>
                 {% else %}
                 <p style="text-align:center; padding:20px;">暂无随机数据，请点击刷新</p>
+                <a href="{{ url_for('random_order') }}" class="btn">🔄 刷新随机</a>
                 {% endif %}
             </div>
-
-            <!-- 随机生成按钮（通过刷新页面实现） -->
-            <a href="{{ url_for('random_order') }}" class="btn" style="margin-top:15px;">🔄 换一组</a>
         </div>
     </div>
 </div>
+
+<!-- 备注弹窗 -->
+<div id="noteModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:3000; justify-content:center; align-items:center;">
+    <div style="background:white; border-radius:16px; padding:25px; width:400px; max-width:90%;">
+        <h3>📝 口味备注</h3>
+        <textarea id="noteText" rows="3" style="width:100%; padding:10px; border-radius:10px; border:1px solid #ddd; margin:15px 0;" placeholder="如：少辣、不要葱..."></textarea>
+        <div style="display:flex; gap:10px; justify-content:flex-end;">
+            <button class="btn" onclick="closeNoteModal()">取消</button>
+            <button class="btn btn-danger" onclick="submitWithNote()">确认下单</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentFormId = '';
+
+    function openNoteModal(formId) {
+        currentFormId = formId;
+        document.getElementById('noteModal').style.display = 'flex';
+        document.getElementById('noteText').value = '';
+        document.getElementById('noteText').focus();
+    }
+
+    function closeNoteModal() {
+        document.getElementById('noteModal').style.display = 'none';
+        currentFormId = '';
+    }
+
+    function submitWithNote() {
+        if (!currentFormId) return;
+        const form = document.getElementById(currentFormId);
+        const noteInput = form.querySelector('.note-input');
+        noteInput.value = document.getElementById('noteText').value.trim();
+        form.submit();
+        // 模态框关闭
+        closeNoteModal();
+    }
+
+    // 点击遮罩关闭
+    document.getElementById('noteModal').addEventListener('click', function(e) {
+        if (e.target === this) closeNoteModal();
+    });
+
+    // Enter 提交
+    document.getElementById('noteText').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            submitWithNote();
+        }
+    });
+</script>
 {% endblock %}

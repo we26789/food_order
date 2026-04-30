@@ -22,12 +22,11 @@
             {% for dish in dishes %}
             <div class="card" style="flex-direction: column; align-items: flex-start;">
                 <div style="display: flex; gap: 20px; width: 100%;">
-                    <!-- 图片点击放大 -->
-                    <img src="{{ url_for('static', filename=dish.image_url) if dish.image_url and not dish.image_url.startswith('http') else (dish.image_url if dish.image_url else '') }}"
+                    <img src="{{ dish.image_url if dish.image_url and dish.image_url.startswith('http') else url_for('static', filename=dish.image_url) if dish.image_url else '' }}"
                          alt="{{ dish.name }}"
                          style="cursor: pointer; width: 120px; height: 120px; object-fit: cover; border-radius: 12px;"
                          onclick="openPreview(this.src)"
-                    >
+                         onerror="this.onerror=null;this.src='https://via.placeholder.com/120?text=🍲';">
                     <div class="card-content">
                         <h3>{{ dish.name }}</h3>
                         {% if dish.description %}<p>{{ dish.description }}</p>{% endif %}
@@ -80,7 +79,6 @@
     function closePreview() {
         document.getElementById('imagePreviewModal').style.display = 'none';
     }
-    // 点击遮罩关闭
     document.getElementById('imagePreviewModal').addEventListener('click', function(e) {
         if (e.target === this) closePreview();
     });

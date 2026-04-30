@@ -21,9 +21,9 @@
             <div class="card">
                 {% if dish.image_url %}
                     {% if dish.image_url.startswith('http') %}
-                        <img src="{{ dish.image_url }}" alt="{{ dish.name }}">
+                        <img src="{{ dish.image_url }}" alt="{{ dish.name }}" onerror="this.onerror=null;this.src='https://via.placeholder.com/120?text=🍲';">
                     {% else %}
-                        <img src="{{ url_for('static', filename=dish.image_url) }}" alt="{{ dish.name }}">
+                        <img src="{{ url_for('static', filename=dish.image_url) }}" alt="{{ dish.name }}" onerror="this.onerror=null;this.src='https://via.placeholder.com/120?text=🍲';">
                     {% endif %}
                 {% else %}
                     <img src="https://via.placeholder.com/120?text=🍲" alt="占位图">
