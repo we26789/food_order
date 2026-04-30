@@ -8,18 +8,37 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: #fef9ef; color: #333; }
         a { color: #e67e22; text-decoration: none; }
-        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
-        nav {
-            background: #e67e22; padding: 10px 20px; display: flex; gap: 20px; align-items: center;
-            border-radius: 0 0 15px 15px; margin-bottom: 25px;
-            justify-content: space-between;
+
+        /* 提示消息：居中浮动 */
+        .flash-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            width: auto;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            pointer-events: none;
         }
-        nav a { color: white; font-weight: bold; }
-        .flash-msg { padding: 12px; border-radius: 8px; margin-bottom: 15px; font-weight: 500; }
+        .flash-msg {
+            pointer-events: auto;
+            margin-bottom: 8px;
+            text-align: center;
+            white-space: nowrap;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
         .flash-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .flash-warning { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
-        .flash-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .flash-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .flash-danger  { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .flash-info    { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+
+        /* 卡片、按钮、表单等（不变） */
         .card {
             background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.05); display: flex; gap: 20px; align-items: center;
@@ -42,44 +61,63 @@
             width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 20px;
             font-size: 14px; outline: none;
         }
+        .form-group input[type="file"] { padding: 5px; }
         .form-group input:focus, .form-group textarea:focus { border-color: #e67e22; }
         .order-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; }
         .order-table th, .order-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
         .order-table th { background: #f5b041; color: white; }
         hr { border: none; border-top: 1px solid #eee; margin: 20px 0; }
+
+        /* 厨师侧边栏布局 */
+        .cook-layout { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 220px; background: #2c3e50; color: white;
+            display: flex; flex-direction: column; height: 100vh;
+            position: fixed; top: 0; left: 0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1); z-index: 100;
+        }
+        .sidebar h3 { text-align: center; margin: 25px 0 20px 0; font-size: 1.2em; color: #f5b041; }
+        .sidebar .nav-links { flex: 1; overflow-y: auto; }
+        .sidebar .nav-links a {
+            display: block; padding: 12px 25px; color: #ecf0f1;
+            font-weight: 500; transition: background 0.2s, color 0.2s;
+        }
+        .sidebar .nav-links a:hover { background: #e67e22; color: white; }
+        .sidebar .user-info {
+            padding: 15px 10px; text-align: center; color: #bdc3c7;
+            font-size: 14px; border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: auto;
+        }
+        .sidebar .user-info a { color: #f5b041; display: inline; padding: 0 4px; font-size: 13px; }
+        .main-content {
+            margin-left: 220px; flex: 1; padding: 30px 40px;
+            background: #fef9ef; min-height: 100vh;
+        }
+        @media (max-width: 768px) {
+            .sidebar { width: 180px; }
+            .main-content { margin-left: 180px; padding: 20px; }
+        }
+
+        /* 顾客顶部导航 */
+        .customer-nav {
+            background: #e67e22; padding: 10px 20px; display: flex; gap: 20px; align-items: center;
+            justify-content: space-between;
+        }
+        .customer-nav a { color: white; font-weight: bold; }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
     </style>
 </head>
 <body>
-    <nav>
-        <div style="display: flex; gap: 20px;">
-            {% if current_user.is_authenticated %}
-                {% if current_user.role == 'customer' %}
-                    <a href="{{ url_for('index') }}">🍽️ 菜单</a>
-                {% else %}
-                    <a href="{{ url_for('orders') }}">📋 订单汇总</a>
-                    <a href="{{ url_for('admin') }}">⚙️ 管理</a>
-                {% endif %}
-            {% else %}
-                <a href="{{ url_for('login') }}">登录</a>
-            {% endif %}
-        </div>
-        <div style="display: flex; gap: 15px; align-items: center;">
-            {% if current_user.is_authenticated %}
-                <span style="color: white;">👤 {{ current_user.username }}</span>
-                <a href="{{ url_for('change_password') }}" style="font-size:14px;">修改密码</a>
-                <a href="{{ url_for('logout') }}" style="font-size:14px;">退出</a>
-            {% endif %}
-        </div>
-    </nav>
-    <div class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
                 {% for category, message in messages %}
                     <div class="flash-msg flash-{{ category }}">{{ message }}</div>
                 {% endfor %}
-            {% endif %}
-        {% endwith %}
-        {% block content %}{% endblock %}
-    </div>
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
 </body>
 </html>

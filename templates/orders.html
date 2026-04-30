@@ -1,33 +1,51 @@
 {% extends "base.html" %}
 {% block content %}
-<h2 style="margin-bottom:20px;">📋 已点菜品汇总</h2>
+<div class="cook-layout">
+    <div class="sidebar">
+        <h3>👨‍🍳 厨师工作台</h3>
+        <div class="nav-links">
+            <a href="{{ url_for('orders') }}">📋 订单汇总</a>
+            <a href="{{ url_for('add_dish') }}">➕ 添加菜品</a>
+            <a href="{{ url_for('list_dishes') }}">📋 已有菜品</a>
+            <a href="{{ url_for('recipe_recommend') }}">📖 菜谱推荐</a>
+        </div>
+        <div class="user-info">
+            {{ current_user.username }}<br>
+            <a href="{{ url_for('change_password') }}">修改密码</a> |
+            <a href="{{ url_for('logout') }}">退出</a>
+        </div>
+    </div>
 
-{% if orders %}
-<table class="order-table">
-    <thead>
-        <tr>
-            <th>谁点的</th>
-            <th>菜品</th>
-            <th>数量</th>
-            <th>备注</th>
-            <th>时间</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for order in orders %}
-    <tr>
-        <td>{{ order.customer }}</td>
-        <td>{{ order.dish.name }}</td>
-        <td>{{ order.quantity }}</td>
-        <td>{{ order.note or '-' }}</td>
-        <td>{{ order.created_at.strftime('%H:%M') }}</td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
-{% else %}
-<div style="text-align:center; padding:60px; color:#aaa;">
-    <h3>🛒 还没有订单，等待顾客点菜～</h3>
+    <div class="main-content">
+        <h2>📋 已点菜品汇总</h2>
+        {% if orders %}
+        <table class="order-table">
+            <thead>
+                <tr>
+                    <th>谁点的</th>
+                    <th>菜品</th>
+                    <th>数量</th>
+                    <th>备注</th>
+                    <th>时间</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.customer }}</td>
+                <td>{{ order.dish.name }}</td>
+                <td>{{ order.quantity }}</td>
+                <td>{{ order.note or '-' }}</td>
+                <td>{{ order.created_at.strftime('%H:%M') }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div style="text-align:center; padding:60px; color:#aaa;">
+            <h3>🛒 还没有订单，等待顾客点菜～</h3>
+        </div>
+        {% endif %}
+    </div>
 </div>
-{% endif %}
 {% endblock %}

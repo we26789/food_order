@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block content %}
+{% if current_user.role == 'cooker' %}
+<!-- 厨师侧边栏布局 -->
+<div class="cook-layout">
+    <div class="sidebar">
+        <h3>👨‍🍳 厨师工作台</h3>
+        <div class="nav-links">
+            <a href="{{ url_for('orders') }}">📋 订单汇总</a>
+            <a href="{{ url_for('add_dish') }}">➕ 添加菜品</a>
+            <a href="{{ url_for('list_dishes') }}">📋 已有菜品</a>
+            <a href="{{ url_for('recipe_recommend') }}">📖 菜谱推荐</a>
+        </div>
+        <div class="user-info">
+            {{ current_user.username }}<br>
+            <a href="{{ url_for('change_password') }}">修改密码</a> |
+            <a href="{{ url_for('logout') }}">退出</a>
+        </div>
+    </div>
+    <div class="main-content">
+{% else %}
+<!-- 顾客顶部导航 -->
+<nav class="customer-nav">
+    <a href="{{ url_for('index') }}">🍽️ 菜单</a>
+    <div style="display:flex; gap:15px; align-items:center;">
+        <span style="color:white;">👤 {{ current_user.username }}</span>
+        <a href="{{ url_for('change_password') }}" style="font-size:14px;">修改密码</a>
+        <a href="{{ url_for('logout') }}" style="font-size:14px;">退出</a>
+    </div>
+</nav>
+<div class="container">
+{% endif %}
+
+<h2>📖 菜谱推荐</h2>
+<p style="color:#777; margin-bottom:25px;">根据口味偏好的分类推荐一日三餐</p>
+
+{% if categories %}
+    {% for cat in categories %}
+    <div style="margin-bottom:35px; border:1px solid #eee; border-radius:12px; padding:20px; background:#fafafa;">
+        <h3 style="color:#e67e22; margin-bottom:8px;">{{ cat.icon }} {{ cat.name }}</h3>
+        <p style="color:#999; font-size:14px; margin-bottom:18px;">{{ cat.description }}</p>
+
+        {% set meals = ['breakfast','lunch','dinner'] %}
+        {% set meal_labels = {'breakfast':'🌅 早餐','lunch':'☀️ 午餐','dinner':'🌙 晚餐'} %}
+        {% for meal in meals %}
+            <div style="margin-bottom:15px;">
+                <h4 style="margin-bottom:8px;">{{ meal_labels[meal] }}</h4>
+                <table class="order-table">
+                    <thead><tr><th style="width:30%;">菜名</th><th>简介</th></tr></thead>
+                    <tbody>
+                    {% for r in cat.recipes if r.meal_type == meal %}
+                    <tr>
+                        <td><strong>{{ r.dish_name }}</strong></td>
+                        <td>{{ r.description }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+{% else %}
+    <div style="text-align:center; padding:60px; color:#aaa;">
+        <h3>📭 暂无菜谱推荐，请先执行 SQL 导入数据</h3>
+    </div>
+{% endif %}
+
+{% if current_user.role != 'cooker' %}
+</div>
+{% else %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="cook-layout">
+    <div class="sidebar">
+        <h3>👨‍🍳 厨师工作台</h3>
+        <div class="nav-links">
+            <a href="{{ url_for('orders') }}">📋 订单汇总</a>
+            <a href="{{ url_for('add_dish') }}">➕ 添加菜品</a>
+            <a href="{{ url_for('list_dishes') }}">📋 已有菜品</a>
+            <a href="{{ url_for('recipe_recommend') }}">📖 菜谱推荐</a>
+        </div>
+        <div class="user-info">
+            {{ current_user.username }}<br>
+            <a href="{{ url_for('change_password') }}">修改密码</a> |
+            <a href="{{ url_for('logout') }}">退出</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h2>➕ 添加新菜品</h2>
+        <form method="POST" enctype="multipart/form-data" class="card" style="display:block;">
+            <div class="form-group">
+                <label>菜名 *</label>
+                <input type="text" name="name" required placeholder="例如：红烧排骨">
+            </div>
+            <div class="form-group">
+                <label>简介</label>
+                <textarea name="description" rows="2" placeholder="简单描述口味、食材..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>上传图片（本地文件）</label>
+                <input type="file" name="image_file" accept="image/*">
+            </div>
+            <div class="form-group">
+                <label>或输入图片链接</label>
+                <input type="text" name="image_url" placeholder="https://...（若上传了图片则忽略此项）">
+            </div>
+            <button type="submit" class="btn">添加菜品</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
