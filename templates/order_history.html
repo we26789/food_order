@@ -18,12 +18,12 @@
     <div class="main-content">
         <h2>📜 我的订单</h2>
         
-        <!-- 日期选择 -->
         <form method="GET" action="{{ url_for('order_history') }}" style="margin-bottom:20px; display:flex; gap:10px; align-items:center;">
-            <label for="order-date" style="font-weight:600;">选择日期：</label>
-            <input type="date" id="order-date" name="date" value="{{ selected_date or '' }}" style="padding:8px 12px; border-radius:20px; border:1px solid #ddd;">
+            <label style="font-weight:600;">选择日期：</label>
+            <input type="date" name="date" value="{{ selected_date }}" 
+                   style="padding:8px 12px; border-radius:20px; border:1px solid #ddd;">
             <button type="submit" class="btn">查看</button>
-            <a href="{{ url_for('order_history') }}" class="btn" style="background:#7f8c8d;">今天</a>
+            <a href="?date={{ today }}" class="btn" style="background:#7f8c8d;">今天</a>
         </form>
 
         {% if orders %}

@@ -18,12 +18,12 @@
     <div class="main-content">
         <h2>📋 订单汇总</h2>
         
-        <!-- 日期选择表单 -->
         <form method="GET" action="{{ url_for('orders') }}" style="margin-bottom:20px; display:flex; gap:10px; align-items:center;">
             <label for="order-date" style="font-weight:600;">选择日期：</label>
-            <input type="date" id="order-date" name="date" value="{{ selected_date or '' }}" style="padding:8px 12px; border-radius:20px; border:1px solid #ddd;">
+            <input type="date" id="order-date" name="date" value="{{ selected_date }}" 
+                   style="padding:8px 12px; border-radius:20px; border:1px solid #ddd;">
             <button type="submit" class="btn">查看</button>
-            <a href="{{ url_for('orders') }}" class="btn" style="background:#7f8c8d;">今日订单</a>
+            <a href="?date={{ today }}" class="btn" style="background:#7f8c8d;">今日订单</a>
         </form>
 
         {% if orders %}
@@ -80,7 +80,7 @@
     </div>
 </div>
 
-<!-- 弹窗及脚本保持不变 -->
+<!-- 确认出餐弹窗（保持不变） -->
 <div id="completeModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:3000; align-items:center; justify-content:center;">
     <div style="background:white; border-radius:12px; padding:25px; width:350px; text-align:center;">
         <h3>✅ 确认出餐</h3>

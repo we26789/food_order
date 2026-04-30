@@ -1,39 +1,43 @@
 {% extends "base.html" %}
 {% block content %}
 {% if current_user.role == 'cooker' %}
-<div class="cook-layout">
-    <div class="sidebar">
-        <h3>👨‍🍳 厨师工作台</h3>
-        <div class="nav-links">
-            <a href="{{ url_for('orders') }}">📋 订单汇总</a>
-            <a href="{{ url_for('add_dish') }}">➕ 添加菜品</a>
-            <a href="{{ url_for('list_dishes') }}">📋 已有菜品</a>
-            <a href="{{ url_for('recipe_recommend') }}">📖 菜谱推荐</a>
+    <!-- 厨师侧边栏保持不变 -->
+    <div class="cook-layout">
+        <div class="sidebar">
+            <h3>👨‍🍳 厨师工作台</h3>
+            <div class="nav-links">
+                <a href="{{ url_for('orders') }}">📋 订单汇总</a>
+                <a href="{{ url_for('add_dish') }}">➕ 添加菜品</a>
+                <a href="{{ url_for('list_dishes') }}">📋 已有菜品</a>
+                <a href="{{ url_for('recipe_recommend') }}">📖 菜谱推荐</a>
+            </div>
+            <div class="user-info">
+                {{ current_user.username }}<br>
+                <a href="{{ url_for('change_password') }}">修改密码</a> |
+                <a href="{{ url_for('logout') }}">退出</a>
+            </div>
         </div>
-        <div class="user-info">
-            {{ current_user.username }}<br>
-            <a href="{{ url_for('change_password') }}">修改密码</a> |
-            <a href="{{ url_for('logout') }}">退出</a>
-        </div>
-    </div>
-    <div class="main-content">
+        <div class="main-content">
 {% else %}
-<div class="cook-layout">
-    <div class="sidebar" style="background:#2c3e50;">
-        <h3>👤 顾客菜单</h3>
-        <div class="nav-links">
-            <a href="{{ url_for('index') }}">🍽️ 点菜</a>
-            <a href="{{ url_for('recipe_recommend') }}">📖 菜谱推荐</a>
-            <a href="{{ url_for('random_order') }}">🎲 随机点菜</a>
+    <!-- 顾客统一侧边栏 -->
+    <div class="cook-layout">
+        <div class="sidebar" style="background:#2c3e50;">
+            <h3>👤 顾客菜单</h3>
+            <div class="nav-links">
+                <a href="{{ url_for('index') }}">🍽️ 点菜</a>
+                <a href="{{ url_for('recipe_recommend') }}">📖 菜谱推荐</a>
+                <a href="{{ url_for('random_order') }}">🎲 随机点菜</a>
+                <a href="{{ url_for('order_history') }}">📜 我的订单</a>
+            </div>
+            <div class="user-info">
+                {{ current_user.username }}<br>
+                <a href="{{ url_for('change_password') }}">修改密码</a> |
+                <a href="{{ url_for('logout') }}">退出</a>
+            </div>
         </div>
-        <div class="user-info">
-            {{ current_user.username }}<br>
-            <a href="{{ url_for('change_password') }}">修改密码</a> |
-            <a href="{{ url_for('logout') }}">退出</a>
-        </div>
-    </div>
-    <div class="main-content">
+        <div class="main-content">
 {% endif %}
+
         <h2>📖 菜谱推荐</h2>
         <p style="color:#777; margin-bottom:25px;">根据口味偏好的分类推荐一日三餐</p>
         {% if categories %}

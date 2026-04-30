@@ -189,6 +189,8 @@ def index():
 @role_required('cooker')
 def orders():
     date_str = request.args.get('date', '')
+    today = datetime.now().date()
+    today_str = today.strftime('%Y-%m-%d')
     if date_str:
         try:
             date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
@@ -198,13 +200,15 @@ def orders():
         order_list = OrderItem.query.filter(
             func.date(OrderItem.created_at) == date_obj
         ).order_by(OrderItem.created_at.asc()).all()
+        return render_template('orders.html', orders=order_list,
+                               selected_date=date_str, today=today_str)
     else:
-        today = datetime.now().date()
         order_list = OrderItem.query.filter(
             func.date(OrderItem.created_at) == today
         ).order_by(OrderItem.created_at.asc()).all()
-    return render_template('orders.html', orders=order_list, selected_date=date_str)
-
+        return render_template('orders.html', orders=order_list,
+                               selected_date=today_str, today=today_str)
+                               
 @app.route('/orders/complete/<int:order_id>', methods=['POST'])
 @role_required('cooker')
 def complete_order(order_id):
@@ -233,6 +237,9 @@ def reject_order(order_id):
 def order_history():
     date_str = request.args.get('date', '')
     customer = current_user.username
+    today = datetime.now().date()
+    today_str = today.strftime('%Y-%m-%d')
+
     if date_str:
         try:
             date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
@@ -243,14 +250,15 @@ def order_history():
             OrderItem.customer == customer,
             func.date(OrderItem.created_at) == date_obj
         ).order_by(OrderItem.created_at.asc()).all()
+        return render_template('order_history.html', orders=orders,
+                               selected_date=date_str, today=today_str)
     else:
-        today = datetime.now().date()
         orders = OrderItem.query.filter(
             OrderItem.customer == customer,
             func.date(OrderItem.created_at) == today
         ).order_by(OrderItem.created_at.asc()).all()
-    return render_template('order_history.html', orders=orders, selected_date=date_str)
-
+        return render_template('order_history.html', orders=orders,
+                               selected_date=today_str, today=today_str)
 # --------------------- 厨师：添加菜品 ---------------------
 @app.route('/dish/add', methods=['GET', 'POST'])
 @role_required('cooker')
