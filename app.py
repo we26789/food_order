@@ -461,22 +461,23 @@ def ai_assistant_chat():
     if cache_key in ai_cache:
         return jsonify(ai_cache[cache_key])
 
-    # 构造菜品列表（简洁版，减少 token 消耗）
+    # 精简菜品列表
     dishes = Dish.query.all()
-    dish_items = [f"{d.id}. {d.name}" for d in dishes]
-    dish_context = "\n".join(dish_items) if dish_items else "暂无菜品"
+    dish_names = [f"{d.id}. {d.name}" for d in dishes]
+    dish_context = "\n".join(dish_names) if dish_names else "暂无菜品"
 
-    # 系统提示（强硬要求禁止思考，直接输出 JSON）
+    # 强化系统提示：明确直接下单的触发条件，强调备注传递
     system_prompt = (
-        "你是一个点菜助手。请严格遵守以下规则：\n"
-        "1. 禁止思考，禁止推理，禁止输出除 JSON 以外的任何内容。\n"
-        "2. 只输出一个 JSON 对象，格式为：\n"
-        '{"recommendations":[{"dish_id":ID,"name":"菜名","quantity":1,"reason":"理由","note":"备注"}],"direct_order":false}\n'
-        "3. 严格遵循用户的数量和排除要求。若用户要求直接下单，direct_order 为 true。\n"
-        "4. 如果用户提出了备注（如不加葱），请填入每个推荐菜品的 note 字段。"
+        "你是一个精确的家庭点菜助手。\n"
+        "1. 必须只输出 JSON，格式：{\"recommendations\":[{\"dish_id\":ID,\"name\":\"菜名\",\"quantity\":1,\"reason\":\"理由\",\"note\":\"备注\"}],\"direct_order\":false}\n"
+        "2. 严格遵守用户的数量和排除条件。\n"
+        "3. 当用户说“直接下单”、“帮我下单”、“立即下单”或“马上下单”时，\n"
+        "   - 将该餐段的 direct_order 设为 true。\n"
+        "   - 即使同一请求中有其他未要求直接下单的餐段，只将明确要求的餐段设为 true。\n"
+        "4. 用户给出的备注（如“不加蒜”、“不要葱”）必须原样填入对应菜品的 note 字段。\n"
+        "5. 禁止输出思考、解释或任何额外文字。"
     )
 
-    # Anthropic 兼容端点
     anthropic_url = "https://token-plan-cn.xiaomimimo.com/anthropic/v1/messages"
     headers = {
         "x-api-key": MIMO_API_KEY,
@@ -485,22 +486,22 @@ def ai_assistant_chat():
     }
     payload = {
         "model": MIMO_MODEL_NAME,
-        "max_tokens": 4096,   # 足够输出完整 JSON
+        "max_tokens": 2048,
+        "thinking": {"type": "disabled"},
         "system": system_prompt,
         "messages": [
-            {"role": "user", "content": f"菜品列表：\n{dish_context}\n\n用户请求：{user_message}"}
+            {"role": "user", "content": f"菜品：\n{dish_context}\n\n用户需求：{user_message}"}
         ]
     }
 
     try:
-        response = requests.post(anthropic_url, headers=headers, json=payload, timeout=30)
+        response = requests.post(anthropic_url, headers=headers, json=payload, timeout=60)
         data = response.json()
-        print("Response status:", response.status_code)
 
         if response.status_code != 200:
-            return jsonify({'error': f'模型返回 {response.status_code}: {data.get("error", data)}'}), 500
+            error_msg = data.get('error', {}).get('message', str(data))
+            return jsonify({'error': f'模型错误：{error_msg}'}), 500
 
-        # 从 content 数组中提取 text 类型的内容
         content_text = None
         if isinstance(data.get("content"), list):
             for block in data["content"]:
@@ -509,9 +510,8 @@ def ai_assistant_chat():
                     break
 
         if not content_text:
-            return jsonify({'error': f'未提取到文本回复，原始响应: {json.dumps(data, ensure_ascii=False)[:500]}'}), 500
+            return jsonify({'error': '未从模型回复中提取到文本'}), 500
 
-        # 清理 JSON
         content_text = content_text.strip()
         if content_text.startswith('```json'):
             content_text = content_text[7:]
@@ -519,17 +519,23 @@ def ai_assistant_chat():
             content_text = content_text[:-3]
 
         result = json.loads(content_text)
+
+        # 强制确保 direct_order 布尔值存在
+        if 'direct_order' not in result:
+            result['direct_order'] = False
+        else:
+            result['direct_order'] = bool(result['direct_order'])
+
+        # 确保每个推荐都有 note 字段
         for rec in result.get('recommendations', []):
             if 'note' not in rec:
                 rec['note'] = ''
-        if 'direct_order' not in result:
-            result['direct_order'] = False
 
         ai_cache[cache_key] = result
         return jsonify(result)
 
-    except json.JSONDecodeError as e:
-        return jsonify({'error': f'模型返回了非 JSON 内容: {content_text[:200]}'}), 500
+    except json.JSONDecodeError:
+        return jsonify({'error': f'模型返回非 JSON：{content_text[:200]}'}), 500
     except Exception as e:
         return jsonify({'error': f'AI 服务异常：{str(e)}'}), 500
 

@@ -20,7 +20,7 @@ git status
 git add .
 
 # 3. 提交并写上简短的改动说明
-git commit -m "接入的是小米mimo-v2，但是效率很慢，同时消耗的token也很多。"
+git commit -m "禁止了ai进行过多思考，同时增大超时时间段，可以处理更加复杂的问题，精简上下文，使得token量大幅减少，平均600多token每个问题。"
 
 # 4. 推送到 GitHub
 git push origin main
