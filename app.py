@@ -46,9 +46,10 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message = '请先登录'
 
-# ---------- DeepSeek API 配置 ----------
-DEEPSEEK_API_KEY = os.getenv('DEEPSEEK_API_KEY')
-DEEPSEEK_BASE_URL = 'https://api.deepseek.com/v1'
+# ---------- 小米 MiMo API 配置 ----------
+MIMO_API_KEY = os.getenv('MIMO_API_KEY')
+MIMO_BASE_URL = os.getenv('MIMO_BASE_URL', 'https://token-plan-cn.xiaomimimo.com/v1')
+MIMO_MODEL_NAME = os.getenv('MIMO_MODEL_NAME', 'MiMo-V2.5')   # 与官方命名一致
 
 # ---------- 数据模型 ----------
 class User(UserMixin, db.Model):
@@ -443,12 +444,12 @@ def submit_random_order():
 
     return redirect(url_for('random_order'))
 
-# ==================== AI 智能点菜 ====================
+# ==================== AI 智能点菜（由 MiMo-V2.5 驱动） ====================
 @app.route('/ai_assistant')
 @role_required('customer')
 def ai_assistant():
     return render_template('ai_assistant.html')
-    
+
 @app.route('/ai_assistant/chat', methods=['POST'])
 @role_required('customer')
 def ai_assistant_chat():
@@ -456,69 +457,81 @@ def ai_assistant_chat():
     if not user_message:
         return jsonify({'error': '消息不能为空'}), 400
 
-    # 缓存检查
     cache_key = user_message.lower().replace(' ', '')
     if cache_key in ai_cache:
         return jsonify(ai_cache[cache_key])
 
-    # 构造完整菜品列表（含描述）
+    # 构造菜品列表（简洁版，减少 token 消耗）
     dishes = Dish.query.all()
-    dish_items = []
-    for d in dishes:
-        desc = d.description or ''
-        dish_items.append(f"{d.id}. {d.name} - {desc}")
+    dish_items = [f"{d.id}. {d.name}" for d in dishes]
     dish_context = "\n".join(dish_items) if dish_items else "暂无菜品"
 
+    # 系统提示（强硬要求禁止思考，直接输出 JSON）
     system_prompt = (
-        "你是一个精确的家庭点菜 AI 助手。你需要根据用户的请求，从当前菜品列表中挑选菜品。\n"
-        "要求：\n"
-        "1. 只返回 JSON，格式：{\"recommendations\":[{\"dish_id\": ID, \"name\": \"菜名\", \"quantity\": 1, \"reason\": \"简短理由\", \"note\": \"备注\"}], \"direct_order\": false}\n"
-        "2. 严格遵循用户的数量要求。例如“要4个”就返回恰好4个，“要2个”返回2个。\n"
-        "3. 严格遵守用户的排除条件。如果用户说“不要面”、“不吃猪肉”等，绝对不要选择含有该食材的菜品。\n"
-        "4. 如果用户给出了统一的口味或要求（例如“不加葱”、“少盐”），请将该要求填入每个推荐菜品的 \"note\" 字段。\n"
-        "5. 如果用户明确表示“直接下单”、“帮我下单”、“立即下单”、“马上下单”等意图，则：\n"
-        "   - 只返回一个最匹配的菜品（即使没有指定数量）。\n"
-        "   - 将 \"direct_order\" 设为 true。\n"
-        "   - 如果用户同时给了备注（如“不要葱”），也填入 \"note\"。\n"
-        "6. 如果没有特殊的数量或排除要求，请推荐 2~3 个最匹配的菜品。\n"
-        "7. 只返回 JSON，不要解释或任何其他文字。"
+        "你是一个点菜助手。请严格遵守以下规则：\n"
+        "1. 禁止思考，禁止推理，禁止输出除 JSON 以外的任何内容。\n"
+        "2. 只输出一个 JSON 对象，格式为：\n"
+        '{"recommendations":[{"dish_id":ID,"name":"菜名","quantity":1,"reason":"理由","note":"备注"}],"direct_order":false}\n'
+        "3. 严格遵循用户的数量和排除要求。若用户要求直接下单，direct_order 为 true。\n"
+        "4. 如果用户提出了备注（如不加葱），请填入每个推荐菜品的 note 字段。"
     )
 
-    try:
-        response = requests.post(
-            f'{DEEPSEEK_BASE_URL}/chat/completions',
-            headers={
-                'Authorization': f'Bearer {DEEPSEEK_API_KEY}',
-                'Content-Type': 'application/json'
-            },
-            json={
-                "model": "deepseek-chat",
-                "messages": [
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": f"现有菜品：\n{dish_context}\n\n用户请求：{user_message}"}
-                ],
-                "temperature": 0.1,
-                "max_tokens": 600,
-                "response_format": {"type": "json_object"}
-            },
-            timeout=30
-        )
-        data = response.json()
-        content = data['choices'][0]['message']['content']
-        result = json.loads(content)
+    # Anthropic 兼容端点
+    anthropic_url = "https://token-plan-cn.xiaomimimo.com/anthropic/v1/messages"
+    headers = {
+        "x-api-key": MIMO_API_KEY,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json"
+    }
+    payload = {
+        "model": MIMO_MODEL_NAME,
+        "max_tokens": 4096,   # 足够输出完整 JSON
+        "system": system_prompt,
+        "messages": [
+            {"role": "user", "content": f"菜品列表：\n{dish_context}\n\n用户请求：{user_message}"}
+        ]
+    }
 
-        # 确保 note 字段存在
+    try:
+        response = requests.post(anthropic_url, headers=headers, json=payload, timeout=30)
+        data = response.json()
+        print("Response status:", response.status_code)
+
+        if response.status_code != 200:
+            return jsonify({'error': f'模型返回 {response.status_code}: {data.get("error", data)}'}), 500
+
+        # 从 content 数组中提取 text 类型的内容
+        content_text = None
+        if isinstance(data.get("content"), list):
+            for block in data["content"]:
+                if isinstance(block, dict) and block.get("type") == "text" and "text" in block:
+                    content_text = block["text"]
+                    break
+
+        if not content_text:
+            return jsonify({'error': f'未提取到文本回复，原始响应: {json.dumps(data, ensure_ascii=False)[:500]}'}), 500
+
+        # 清理 JSON
+        content_text = content_text.strip()
+        if content_text.startswith('```json'):
+            content_text = content_text[7:]
+        if content_text.endswith('```'):
+            content_text = content_text[:-3]
+
+        result = json.loads(content_text)
         for rec in result.get('recommendations', []):
             if 'note' not in rec:
                 rec['note'] = ''
-        # 确保 direct_order 字段存在
         if 'direct_order' not in result:
             result['direct_order'] = False
 
         ai_cache[cache_key] = result
         return jsonify(result)
+
+    except json.JSONDecodeError as e:
+        return jsonify({'error': f'模型返回了非 JSON 内容: {content_text[:200]}'}), 500
     except Exception as e:
-        return jsonify({'error': f'AI 服务暂时不可用：{str(e)}'}), 500
+        return jsonify({'error': f'AI 服务异常：{str(e)}'}), 500
 
 @app.route('/ai_assistant/order', methods=['POST'])
 @role_required('customer')

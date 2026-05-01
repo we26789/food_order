@@ -1,6 +1,4 @@
-deepseek：sk-f839ebb1c648409e9b5897e2504b7cc1
-mimo：sk-c6y6v2ybz3dunbzct02qpatpbo6ig5gqn8juykk5363lx489
-mimo：tp-cj9m11d3c8qt29x38kb6hq78ozvzsemvdztvomn05x8rgxo8
+
 已初始化后再次提交命令：
 # 1. 查看变更（养成习惯，避免误传）
 git status
@@ -22,7 +20,7 @@ git status
 git add .
 
 # 3. 提交并写上简短的改动说明
-git commit -m "修改清除当日订单功能的位置bug，实现了移动端的完美适配，无需放大缩小。"
+git commit -m "接入的是小米mimo-v2，但是效率很慢，同时消耗的token也很多。"
 
 # 4. 推送到 GitHub
 git push origin main
