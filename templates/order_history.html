@@ -313,6 +313,7 @@
         color: var(--primary);
     }
 
+    /* 移动端适配 */
     @media (max-width: 768px) {
         .filter-form {
             flex-direction: column;
@@ -321,6 +322,24 @@
 
         .filter-actions {
             flex-direction: column;
+        }
+
+        /* 确保表格可以水平滚动 */
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .data-table {
+            min-width: 600px; /* 保证表格内容宽度，可横向滑动 */
+        }
+
+        .page-header {
+            margin-bottom: 20px;
+        }
+
+        .page-title {
+            font-size: 24px;
         }
     }
 </style>
