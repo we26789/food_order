@@ -1,84 +1,369 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="cook-layout">
-    <div class="sidebar">
-        <h3>👨‍🍳 厨师工作台</h3>
-        <div class="nav-links">
-            <a href="{{ url_for('orders') }}">📋 订单汇总</a>
-            <a href="{{ url_for('add_dish') }}">➕ 添加菜品</a>
-            <a href="{{ url_for('list_dishes') }}">📋 已有菜品</a>
-            <a href="{{ url_for('recipe_recommend') }}">📖 菜谱推荐</a>
+<div class="app-layout">
+    <!-- Cook Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"></path>
+                        <line x1="6" y1="17" x2="18" y2="17"></line>
+                    </svg>
+                </div>
+                <div>
+                    <div class="sidebar-logo-text">家庭点菜</div>
+                    <div class="sidebar-role">厨师工作台</div>
+                </div>
+            </div>
         </div>
-        <div class="user-info">
-            {{ current_user.username }}<br>
-            <a href="{{ url_for('change_password') }}">修改密码</a> |
-            <a href="{{ url_for('logout') }}">退出</a>
-        </div>
-    </div>
 
-    <div class="main-content">
-        <h2>📋 已有菜品</h2>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">订单管理</div>
+                <a href="{{ url_for('orders') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                    </span>
+                    <span>订单汇总</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">菜品管理</div>
+                <a href="{{ url_for('add_dish') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </span>
+                    <span>添加菜品</span>
+                </a>
+                <a href="{{ url_for('list_dishes') }}" class="nav-link active">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="8" y1="6" x2="21" y2="6"></line>
+                            <line x1="8" y1="12" x2="21" y2="12"></line>
+                            <line x1="8" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </span>
+                    <span>已有菜品</span>
+                </a>
+                <a href="{{ url_for('recipe_recommend') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                    </span>
+                    <span>菜谱推荐</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark));">{{ current_user.username[0] }}</div>
+                <div class="user-info">
+                    <div class="user-name">{{ current_user.username }}</div>
+                    <div class="user-actions">
+                        <a href="{{ url_for('change_password') }}" class="user-action-link">修改密码</a>
+                        <span style="color: var(--text-muted);">|</span>
+                        <a href="{{ url_for('logout') }}" class="user-action-link">退出</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <h1 class="page-title">已有菜品</h1>
+                <p class="page-subtitle">管理菜单中的所有菜品</p>
+            </div>
+            <a href="{{ url_for('add_dish') }}" class="btn btn-primary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                添加菜品
+            </a>
+        </div>
+
         {% if dishes %}
-            {% for dish in dishes %}
-            <div class="card" style="flex-direction: column; align-items: flex-start;">
-                <div style="display: flex; gap: 20px; width: 100%;">
-                    <img src="{{ dish.image_url if dish.image_url and dish.image_url.startswith('http') else url_for('static', filename=dish.image_url) if dish.image_url else '' }}"
-                         alt="{{ dish.name }}"
-                         style="cursor: pointer; width: 120px; height: 120px; object-fit: cover; border-radius: 12px;"
-                         onclick="openPreview(this.src)"
-                         onerror="this.onerror=null;this.src='https://via.placeholder.com/120?text=🍲';">
-                    <div class="card-content">
-                        <h3>{{ dish.name }}</h3>
-                        {% if dish.description %}<p>{{ dish.description }}</p>{% endif %}
-                        <form method="POST" action="{{ url_for('delete_dish') }}" onsubmit="return confirm('确定删除该菜品？相关订单也会被删除。');">
-                            <input type="hidden" name="dish_id" value="{{ dish.id }}">
-                            <button type="submit" class="btn btn-danger">🗑️ 删除</button>
+            <div class="dishes-list">
+                {% for dish in dishes %}
+                <div class="dish-manage-card">
+                    <div class="dish-manage-main">
+                        <img src="{{ dish.image_url if dish.image_url and dish.image_url.startswith('http') else url_for('static', filename=dish.image_url) if dish.image_url else '' }}"
+                             alt="{{ dish.name }}"
+                             class="dish-manage-image"
+                             onclick="openPreview(this.src)"
+                             onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&h=300&fit=crop';">
+                        
+                        <div class="dish-manage-info">
+                            <h3 class="dish-manage-name">{{ dish.name }}</h3>
+                            <p class="dish-manage-desc">{{ dish.description or '暂无描述' }}</p>
+                            
+                            <form method="POST" action="{{ url_for('delete_dish') }}" class="delete-form" onsubmit="return confirm('确定删除该菜品？相关订单也会被删除。');">
+                                <input type="hidden" name="dish_id" value="{{ dish.id }}">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                    删除
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="dish-manage-update">
+                        <div class="update-header">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                            <span>更换图片</span>
+                        </div>
+                        <form method="POST" action="{{ url_for('update_dish_image', dish_id=dish.id) }}" enctype="multipart/form-data" class="update-form">
+                            <div class="update-inputs">
+                                <div class="form-group mb-0">
+                                    <input type="file" name="image_file" accept="image/*" class="form-input form-input-sm">
+                                </div>
+                                <div class="form-group mb-0" style="flex: 1;">
+                                    <input type="text" name="image_url" placeholder="或输入图片链接 https://..." class="form-input form-input-sm">
+                                </div>
+                                <button type="submit" class="btn btn-outline btn-sm">更新</button>
+                            </div>
                         </form>
                     </div>
                 </div>
+                {% endfor %}
+            </div>
 
-                <!-- 更换图片区域 -->
-                <div style="margin-top: 15px; width: 100%; border-top: 1px solid #eee; padding-top: 10px;">
-                    <form method="POST" action="{{ url_for('update_dish_image', dish_id=dish.id) }}" enctype="multipart/form-data" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end;">
-                        <div class="form-group" style="margin:0; flex: 1; min-width: 180px;">
-                            <label style="font-size:13px;">上传新图片</label>
-                            <input type="file" name="image_file" accept="image/*" style="padding: 6px;">
-                        </div>
-                        <div class="form-group" style="margin:0; flex: 2; min-width: 180px;">
-                            <label style="font-size:13px;">或输入图片链接</label>
-                            <input type="text" name="image_url" placeholder="https://...">
-                        </div>
-                        <button type="submit" class="btn" style="height: 38px;">更换图片</button>
+            <!-- Clear Orders Section -->
+            <div class="danger-zone">
+                <div class="danger-zone-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                    <span>危险操作</span>
+                </div>
+                <div class="danger-zone-content">
+                    <div class="danger-zone-info">
+                        <h4>清空今日订单</h4>
+                        <p>此操作将删除今日所有订单记录，不可恢复</p>
+                    </div>
+                    <form method="POST" action="{{ url_for('clear_orders') }}" onsubmit="return confirm('确定要删除今日所有订单吗？此操作不可恢复。');">
+                        <button type="submit" class="btn btn-danger">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                            清空今日订单
+                        </button>
                     </form>
                 </div>
             </div>
-            {% endfor %}
         {% else %}
-            <p style="color:#aaa;">暂无菜品，请添加。</p>
+            <div class="empty-state card">
+                <div class="empty-state-icon">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                        <path d="M7 2v20"></path>
+                        <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+                    </svg>
+                </div>
+                <h3 class="empty-state-title">暂无菜品</h3>
+                <p class="empty-state-desc">点击上方按钮添加第一个菜品</p>
+            </div>
         {% endif %}
-
-        <hr>
-        <h3>🧹 清空今日订单</h3>
-        <form method="POST" action="{{ url_for('clear_orders') }}" onsubmit="return confirm('确定要删除今日所有订单吗？此操作不可恢复。');">
-            <button type="submit" class="btn btn-danger">清空今日订单</button>
-        </form>
-    </div>
+    </main>
 </div>
 
-<!-- 图片预览模态框 -->
-<div id="imagePreviewModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center;" onclick="closePreview()">
-    <span style="position: absolute; top: 20px; right: 40px; font-size: 40px; color: white; cursor: pointer;" onclick="closePreview()">&times;</span>
-    <img id="previewImage" src="" style="max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 5px 25px rgba(0,0,0,0.5);" onclick="event.stopPropagation();">
+<!-- Image Preview Modal -->
+<div id="imagePreviewModal" class="image-preview-overlay" onclick="closePreview()">
+    <span class="image-preview-close" onclick="closePreview()">&times;</span>
+    <img id="previewImage" src="" class="image-preview-img" onclick="event.stopPropagation();">
 </div>
+
+<style>
+    .dishes-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .dish-manage-card {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+    }
+
+    .dish-manage-main {
+        display: flex;
+        gap: 24px;
+        padding: 24px;
+    }
+
+    .dish-manage-image {
+        width: 140px;
+        height: 140px;
+        border-radius: var(--radius);
+        object-fit: cover;
+        cursor: pointer;
+        transition: var(--transition);
+        flex-shrink: 0;
+    }
+
+    .dish-manage-image:hover {
+        transform: scale(1.05);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .dish-manage-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .dish-manage-name {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+    }
+
+    .dish-manage-desc {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-bottom: auto;
+        line-height: 1.6;
+    }
+
+    .delete-form {
+        margin-top: 16px;
+    }
+
+    .dish-manage-update {
+        background: var(--background);
+        padding: 16px 24px;
+        border-top: 1px solid var(--border);
+    }
+
+    .update-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 12px;
+    }
+
+    .update-form {
+        display: flex;
+        align-items: center;
+    }
+
+    .update-inputs {
+        display: flex;
+        gap: 12px;
+        flex: 1;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .form-input-sm {
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+
+    .danger-zone {
+        margin-top: 40px;
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        border: 2px solid rgba(239, 68, 68, 0.2);
+        overflow: hidden;
+    }
+
+    .danger-zone-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 20px;
+        background: rgba(239, 68, 68, 0.05);
+        color: var(--danger);
+        font-weight: 600;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .danger-zone-content {
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .danger-zone-info h4 {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+
+    .danger-zone-info p {
+        font-size: 13px;
+        color: var(--text-secondary);
+    }
+
+    @media (max-width: 768px) {
+        .dish-manage-main {
+            flex-direction: column;
+        }
+
+        .dish-manage-image {
+            width: 100%;
+            height: 200px;
+        }
+
+        .update-inputs {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .danger-zone-content {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
 
 <script>
     function openPreview(src) {
         document.getElementById('previewImage').src = src;
         document.getElementById('imagePreviewModal').style.display = 'flex';
     }
+    
     function closePreview() {
         document.getElementById('imagePreviewModal').style.display = 'none';
     }
+    
     document.getElementById('imagePreviewModal').addEventListener('click', function(e) {
         if (e.target === this) closePreview();
     });

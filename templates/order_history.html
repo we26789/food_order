@@ -1,81 +1,327 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="cook-layout">
-    <div class="sidebar" style="background:#2c3e50;">
-        <h3>👤 顾客菜单</h3>
-        <div class="nav-links">
-            <a href="{{ url_for('index') }}">🍽️ 点菜</a>
-            <a href="{{ url_for('recipe_recommend') }}">📖 菜谱推荐</a>
-            <a href="{{ url_for('random_order') }}">🎲 随机点菜</a>
-            <a href="{{ url_for('ai_assistant') }}">🤖 智能点菜</a>
-            <a href="{{ url_for('order_history') }}">📜 我的订单</a>
-
+<div class="app-layout">
+    <!-- Customer Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                        <path d="M7 2v20"></path>
+                        <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div class="sidebar-logo-text">家庭点菜</div>
+                    <div class="sidebar-role">顾客端</div>
+                </div>
+            </div>
         </div>
-        <div class="user-info">
-            {{ current_user.username }}<br>
-            <a href="{{ url_for('change_password') }}">修改密码</a> |
-            <a href="{{ url_for('logout') }}">退出</a>
-        </div>
-    </div>
-    <div class="main-content">
-        <h2>📜 我的订单</h2>
 
-        <form method="GET" action="{{ url_for('order_history') }}" style="margin-bottom:20px; display:flex; gap:10px; align-items:center;">
-            <label style="font-weight:600;">选择日期：</label>
-            <input type="date" name="date" value="{{ selected_date }}"
-                   style="padding:8px 12px; border-radius:20px; border:1px solid #ddd;">
-            <button type="submit" class="btn">查看</button>
-            <a href="?date={{ today }}" class="btn" style="background:#7f8c8d;">今天</a>
-        </form>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">点餐服务</div>
+                <a href="{{ url_for('index') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                            <path d="M7 2v20"></path>
+                            <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+                        </svg>
+                    </span>
+                    <span>点菜</span>
+                </a>
+                <a href="{{ url_for('recipe_recommend') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                    </span>
+                    <span>菜谱推荐</span>
+                </a>
+                <a href="{{ url_for('random_order') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="1" width="6" height="6" rx="1"></rect>
+                            <rect x="17" y="1" width="6" height="6" rx="1"></rect>
+                            <rect x="9" y="9" width="6" height="6" rx="1"></rect>
+                            <rect x="1" y="17" width="6" height="6" rx="1"></rect>
+                            <rect x="17" y="17" width="6" height="6" rx="1"></rect>
+                        </svg>
+                    </span>
+                    <span>随机点菜</span>
+                </a>
+                <a href="{{ url_for('ai_assistant') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 8V4H8"></path>
+                            <rect x="8" y="8" width="8" height="8" rx="1"></rect>
+                            <path d="M4 12h4"></path>
+                            <path d="M16 12h4"></path>
+                            <path d="M12 16v4"></path>
+                        </svg>
+                    </span>
+                    <span>智能点菜</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">我的订单</div>
+                <a href="{{ url_for('order_history') }}" class="nav-link active">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                        </svg>
+                    </span>
+                    <span>订单历史</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">{{ current_user.username[0] }}</div>
+                <div class="user-info">
+                    <div class="user-name">{{ current_user.username }}</div>
+                    <div class="user-actions">
+                        <a href="{{ url_for('change_password') }}" class="user-action-link">修改密码</a>
+                        <span style="color: var(--text-muted);">|</span>
+                        <a href="{{ url_for('logout') }}" class="user-action-link">退出</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">我的订单</h1>
+            <p class="page-subtitle">查看您的历史点餐记录</p>
+        </div>
+
+        <!-- Date Filter -->
+        <div class="filter-card">
+            <form method="GET" action="{{ url_for('order_history') }}" class="filter-form">
+                <div class="filter-group">
+                    <label class="form-label">选择日期</label>
+                    <input type="date" name="date" value="{{ selected_date }}" class="form-input" style="width: auto;">
+                </div>
+                <div class="filter-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        查看
+                    </button>
+                    <a href="?date={{ today }}" class="btn btn-outline">今天</a>
+                </div>
+            </form>
+        </div>
 
         {% if orders %}
-        <table class="order-table">
-            <thead>
+        <!-- Orders Table -->
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>单号</th>
+                        <th>菜品</th>
+                        <th>数量</th>
+                        <th>备注</th>
+                        <th>时间</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for order in orders %}
                 <tr>
-                    <th>单号</th>
-                    <th>菜品</th>
-                    <th>数量</th>
-                    <th>备注</th>
-                    <th>时间</th>
-                    <th>状态</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for order in orders %}
-            <tr>
-                <td><strong>#{{ order.daily_seq }}</strong></td>
-                <td>{{ order.dish.name }}</td>
-                <td>{{ order.quantity }}</td>
-                <td>{{ order.note or '-' }}</td>
-                <td>{{ order.created_at.strftime('%H:%M') }}</td>
-                <td>
-                    {% if order.status == 'pending' %}
-                        <span class="badge badge-danger">未出餐</span>
-                    {% elif order.status == 'completed' %}
-                        <span class="badge badge-success">已出餐</span>
-                    {% elif order.status == 'rejected' %}
-                        <span class="badge badge-warning">已拒绝</span>
-                        {% if order.reject_reason %}
-                            <br><small style="color:#e67e22;">理由: {{ order.reject_reason }}</small>
+                    <td>
+                        <span class="order-number">#{{ order.daily_seq }}</span>
+                    </td>
+                    <td><strong>{{ order.dish.name }}</strong></td>
+                    <td>
+                        <span class="quantity-badge">x{{ order.quantity }}</span>
+                    </td>
+                    <td>
+                        <span class="order-note">{{ order.note or '-' }}</span>
+                    </td>
+                    <td>{{ order.created_at.strftime('%H:%M') }}</td>
+                    <td>
+                        {% if order.status == 'pending' %}
+                            <span class="badge badge-pending">
+                                <span class="status-dot pending"></span>
+                                未出餐
+                            </span>
+                        {% elif order.status == 'completed' %}
+                            <span class="badge badge-completed">
+                                <span class="status-dot completed"></span>
+                                已出餐
+                            </span>
+                        {% elif order.status == 'rejected' %}
+                            <span class="badge badge-rejected">
+                                <span class="status-dot rejected"></span>
+                                已拒绝
+                            </span>
+                            {% if order.reject_reason %}
+                                <div class="reject-reason">{{ order.reject_reason }}</div>
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary">
+            <div class="summary-item">
+                <span class="summary-label">总计订单</span>
+                <span class="summary-value">{{ orders|length }} 单</span>
+            </div>
+        </div>
         {% else %}
-        <div style="text-align:center; padding:60px; color:#aaa;">
-            <h3>📭 这一天还没有订单</h3>
+        <div class="empty-state card">
+            <div class="empty-state-icon">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+            </div>
+            <h3 class="empty-state-title">暂无订单</h3>
+            <p class="empty-state-desc">这一天还没有订单记录</p>
+            <a href="{{ url_for('index') }}" class="btn btn-primary mt-3">去点菜</a>
         </div>
         {% endif %}
-    </div>
+    </main>
 </div>
 
 <style>
-    .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
-    .badge-danger { background: #ffe0e0; color: #c0392b; }
-    .badge-success { background: #d5f5e3; color: #27ae60; }
-    .badge-warning { background: #fdebd0; color: #e67e22; }
+    .filter-card {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        padding: 20px 24px;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+    }
+
+    .filter-form {
+        display: flex;
+        align-items: flex-end;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .order-number {
+        font-weight: 700;
+        color: var(--primary);
+        font-size: 15px;
+    }
+
+    .quantity-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4px 12px;
+        background: rgba(26, 26, 46, 0.08);
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 13px;
+    }
+
+    .order-note {
+        color: var(--text-secondary);
+        font-size: 13px;
+    }
+
+    .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        margin-right: 6px;
+        display: inline-block;
+    }
+
+    .status-dot.pending {
+        background: var(--danger);
+        animation: pulse 2s infinite;
+    }
+
+    .status-dot.completed {
+        background: var(--success);
+    }
+
+    .status-dot.rejected {
+        background: var(--warning);
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+
+    .reject-reason {
+        font-size: 12px;
+        color: var(--warning);
+        margin-top: 4px;
+    }
+
+    .order-summary {
+        margin-top: 24px;
+        padding: 20px 24px;
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .summary-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .summary-label {
+        font-size: 14px;
+        color: var(--text-secondary);
+    }
+
+    .summary-value {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    @media (max-width: 768px) {
+        .filter-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filter-actions {
+            flex-direction: column;
+        }
+    }
 </style>
 {% endblock %}

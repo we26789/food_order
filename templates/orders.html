@@ -1,131 +1,359 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="cook-layout">
-    <div class="sidebar">
-        <h3>👨‍🍳 厨师工作台</h3>
-        <div class="nav-links">
-            <a href="{{ url_for('orders') }}">📋 订单汇总</a>
-            <a href="{{ url_for('add_dish') }}">➕ 添加菜品</a>
-            <a href="{{ url_for('list_dishes') }}">📋 已有菜品</a>
-            <a href="{{ url_for('recipe_recommend') }}">📖 菜谱推荐</a>
+<div class="app-layout">
+    <!-- Cook Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"></path>
+                        <line x1="6" y1="17" x2="18" y2="17"></line>
+                    </svg>
+                </div>
+                <div>
+                    <div class="sidebar-logo-text">家庭点菜</div>
+                    <div class="sidebar-role">厨师工作台</div>
+                </div>
+            </div>
         </div>
-        <div class="user-info">
-            {{ current_user.username }}<br>
-            <a href="{{ url_for('change_password') }}">修改密码</a> |
-            <a href="{{ url_for('logout') }}">退出</a>
-        </div>
-    </div>
-    <div class="main-content">
-        <h2>📋 订单汇总</h2>
 
-        <!-- 日期选择表单 -->
-        <form method="GET" action="{{ url_for('orders') }}" style="margin-bottom:20px; display:flex; gap:10px; align-items:center;">
-            <label for="order-date" style="font-weight:600;">选择日期：</label>
-            <input type="date" id="order-date" name="date" value="{{ selected_date }}"
-                   style="padding:8px 12px; border-radius:20px; border:1px solid #ddd;">
-            <button type="submit" class="btn">查看</button>
-            <a href="?date={{ today }}" class="btn" style="background:#7f8c8d;">今日订单</a>
-        </form>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">订单管理</div>
+                <a href="{{ url_for('orders') }}" class="nav-link active">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                        </svg>
+                    </span>
+                    <span>订单汇总</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">菜品管理</div>
+                <a href="{{ url_for('add_dish') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </span>
+                    <span>添加菜品</span>
+                </a>
+                <a href="{{ url_for('list_dishes') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="8" y1="6" x2="21" y2="6"></line>
+                            <line x1="8" y1="12" x2="21" y2="12"></line>
+                            <line x1="8" y1="18" x2="21" y2="18"></line>
+                            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                        </svg>
+                    </span>
+                    <span>已有菜品</span>
+                </a>
+                <a href="{{ url_for('recipe_recommend') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                    </span>
+                    <span>菜谱推荐</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark));">{{ current_user.username[0] }}</div>
+                <div class="user-info">
+                    <div class="user-name">{{ current_user.username }}</div>
+                    <div class="user-actions">
+                        <a href="{{ url_for('change_password') }}" class="user-action-link">修改密码</a>
+                        <span style="color: var(--text-muted);">|</span>
+                        <a href="{{ url_for('logout') }}" class="user-action-link">退出</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">订单汇总</h1>
+            <p class="page-subtitle">管理和处理所有顾客订单</p>
+        </div>
+
+        <!-- Date Filter -->
+        <div class="filter-card">
+            <form method="GET" action="{{ url_for('orders') }}" class="filter-form">
+                <div class="filter-group">
+                    <label class="form-label">选择日期</label>
+                    <input type="date" name="date" value="{{ selected_date }}" class="form-input" style="width: auto;">
+                </div>
+                <div class="filter-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        查看
+                    </button>
+                    <a href="?date={{ today }}" class="btn btn-outline">今日订单</a>
+                </div>
+            </form>
+        </div>
 
         {% if orders %}
-        <table class="order-table" id="order-table">
-            <thead>
-                <tr>
-                    <th>单号</th>
-                    <th>谁点的</th>
-                    <th>菜品</th>
-                    <th>数量</th>
-                    <th>备注</th>
-                    <th>时间</th>
-                    <th>状态</th>
-                    <th>操作</th>
+        <!-- Orders Table -->
+        <div class="table-container">
+            <table class="data-table" id="order-table">
+                <thead>
+                    <tr>
+                        <th>单号</th>
+                        <th>顾客</th>
+                        <th>菜品</th>
+                        <th>数量</th>
+                        <th>备注</th>
+                        <th>时间</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for order in orders %}
+                <tr id="order-{{ order.id }}" data-order-id="{{ order.id }}" data-daily-seq="{{ order.daily_seq }}">
+                    <td>
+                        <span class="order-number">#{{ order.daily_seq }}</span>
+                    </td>
+                    <td>
+                        <div class="customer-info">
+                            <div class="customer-avatar">{{ order.customer[0] }}</div>
+                            <span>{{ order.customer }}</span>
+                        </div>
+                    </td>
+                    <td><strong>{{ order.dish.name }}</strong></td>
+                    <td>
+                        <span class="quantity-badge">x{{ order.quantity }}</span>
+                    </td>
+                    <td>
+                        <span class="order-note">{{ order.note or '-' }}</span>
+                    </td>
+                    <td>{{ order.created_at.strftime('%H:%M') }}</td>
+                    <td class="status-cell">
+                        {% if order.status == 'pending' %}
+                            <span class="badge badge-pending">未出餐</span>
+                        {% elif order.status == 'completed' %}
+                            <span class="badge badge-completed">已出餐</span>
+                        {% elif order.status == 'rejected' %}
+                            <span class="badge badge-rejected">已拒绝</span>
+                            {% if order.reject_reason %}
+                                <div class="reject-reason">{{ order.reject_reason }}</div>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td class="order-actions">
+                        {% if order.status == 'pending' %}
+                            <div class="action-buttons">
+                                <button class="btn btn-success btn-sm btn-complete" data-order-id="{{ order.id }}">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    出餐
+                                </button>
+                                <button class="btn btn-warning btn-sm btn-reject" data-order-id="{{ order.id }}">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                    拒绝
+                                </button>
+                            </div>
+                        {% else %}
+                            {% if order.status == 'rejected' and order.reject_reason %}
+                                <span class="reject-reason-text">理由: {{ order.reject_reason }}</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-            {% for order in orders %}
-            <tr id="order-{{ order.id }}" data-order-id="{{ order.id }}" data-daily-seq="{{ order.daily_seq }}">
-                <td><strong>#{{ order.daily_seq }}</strong></td>
-                <td>{{ order.customer }}</td>
-                <td>{{ order.dish.name }}</td>
-                <td>{{ order.quantity }}</td>
-                <td>{{ order.note or '-' }}</td>
-                <td>{{ order.created_at.strftime('%H:%M') }}</td>
-                <td class="status-cell">
-                    {% if order.status == 'pending' %}
-                        <span class="badge badge-danger">未出餐</span>
-                    {% elif order.status == 'completed' %}
-                        <span class="badge badge-success">已出餐</span>
-                    {% elif order.status == 'rejected' %}
-                        <span class="badge badge-warning">已拒绝</span>
-                        {% if order.reject_reason %}
-                            <br><small class="reject-reason-text" style="color:#e67e22;">理由: {{ order.reject_reason }}</small>
-                        {% endif %}
-                    {% endif %}
-                </td>
-                <td class="order-actions">
-                    {% if order.status == 'pending' %}
-                        <button class="btn btn-sm btn-complete" data-order-id="{{ order.id }}" style="background:#27ae60; border:none; padding:4px 12px; color:white;">已出餐</button>
-                        <button class="btn btn-sm btn-reject" data-order-id="{{ order.id }}" style="background:#f39c12; border:none; padding:4px 12px; color:white;">拒绝出餐</button>
-                    {% else %}
-                        {% if order.status == 'rejected' and order.reject_reason %}
-                            <small class="reject-reason-text" style="color:#e67e22;">理由: {{ order.reject_reason }}</small>
-                        {% endif %}
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
         {% else %}
-        <div style="text-align:center; padding:60px; color:#aaa;">
-            <h3>📭 该日期没有订单</h3>
+        <div class="empty-state card">
+            <div class="empty-state-icon">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+            </div>
+            <h3 class="empty-state-title">暂无订单</h3>
+            <p class="empty-state-desc">该日期没有订单记录</p>
         </div>
         {% endif %}
-    </div>
+    </main>
 </div>
 
-<!-- 确认出餐弹窗 -->
-<div id="completeModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:3000; align-items:center; justify-content:center;">
-    <div style="background:white; border-radius:12px; padding:25px; width:350px; text-align:center;">
-        <h3>✅ 确认出餐</h3>
-        <p>确定该订单已出餐吗？</p>
-        <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
-            <button class="btn" onclick="closeCompleteModal()">取消</button>
-            <button class="btn" id="confirmCompleteBtn" style="background:#27ae60;">确认</button>
+<!-- Complete Modal -->
+<div id="completeModal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title">确认出餐</h3>
+        </div>
+        <div class="modal-body">
+            <p style="color: var(--text-secondary);">确定该订单已经出餐完成吗？</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeCompleteModal()">取消</button>
+            <button class="btn btn-success" id="confirmCompleteBtn">确认出餐</button>
         </div>
     </div>
 </div>
 
-<!-- 拒绝出餐弹窗 -->
-<div id="rejectModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:3000; align-items:center; justify-content:center;">
-    <div style="background:white; border-radius:12px; padding:25px; width:400px;">
-        <h3>🚫 拒绝出餐</h3>
-        <p>请填写拒绝理由：</p>
-        <textarea id="rejectReason" rows="3" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; margin-bottom:15px;" placeholder="例如：食材不足、顾客取消..."></textarea>
-        <div style="display:flex; gap:10px; justify-content:flex-end;">
-            <button class="btn" onclick="closeRejectModal()">取消</button>
-            <button class="btn" id="confirmRejectBtn" style="background:#f39c12;">确认拒绝</button>
+<!-- Reject Modal -->
+<div id="rejectModal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title">拒绝出餐</h3>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">拒绝理由</label>
+                <textarea id="rejectReason" class="form-input" rows="3" placeholder="例如：食材不足、顾客取消..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeRejectModal()">取消</button>
+            <button class="btn btn-warning" id="confirmRejectBtn">确认拒绝</button>
         </div>
     </div>
 </div>
 
 <style>
-    .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
-    .badge-danger { background: #ffe0e0; color: #c0392b; }
-    .badge-success { background: #d5f5e3; color: #27ae60; }
-    .badge-warning { background: #fdebd0; color: #e67e22; }
-    .btn-sm { padding: 4px 12px; font-size: 13px; }
+    .filter-card {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        padding: 20px 24px;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+    }
+
+    .filter-form {
+        display: flex;
+        align-items: flex-end;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .order-number {
+        font-weight: 700;
+        color: var(--primary);
+        font-size: 15px;
+    }
+
+    .customer-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .customer-avatar {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-light));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 13px;
+    }
+
+    .quantity-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4px 12px;
+        background: rgba(26, 26, 46, 0.08);
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 13px;
+    }
+
+    .order-note {
+        color: var(--text-secondary);
+        font-size: 13px;
+    }
+
+    .reject-reason {
+        font-size: 12px;
+        color: var(--warning);
+        margin-top: 4px;
+    }
+
+    .reject-reason-text {
+        font-size: 12px;
+        color: var(--warning);
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+    }
+
+    @media (max-width: 1200px) {
+        .data-table th:nth-child(5),
+        .data-table td:nth-child(5) {
+            display: none;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .filter-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filter-actions {
+            flex-direction: column;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
 </style>
 
 <script>
-// 全局当前操作的订单 ID
 let currentOrderId = null;
-// 操作类型 complete / reject
 let currentAction = null;
 
-// 事件委托监听按钮
 document.getElementById('order-table').addEventListener('click', function(e) {
-    const target = e.target;
+    const target = e.target.closest('.btn-complete, .btn-reject');
+    if (!target) return;
+    
     if (target.classList.contains('btn-complete')) {
         currentOrderId = target.getAttribute('data-order-id');
         currentAction = 'complete';
@@ -137,27 +365,26 @@ document.getElementById('order-table').addEventListener('click', function(e) {
     }
 });
 
-// ---------- 确认出餐弹窗 ----------
 function openCompleteModal() {
     document.getElementById('completeModal').style.display = 'flex';
 }
+
 function closeCompleteModal() {
     document.getElementById('completeModal').style.display = 'none';
     currentOrderId = null;
 }
 
-// ---------- 拒绝出餐弹窗 ----------
 function openRejectModal() {
     document.getElementById('rejectModal').style.display = 'flex';
     document.getElementById('rejectReason').value = '';
     document.getElementById('rejectReason').focus();
 }
+
 function closeRejectModal() {
     document.getElementById('rejectModal').style.display = 'none';
     currentOrderId = null;
 }
 
-// ---------- Ajax 提交 ----------
 async function submitAction() {
     if (!currentOrderId || !currentAction) return;
     
@@ -175,13 +402,12 @@ async function submitAction() {
         const response = await fetch(url, {
             method: 'POST',
             headers: {
-                'X-Requested-With': 'XMLHttpRequest'  // 标识为 Ajax 请求
+                'X-Requested-With': 'XMLHttpRequest'
             },
             body: formData
         });
         const data = await response.json();
         if (data.success) {
-            // 更新当前行状态
             const row = document.getElementById(`order-${currentOrderId}`);
             if (!row) return;
             
@@ -189,15 +415,15 @@ async function submitAction() {
             const actionsCell = row.querySelector('.order-actions');
             
             if (currentAction === 'complete') {
-                statusCell.innerHTML = '<span class="badge badge-success">已出餐</span>';
+                statusCell.innerHTML = '<span class="badge badge-completed">已出餐</span>';
                 actionsCell.innerHTML = '';
             } else {
-                let html = '<span class="badge badge-warning">已拒绝</span>';
+                let html = '<span class="badge badge-rejected">已拒绝</span>';
                 if (data.reason) {
-                    html += `<br><small style="color:#e67e22;">理由: ${data.reason}</small>`;
+                    html += `<div class="reject-reason">${data.reason}</div>`;
                 }
                 statusCell.innerHTML = html;
-                actionsCell.innerHTML = data.reason ? `<small style="color:#e67e22;">理由: ${data.reason}</small>` : '';
+                actionsCell.innerHTML = data.reason ? `<span class="reject-reason-text">理由: ${data.reason}</span>` : '';
             }
         }
     } catch (err) {
@@ -208,11 +434,9 @@ async function submitAction() {
     }
 }
 
-// 绑定确认按钮
 document.getElementById('confirmCompleteBtn').addEventListener('click', submitAction);
 document.getElementById('confirmRejectBtn').addEventListener('click', submitAction);
 
-// 点击遮罩关闭弹窗
 document.getElementById('completeModal').addEventListener('click', function(e) {
     if (e.target === this) closeCompleteModal();
 });

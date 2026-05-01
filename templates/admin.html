@@ -1,72 +1,370 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="cook-layout">
-    <!-- 左侧功能栏 -->
-    <div class="sidebar">
-        <h3>👨‍🍳 厨师工作台</h3>
-        <a href="{{ url_for('orders') }}">📋 订单汇总</a>
-        <a href="{{ url_for('admin') }}#add">➕ 添加菜品</a>
-        <a href="{{ url_for('admin') }}#list">📋 已有菜品</a>
-    </div>
-
-    <!-- 右侧内容 -->
-    <div class="main-content">
-        <h2 style="margin-bottom:20px;">⚙️ 菜品管理</h2>
-
-        <div id="add">
-            <h3>➕ 添加新菜品</h3>
-            <form method="POST" class="card" style="display:block;">
-                <input type="hidden" name="action" value="add">
-                <div class="form-group">
-                    <label>菜名 *</label>
-                    <input type="text" name="name" placeholder="例如：红烧排骨" required>
+<div class="app-layout">
+    <!-- Cook Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"></path>
+                        <line x1="6" y1="17" x2="18" y2="17"></line>
+                    </svg>
                 </div>
-                <div class="form-group">
-                    <label>简介</label>
-                    <textarea name="description" rows="2" placeholder="简单描述口味、食材..."></textarea>
+                <div>
+                    <div class="sidebar-logo-text">家庭点菜</div>
+                    <div class="sidebar-role">厨师工作台</div>
                 </div>
-                <div class="form-group">
-                    <label>图片链接（可选）</label>
-                    <input type="text" name="image_url" placeholder="https://...">
-                </div>
-                <button type="submit" class="btn">添加菜品</button>
-            </form>
+            </div>
         </div>
 
-        <hr>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">订单管理</div>
+                <a href="{{ url_for('orders') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                    </span>
+                    <span>订单汇总</span>
+                </a>
+            </div>
 
-        <div id="list">
-            <h3>📋 当前菜品列表</h3>
+            <div class="nav-section">
+                <div class="nav-section-title">菜品管理</div>
+                <a href="{{ url_for('add_dish') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </span>
+                    <span>添加菜品</span>
+                </a>
+                <a href="{{ url_for('list_dishes') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="8" y1="6" x2="21" y2="6"></line>
+                            <line x1="8" y1="12" x2="21" y2="12"></line>
+                            <line x1="8" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </span>
+                    <span>已有菜品</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark));">{{ current_user.username[0] }}</div>
+                <div class="user-info">
+                    <div class="user-name">{{ current_user.username }}</div>
+                    <div class="user-actions">
+                        <a href="{{ url_for('change_password') }}" class="user-action-link">修改密码</a>
+                        <span style="color: var(--text-muted);">|</span>
+                        <a href="{{ url_for('logout') }}" class="user-action-link">退出</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">菜品管理</h1>
+            <p class="page-subtitle">管理和维护菜单中的所有菜品</p>
+        </div>
+
+        <!-- Add Dish Section -->
+        <div id="add" class="admin-section">
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </div>
+                    <h2 class="section-title">添加新菜品</h2>
+                </div>
+
+                <form method="POST" class="admin-form">
+                    <input type="hidden" name="action" value="add">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">菜品名称 <span class="required">*</span></label>
+                            <input type="text" name="name" class="form-input" required placeholder="例如：红烧排骨">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">图片链接</label>
+                            <input type="text" name="image_url" class="form-input" placeholder="https://...">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">菜品简介</label>
+                        <textarea name="description" class="form-input" rows="2" placeholder="简单描述口味、食材..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            添加菜品
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Dish List Section -->
+        <div id="list" class="admin-section">
+            <div class="section-header-inline">
+                <h2 class="section-title">当前菜品列表</h2>
+                <span class="dish-count">{{ dishes|length }} 个菜品</span>
+            </div>
+
             {% if dishes %}
+            <div class="dish-grid">
                 {% for dish in dishes %}
-                <div class="card">
+                <div class="dish-admin-card">
                     {% if dish.image_url %}
-                    <img src="{{ dish.image_url }}" alt="{{ dish.name }}">
+                    <img src="{{ dish.image_url }}" alt="{{ dish.name }}" class="dish-admin-image" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&h=300&fit=crop';">
                     {% else %}
-                    <img src="https://via.placeholder.com/120?text=🍲" alt="占位图">
+                    <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&h=300&fit=crop" alt="{{ dish.name }}" class="dish-admin-image">
                     {% endif %}
-                    <div class="card-content">
-                        <h3>{{ dish.name }}</h3>
-                        {% if dish.description %}<p>{{ dish.description }}</p>{% endif %}
-                        <form method="POST" onsubmit="return confirm('确定删除该菜品？相关订单也会被删除。');">
+                    <div class="dish-admin-info">
+                        <h3 class="dish-admin-name">{{ dish.name }}</h3>
+                        <p class="dish-admin-desc">{{ dish.description or '暂无描述' }}</p>
+                        <form method="POST" onsubmit="return confirm('确定删除该菜品？');">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="dish_id" value="{{ dish.id }}">
-                            <button type="submit" class="btn btn-danger">🗑️ 删除</button>
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                                删除
+                            </button>
                         </form>
                     </div>
                 </div>
                 {% endfor %}
+            </div>
             {% else %}
-                <p style="color:#aaa;">暂无菜品，请添加。</p>
+            <div class="empty-state card">
+                <div class="empty-state-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                        <path d="M7 2v20"></path>
+                        <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+                    </svg>
+                </div>
+                <h3 class="empty-state-title">暂无菜品</h3>
+                <p class="empty-state-desc">使用上方表单添加第一个菜品</p>
+            </div>
             {% endif %}
         </div>
 
-        <hr>
-        <h3>🧹 清空所有订单</h3>
-        <form method="POST" onsubmit="return confirm('确定要删除所有已点的订单吗？此操作不可恢复。');">
-            <input type="hidden" name="action" value="clear_orders">
-            <button type="submit" class="btn btn-danger">清空全部订单</button>
-        </form>
-    </div>
+        <!-- Clear Orders Section -->
+        <div class="danger-zone">
+            <div class="danger-zone-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                <span>危险操作</span>
+            </div>
+            <div class="danger-zone-content">
+                <div class="danger-zone-info">
+                    <h4>清空所有订单</h4>
+                    <p>此操作将删除所有已点的订单，不可恢复</p>
+                </div>
+                <form method="POST" onsubmit="return confirm('确定要删除所有订单吗？此操作不可恢复。');">
+                    <input type="hidden" name="action" value="clear_orders">
+                    <button type="submit" class="btn btn-danger">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                        清空全部订单
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
 </div>
+
+<style>
+    .admin-section {
+        margin-bottom: 32px;
+    }
+
+    .section-card {
+        background: var(--surface);
+        border-radius: var(--radius-xl);
+        padding: 28px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .section-icon {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 107, 53, 0.05));
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+    }
+
+    .section-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .section-header-inline {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .dish-count {
+        font-size: 14px;
+        color: var(--text-muted);
+        padding: 6px 14px;
+        background: var(--background);
+        border-radius: 20px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .required {
+        color: var(--danger);
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 8px;
+    }
+
+    .dish-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .dish-admin-card {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        transition: var(--transition);
+    }
+
+    .dish-admin-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .dish-admin-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+    }
+
+    .dish-admin-info {
+        padding: 20px;
+    }
+
+    .dish-admin-name {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+    }
+
+    .dish-admin-desc {
+        font-size: 13px;
+        color: var(--text-secondary);
+        margin-bottom: 16px;
+        line-height: 1.5;
+    }
+
+    .danger-zone {
+        margin-top: 40px;
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        border: 2px solid rgba(239, 68, 68, 0.2);
+        overflow: hidden;
+    }
+
+    .danger-zone-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 20px;
+        background: rgba(239, 68, 68, 0.05);
+        color: var(--danger);
+        font-weight: 600;
+        font-size: 13px;
+        text-transform: uppercase;
+    }
+
+    .danger-zone-content {
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .danger-zone-info h4 {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+
+    .danger-zone-info p {
+        font-size: 13px;
+        color: var(--text-secondary);
+    }
+
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .danger-zone-content {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
 {% endblock %}

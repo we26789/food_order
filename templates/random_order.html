@@ -1,109 +1,388 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="cook-layout">
-    <!-- 顾客统一侧边栏 -->
-    <div class="sidebar" style="background:#2c3e50;">
-        <h3>👤 顾客菜单</h3>
-        <div class="nav-links">
-            <a href="{{ url_for('index') }}">🍽️ 点菜</a>
-            <a href="{{ url_for('recipe_recommend') }}">📖 菜谱推荐</a>
-            <a href="{{ url_for('random_order') }}">🎲 随机点菜</a>
-            <a href="{{ url_for('ai_assistant') }}">🤖 智能点菜</a>
-            <a href="{{ url_for('order_history') }}">📜 我的订单</a>
+<div class="app-layout">
+    <!-- Customer Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                        <path d="M7 2v20"></path>
+                        <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div class="sidebar-logo-text">家庭点菜</div>
+                    <div class="sidebar-role">顾客端</div>
+                </div>
+            </div>
         </div>
-        <div class="user-info">
-            {{ current_user.username }}<br>
-            <a href="{{ url_for('change_password') }}">修改密码</a> |
-            <a href="{{ url_for('logout') }}">退出</a>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">点餐服务</div>
+                <a href="{{ url_for('index') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                            <path d="M7 2v20"></path>
+                            <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+                        </svg>
+                    </span>
+                    <span>点菜</span>
+                </a>
+                <a href="{{ url_for('recipe_recommend') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                    </span>
+                    <span>菜谱推荐</span>
+                </a>
+                <a href="{{ url_for('random_order') }}" class="nav-link active">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="1" width="6" height="6" rx="1"></rect>
+                            <rect x="17" y="1" width="6" height="6" rx="1"></rect>
+                            <rect x="9" y="9" width="6" height="6" rx="1"></rect>
+                            <rect x="1" y="17" width="6" height="6" rx="1"></rect>
+                            <rect x="17" y="17" width="6" height="6" rx="1"></rect>
+                        </svg>
+                    </span>
+                    <span>随机点菜</span>
+                </a>
+                <a href="{{ url_for('ai_assistant') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 8V4H8"></path>
+                            <rect x="8" y="8" width="8" height="8" rx="1"></rect>
+                            <path d="M4 12h4"></path>
+                            <path d="M16 12h4"></path>
+                            <path d="M12 16v4"></path>
+                        </svg>
+                    </span>
+                    <span>智能点菜</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">我的订单</div>
+                <a href="{{ url_for('order_history') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                    </span>
+                    <span>订单历史</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">{{ current_user.username[0] }}</div>
+                <div class="user-info">
+                    <div class="user-name">{{ current_user.username }}</div>
+                    <div class="user-actions">
+                        <a href="{{ url_for('change_password') }}" class="user-action-link">修改密码</a>
+                        <span style="color: var(--text-muted);">|</span>
+                        <a href="{{ url_for('logout') }}" class="user-action-link">退出</a>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+    </aside>
 
-    <div class="main-content">
-        <h2>🎲 随机一日三餐</h2>
-        <p style="color:#777;">点击下方按钮随机生成今日推荐，满意可直接下单</p>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">随机一日三餐</h1>
+            <p class="page-subtitle">不知道吃什么？让系统帮你随机搭配今日三餐</p>
+        </div>
 
-        <div class="card" style="display:block;">
-            <div id="randomResult">
-                {% if breakfast %}
-                <h3>🌅 早餐：{{ breakfast.dish_name }}</h3>
-                <p>{{ breakfast.description }}</p>
-                <hr>
-                <h3>☀️ 午餐：{{ lunch.dish_name }}</h3>
-                <p>{{ lunch.description }}</p>
-                <hr>
-                <h3>🌙 晚餐：{{ dinner.dish_name }}</h3>
-                <p>{{ dinner.description }}</p>
-
-                <!-- 操作按钮行 -->
-                <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-                    <form method="POST" action="{{ url_for('submit_random_order') }}" id="form-all" style="margin:0;">
-                        <input type="hidden" name="action" value="all">
-                        <input type="hidden" name="breakfast_id" value="{{ breakfast.id }}">
-                        <input type="hidden" name="lunch_id" value="{{ lunch.id }}">
-                        <input type="hidden" name="dinner_id" value="{{ dinner.id }}">
-                        <input type="hidden" name="note" class="note-input">
-                        <button type="button" class="btn btn-danger" style="background:#27ae60;" onclick="openNoteModal('form-all')">✅ 一键下单三餐</button>
-                    </form>
-
-                    <form method="POST" action="{{ url_for('submit_random_order') }}" id="form-breakfast" style="margin:0;">
+        {% if breakfast %}
+        <div class="random-result-card">
+            <!-- Meals Grid -->
+            <div class="meals-grid">
+                <!-- Breakfast -->
+                <div class="meal-card breakfast">
+                    <div class="meal-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                    </div>
+                    <div class="meal-label">早餐</div>
+                    <h3 class="meal-name">{{ breakfast.dish_name }}</h3>
+                    <p class="meal-desc">{{ breakfast.description or '美味营养的早餐' }}</p>
+                    <form method="POST" action="{{ url_for('submit_random_order') }}" id="form-breakfast">
                         <input type="hidden" name="action" value="single">
                         <input type="hidden" name="meal_type" value="breakfast">
                         <input type="hidden" name="recipe_id" value="{{ breakfast.id }}">
                         <input type="hidden" name="note" class="note-input">
-                        <button type="button" class="btn" onclick="openNoteModal('form-breakfast')">🌅 只点早餐</button>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="openNoteModal('form-breakfast')">单独下单</button>
                     </form>
+                </div>
 
-                    <form method="POST" action="{{ url_for('submit_random_order') }}" id="form-lunch" style="margin:0;">
+                <!-- Lunch -->
+                <div class="meal-card lunch">
+                    <div class="meal-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                    </div>
+                    <div class="meal-label">午餐</div>
+                    <h3 class="meal-name">{{ lunch.dish_name }}</h3>
+                    <p class="meal-desc">{{ lunch.description or '丰盛可口的午餐' }}</p>
+                    <form method="POST" action="{{ url_for('submit_random_order') }}" id="form-lunch">
                         <input type="hidden" name="action" value="single">
                         <input type="hidden" name="meal_type" value="lunch">
                         <input type="hidden" name="recipe_id" value="{{ lunch.id }}">
                         <input type="hidden" name="note" class="note-input">
-                        <button type="button" class="btn" onclick="openNoteModal('form-lunch')">☀️ 只点午餐</button>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="openNoteModal('form-lunch')">单独下单</button>
                     </form>
+                </div>
 
-                    <form method="POST" action="{{ url_for('submit_random_order') }}" id="form-dinner" style="margin:0;">
+                <!-- Dinner -->
+                <div class="meal-card dinner">
+                    <div class="meal-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </div>
+                    <div class="meal-label">晚餐</div>
+                    <h3 class="meal-name">{{ dinner.dish_name }}</h3>
+                    <p class="meal-desc">{{ dinner.description or '温馨舒适的晚餐' }}</p>
+                    <form method="POST" action="{{ url_for('submit_random_order') }}" id="form-dinner">
                         <input type="hidden" name="action" value="single">
                         <input type="hidden" name="meal_type" value="dinner">
                         <input type="hidden" name="recipe_id" value="{{ dinner.id }}">
                         <input type="hidden" name="note" class="note-input">
-                        <button type="button" class="btn" onclick="openNoteModal('form-dinner')">🌙 只点晚餐</button>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="openNoteModal('form-dinner')">单独下单</button>
                     </form>
-
-                    <a href="{{ url_for('random_order') }}" class="btn" style="margin:0;">🔄 换一组</a>
                 </div>
-                {% else %}
-                <p style="text-align:center; padding:20px;">暂无随机数据，请点击刷新</p>
-                <a href="{{ url_for('random_order') }}" class="btn">🔄 刷新随机</a>
-                {% endif %}
+            </div>
+
+            <!-- Actions -->
+            <div class="random-actions">
+                <a href="{{ url_for('random_order') }}" class="btn btn-outline">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                    </svg>
+                    换一组
+                </a>
+                <form method="POST" action="{{ url_for('submit_random_order') }}" id="form-all" style="margin: 0;">
+                    <input type="hidden" name="action" value="all">
+                    <input type="hidden" name="breakfast_id" value="{{ breakfast.id }}">
+                    <input type="hidden" name="lunch_id" value="{{ lunch.id }}">
+                    <input type="hidden" name="dinner_id" value="{{ dinner.id }}">
+                    <input type="hidden" name="note" class="note-input">
+                    <button type="button" class="btn btn-success btn-lg" onclick="openNoteModal('form-all')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        一键下单三餐
+                    </button>
+                </form>
             </div>
         </div>
-    </div>
+        {% else %}
+        <div class="empty-state card">
+            <div class="empty-state-icon">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="1" y="1" width="6" height="6" rx="1"></rect>
+                    <rect x="17" y="1" width="6" height="6" rx="1"></rect>
+                    <rect x="9" y="9" width="6" height="6" rx="1"></rect>
+                    <rect x="1" y="17" width="6" height="6" rx="1"></rect>
+                    <rect x="17" y="17" width="6" height="6" rx="1"></rect>
+                </svg>
+            </div>
+            <h3 class="empty-state-title">暂无随机数据</h3>
+            <p class="empty-state-desc">菜谱数据不足，无法生成随机点菜</p>
+            <a href="{{ url_for('random_order') }}" class="btn btn-primary mt-3">刷新随机</a>
+        </div>
+        {% endif %}
+    </main>
 </div>
 
-<!-- 备注弹窗（保持不变） -->
-<div id="noteModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:3000; justify-content:center; align-items:center;">
-    <div style="background:white; border-radius:16px; padding:25px; width:400px; max-width:90%;">
-        <h3>📝 口味备注</h3>
-        <textarea id="noteText" rows="3" style="width:100%; padding:10px; border-radius:10px; border:1px solid #ddd; margin:15px 0;" placeholder="如：少辣、不要葱..."></textarea>
-        <div style="display:flex; gap:10px; justify-content:flex-end;">
-            <button class="btn" onclick="closeNoteModal()">取消</button>
-            <button class="btn btn-danger" onclick="submitWithNote()">确认下单</button>
+<!-- Note Modal -->
+<div id="noteModal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title">口味备注</h3>
+        </div>
+        <div class="modal-body">
+            <div class="form-group mb-0">
+                <label class="form-label">添加备注（可选）</label>
+                <textarea id="noteText" class="form-input" rows="3" placeholder="如：少辣、不要葱..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeNoteModal()">取消</button>
+            <button class="btn btn-primary" onclick="submitWithNote()">确认下单</button>
         </div>
     </div>
 </div>
+
+<style>
+    .random-result-card {
+        background: var(--surface);
+        border-radius: var(--radius-xl);
+        padding: 32px;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border);
+    }
+
+    .meals-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin-bottom: 32px;
+    }
+
+    .meal-card {
+        background: var(--background);
+        border-radius: var(--radius-lg);
+        padding: 28px;
+        text-align: center;
+        border: 2px solid var(--border);
+        transition: var(--transition);
+    }
+
+    .meal-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .meal-card.breakfast {
+        border-color: rgba(255, 193, 7, 0.3);
+    }
+
+    .meal-card.breakfast:hover {
+        border-color: #FFC107;
+        background: rgba(255, 193, 7, 0.05);
+    }
+
+    .meal-card.lunch {
+        border-color: rgba(255, 107, 53, 0.3);
+    }
+
+    .meal-card.lunch:hover {
+        border-color: var(--primary);
+        background: rgba(255, 107, 53, 0.05);
+    }
+
+    .meal-card.dinner {
+        border-color: rgba(103, 58, 183, 0.3);
+    }
+
+    .meal-card.dinner:hover {
+        border-color: #673AB7;
+        background: rgba(103, 58, 183, 0.05);
+    }
+
+    .meal-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 16px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .breakfast .meal-icon {
+        background: linear-gradient(135deg, rgba(255, 193, 7, 0.2), rgba(255, 193, 7, 0.1));
+        color: #FFC107;
+    }
+
+    .lunch .meal-icon {
+        background: linear-gradient(135deg, rgba(255, 107, 53, 0.2), rgba(255, 107, 53, 0.1));
+        color: var(--primary);
+    }
+
+    .dinner .meal-icon {
+        background: linear-gradient(135deg, rgba(103, 58, 183, 0.2), rgba(103, 58, 183, 0.1));
+        color: #673AB7;
+    }
+
+    .meal-label {
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+    }
+
+    .meal-name {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+    }
+
+    .meal-desc {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-bottom: 20px;
+        line-height: 1.5;
+    }
+
+    .random-actions {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 16px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 900px) {
+        .meals-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .random-actions {
+            flex-direction: column;
+        }
+
+        .random-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
 
 <script>
     let currentFormId = '';
+
     function openNoteModal(formId) {
         currentFormId = formId;
         document.getElementById('noteModal').style.display = 'flex';
         document.getElementById('noteText').value = '';
         document.getElementById('noteText').focus();
     }
+
     function closeNoteModal() {
         document.getElementById('noteModal').style.display = 'none';
         currentFormId = '';
     }
+
     function submitWithNote() {
         if (!currentFormId) return;
         const form = document.getElementById(currentFormId);
@@ -112,9 +391,11 @@
         form.submit();
         closeNoteModal();
     }
+
     document.getElementById('noteModal').addEventListener('click', function(e) {
         if (e.target === this) closeNoteModal();
     });
+
     document.getElementById('noteText').addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
