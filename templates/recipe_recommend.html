@@ -1,76 +1,377 @@
 {% extends "base.html" %}
 {% block content %}
 {% if current_user.role == 'cooker' %}
-    <!-- 厨师侧边栏保持不变 -->
-    <div class="cook-layout">
-        <div class="sidebar">
-            <h3>👨‍🍳 厨师工作台</h3>
-            <div class="nav-links">
-                <a href="{{ url_for('orders') }}">📋 订单汇总</a>
-                <a href="{{ url_for('add_dish') }}">➕ 添加菜品</a>
-                <a href="{{ url_for('list_dishes') }}">📋 已有菜品</a>
-                <a href="{{ url_for('recipe_recommend') }}">📖 菜谱推荐</a>
-            </div>
-            <div class="user-info">
-                {{ current_user.username }}<br>
-                <a href="{{ url_for('change_password') }}">修改密码</a> |
-                <a href="{{ url_for('logout') }}">退出</a>
+<div class="app-layout">
+    <!-- Cook Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"></path>
+                        <line x1="6" y1="17" x2="18" y2="17"></line>
+                    </svg>
+                </div>
+                <div>
+                    <div class="sidebar-logo-text">家庭点菜</div>
+                    <div class="sidebar-role">厨师工作台</div>
+                </div>
             </div>
         </div>
-        <div class="main-content">
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">订单管理</div>
+                <a href="{{ url_for('orders') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                    </span>
+                    <span>订单汇总</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">菜品管理</div>
+                <a href="{{ url_for('add_dish') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </span>
+                    <span>添加菜品</span>
+                </a>
+                <a href="{{ url_for('list_dishes') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="8" y1="6" x2="21" y2="6"></line>
+                            <line x1="8" y1="12" x2="21" y2="12"></line>
+                            <line x1="8" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </span>
+                    <span>已有菜品</span>
+                </a>
+                <a href="{{ url_for('recipe_recommend') }}" class="nav-link active">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                    </span>
+                    <span>菜谱推荐</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark));">{{ current_user.username[0] }}</div>
+                <div class="user-info">
+                    <div class="user-name">{{ current_user.username }}</div>
+                    <div class="user-actions">
+                        <a href="{{ url_for('change_password') }}" class="user-action-link">修改密码</a>
+                        <span style="color: var(--text-muted);">|</span>
+                        <a href="{{ url_for('logout') }}" class="user-action-link">退出</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
 {% else %}
-    <!-- 顾客统一侧边栏 -->
-    <div class="cook-layout">
-        <div class="sidebar" style="background:#2c3e50;">
-            <h3>👤 顾客菜单</h3>
-            <div class="nav-links">
-                <a href="{{ url_for('index') }}">🍽️ 点菜</a>
-                <a href="{{ url_for('recipe_recommend') }}">📖 菜谱推荐</a>
-                <a href="{{ url_for('random_order') }}">🎲 随机点菜</a>
-                <a href="{{ url_for('ai_assistant') }}">🤖 智能点菜</a>
-                <a href="{{ url_for('order_history') }}">📜 我的订单</a>
-            </div>
-            <div class="user-info">
-                {{ current_user.username }}<br>
-                <a href="{{ url_for('change_password') }}">修改密码</a> |
-                <a href="{{ url_for('logout') }}">退出</a>
+<div class="app-layout">
+    <!-- Customer Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                        <path d="M7 2v20"></path>
+                        <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div class="sidebar-logo-text">家庭点菜</div>
+                    <div class="sidebar-role">顾客端</div>
+                </div>
             </div>
         </div>
-        <div class="main-content">
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">点餐服务</div>
+                <a href="{{ url_for('index') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                            <path d="M7 2v20"></path>
+                            <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+                        </svg>
+                    </span>
+                    <span>点菜</span>
+                </a>
+                <a href="{{ url_for('recipe_recommend') }}" class="nav-link active">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                    </span>
+                    <span>菜谱推荐</span>
+                </a>
+                <a href="{{ url_for('random_order') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="1" width="6" height="6" rx="1"></rect>
+                            <rect x="17" y="1" width="6" height="6" rx="1"></rect>
+                            <rect x="9" y="9" width="6" height="6" rx="1"></rect>
+                            <rect x="1" y="17" width="6" height="6" rx="1"></rect>
+                            <rect x="17" y="17" width="6" height="6" rx="1"></rect>
+                        </svg>
+                    </span>
+                    <span>随机点菜</span>
+                </a>
+                <a href="{{ url_for('ai_assistant') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 8V4H8"></path>
+                            <rect x="8" y="8" width="8" height="8" rx="1"></rect>
+                            <path d="M4 12h4"></path>
+                            <path d="M16 12h4"></path>
+                            <path d="M12 16v4"></path>
+                        </svg>
+                    </span>
+                    <span>智能点菜</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">我的订单</div>
+                <a href="{{ url_for('order_history') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                    </span>
+                    <span>订单历史</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">{{ current_user.username[0] }}</div>
+                <div class="user-info">
+                    <div class="user-name">{{ current_user.username }}</div>
+                    <div class="user-actions">
+                        <a href="{{ url_for('change_password') }}" class="user-action-link">修改密码</a>
+                        <span style="color: var(--text-muted);">|</span>
+                        <a href="{{ url_for('logout') }}" class="user-action-link">退出</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
 {% endif %}
 
-        <h2>📖 菜谱推荐</h2>
-        <p style="color:#777; margin-bottom:25px;">根据口味偏好的分类推荐一日三餐</p>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">菜谱推荐</h1>
+            <p class="page-subtitle">根据口味偏好的分类推荐一日三餐</p>
+        </div>
+
         {% if categories %}
             {% for cat in categories %}
-            <div style="margin-bottom:35px; border:1px solid #eee; border-radius:12px; padding:20px; background:#fafafa;">
-                <h3 style="color:#e67e22;">{{ cat.icon }} {{ cat.name }}</h3>
-                <p style="color:#999; font-size:14px;">{{ cat.description }}</p>
-                {% set meals = ['breakfast','lunch','dinner'] %}
-                {% set meal_labels = {'breakfast':'🌅 早餐','lunch':'☀️ 午餐','dinner':'🌙 晚餐'} %}
-                {% for meal in meals %}
-                    <div style="margin-bottom:15px;">
-                        <h4>{{ meal_labels[meal] }}</h4>
-                        <table class="order-table">
-                            <thead><tr><th style="width:30%;">菜名</th><th>简介</th></tr></thead>
-                            <tbody>
-                            {% for r in cat.recipes if r.meal_type == meal %}
-                            <tr>
-                                <td><strong>{{ r.dish_name }}</strong></td>
-                                <td>{{ r.description }}</td>
-                            </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+            <div class="category-card">
+                <div class="category-header">
+                    <div class="category-icon">{{ cat.icon }}</div>
+                    <div class="category-info">
+                        <h2 class="category-name">{{ cat.name }}</h2>
+                        <p class="category-desc">{{ cat.description }}</p>
                     </div>
-                {% endfor %}
+                </div>
+
+                <div class="meals-container">
+                    {% set meals = ['breakfast','lunch','dinner'] %}
+                    {% set meal_labels = {'breakfast':'早餐','lunch':'午餐','dinner':'晚餐'} %}
+                    {% set meal_icons = {'breakfast':'sunrise','lunch':'sun','dinner':'moon'} %}
+                    
+                    {% for meal in meals %}
+                    <div class="meal-section">
+                        <div class="meal-header">
+                            {% if meal == 'breakfast' %}
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="5"></circle>
+                                <line x1="12" y1="1" x2="12" y2="3"></line>
+                                <line x1="12" y1="21" x2="12" y2="23"></line>
+                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            </svg>
+                            {% elif meal == 'lunch' %}
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="5"></circle>
+                                <line x1="12" y1="1" x2="12" y2="3"></line>
+                                <line x1="12" y1="21" x2="12" y2="23"></line>
+                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                                <line x1="1" y1="12" x2="3" y2="12"></line>
+                                <line x1="21" y1="12" x2="23" y2="12"></line>
+                                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                            </svg>
+                            {% else %}
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                            </svg>
+                            {% endif %}
+                            <span>{{ meal_labels[meal] }}</span>
+                        </div>
+                        
+                        <div class="recipe-list">
+                            {% for r in cat.recipes if r.meal_type == meal %}
+                            <div class="recipe-item">
+                                <div class="recipe-name">{{ r.dish_name }}</div>
+                                <div class="recipe-desc">{{ r.description }}</div>
+                            </div>
+                            {% else %}
+                            <div class="recipe-empty">暂无推荐</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
             {% endfor %}
         {% else %}
-            <div style="text-align:center; padding:60px; color:#aaa;">
-                <h3>📭 暂无菜谱推荐，请先执行 SQL 导入数据</h3>
+            <div class="empty-state card">
+                <div class="empty-state-icon">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                </div>
+                <h3 class="empty-state-title">暂无菜谱推荐</h3>
+                <p class="empty-state-desc">请先执行 SQL 导入数据</p>
             </div>
         {% endif %}
-    </div>
+    </main>
 </div>
+
+<style>
+    .category-card {
+        background: var(--surface);
+        border-radius: var(--radius-xl);
+        padding: 28px;
+        margin-bottom: 28px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+    }
+
+    .category-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .category-icon {
+        width: 56px;
+        height: 56px;
+        background: linear-gradient(135deg, rgba(255, 107, 53, 0.15), rgba(255, 107, 53, 0.05));
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+    }
+
+    .category-name {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+
+    .category-desc {
+        font-size: 14px;
+        color: var(--text-secondary);
+    }
+
+    .meals-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+    }
+
+    .meal-section {
+        background: var(--background);
+        border-radius: var(--radius-lg);
+        padding: 20px;
+        border: 1px solid var(--border);
+    }
+
+    .meal-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid rgba(255, 107, 53, 0.2);
+    }
+
+    .recipe-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .recipe-item {
+        padding: 12px 16px;
+        background: var(--surface);
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        transition: var(--transition);
+    }
+
+    .recipe-item:hover {
+        border-color: var(--primary);
+        transform: translateX(4px);
+    }
+
+    .recipe-name {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+
+    .recipe-desc {
+        font-size: 13px;
+        color: var(--text-secondary);
+        line-height: 1.5;
+    }
+
+    .recipe-empty {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 13px;
+        padding: 20px;
+    }
+
+    @media (max-width: 1024px) {
+        .meals-container {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
 {% endblock %}

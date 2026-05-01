@@ -1,83 +1,439 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="cook-layout">
-    <div class="sidebar" style="background:#2c3e50;">
-        <h3>👤 顾客菜单</h3>
-        <div class="nav-links">
-            <a href="{{ url_for('index') }}">🍽️ 点菜</a>
-            <a href="{{ url_for('recipe_recommend') }}">📖 菜谱推荐</a>
-            <a href="{{ url_for('random_order') }}">🎲 随机点菜</a>
-            <a href="{{ url_for('order_history') }}">📜 我的订单</a>
-            <a href="{{ url_for('ai_assistant') }}">🤖 智能点菜</a>
-        </div>
-        <div class="user-info">
-            {{ current_user.username }}<br>
-            <a href="{{ url_for('change_password') }}">修改密码</a> |
-            <a href="{{ url_for('logout') }}">退出</a>
-        </div>
-    </div>
-    <div class="main-content">
-        <h2>🤖 智能点菜助手</h2>
-        <p style="color:#777; margin-bottom:20px;">告诉我你想吃什么，我帮你从菜单中推荐并下单（说“直接下单”可自动完成）</p>
-
-        <div id="chatBox" style="border:1px solid #ddd; border-radius:16px; padding:20px; background:white; min-height:200px; margin-bottom:20px; max-height:400px; overflow-y:auto;">
-            <div class="ai-message"><strong>🤖 助手：</strong> 你好！你想吃点什么？比如“来点辣的”、“清淡的午餐”</div>
+<div class="app-layout">
+    <!-- Customer Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                        <path d="M7 2v20"></path>
+                        <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div class="sidebar-logo-text">家庭点菜</div>
+                    <div class="sidebar-role">顾客端</div>
+                </div>
+            </div>
         </div>
 
-        <div style="display:flex; gap:10px;">
-            <input type="text" id="userInput" placeholder="我想吃..." style="flex:1; padding:12px; border-radius:25px; border:1px solid #ddd;">
-            <button class="btn" onclick="sendMessage()">发送</button>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">点餐服务</div>
+                <a href="{{ url_for('index') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                            <path d="M7 2v20"></path>
+                            <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+                        </svg>
+                    </span>
+                    <span>点菜</span>
+                </a>
+                <a href="{{ url_for('recipe_recommend') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                    </span>
+                    <span>菜谱推荐</span>
+                </a>
+                <a href="{{ url_for('random_order') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="1" width="6" height="6" rx="1"></rect>
+                            <rect x="17" y="1" width="6" height="6" rx="1"></rect>
+                            <rect x="9" y="9" width="6" height="6" rx="1"></rect>
+                            <rect x="1" y="17" width="6" height="6" rx="1"></rect>
+                            <rect x="17" y="17" width="6" height="6" rx="1"></rect>
+                        </svg>
+                    </span>
+                    <span>随机点菜</span>
+                </a>
+                <a href="{{ url_for('ai_assistant') }}" class="nav-link active">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 8V4H8"></path>
+                            <rect x="8" y="8" width="8" height="8" rx="1"></rect>
+                            <path d="M4 12h4"></path>
+                            <path d="M16 12h4"></path>
+                            <path d="M12 16v4"></path>
+                        </svg>
+                    </span>
+                    <span>智能点菜</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">我的订单</div>
+                <a href="{{ url_for('order_history') }}" class="nav-link">
+                    <span class="nav-link-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                    </span>
+                    <span>订单历史</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">{{ current_user.username[0] }}</div>
+                <div class="user-info">
+                    <div class="user-name">{{ current_user.username }}</div>
+                    <div class="user-actions">
+                        <a href="{{ url_for('change_password') }}" class="user-action-link">修改密码</a>
+                        <span style="color: var(--text-muted);">|</span>
+                        <a href="{{ url_for('logout') }}" class="user-action-link">退出</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">智能点菜助手</h1>
+            <p class="page-subtitle">告诉我你想吃什么，我帮你从菜单中推荐并下单</p>
         </div>
 
-        <div id="recommendationArea" style="margin-top:20px;"></div>
-    </div>
+        <div class="chat-container">
+            <!-- Chat Box -->
+            <div class="chat-box" id="chatBox">
+                <div class="chat-message ai">
+                    <div class="chat-avatar ai">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 8V4H8"></path>
+                            <rect x="8" y="8" width="8" height="8" rx="1"></rect>
+                            <path d="M4 12h4"></path>
+                            <path d="M16 12h4"></path>
+                            <path d="M12 16v4"></path>
+                        </svg>
+                    </div>
+                    <div class="chat-content">
+                        <div class="chat-name">AI 助手</div>
+                        <div class="chat-bubble">你好！我是智能点菜助手。你想吃点什么？比如"来点辣的"、"清淡的午餐"、"直接下单一碗面"</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="chat-input-area">
+                <input type="text" id="userInput" class="chat-input" placeholder="我想吃..." autocomplete="off">
+                <button class="btn btn-primary" onclick="sendMessage()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Recommendation Area -->
+            <div id="recommendationArea"></div>
+        </div>
+    </main>
 </div>
 
-<div id="noteModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:3000; justify-content:center; align-items:center;">
-    <div style="background:white; border-radius:16px; padding:25px; width:400px; max-width:90%;">
-        <h3>📝 口味备注</h3>
-        <textarea id="noteText" rows="3" style="width:100%; padding:10px; border-radius:10px; border:1px solid #ddd; margin:15px 0;" placeholder="如：少辣、不要葱..."></textarea>
-        <div style="display:flex; gap:10px; justify-content:flex-end;">
-            <button class="btn" onclick="closeNoteModal()">取消</button>
-            <button class="btn btn-danger" onclick="submitWithNote()">确认下单</button>
+<!-- Note Modal -->
+<div id="noteModal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title">口味备注</h3>
+        </div>
+        <div class="modal-body">
+            <div class="form-group mb-0">
+                <label class="form-label">添加备注（可选）</label>
+                <textarea id="noteText" class="form-input" rows="3" placeholder="如：少辣、不要葱..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeNoteModal()">取消</button>
+            <button class="btn btn-primary" onclick="submitWithNote()">确认下单</button>
         </div>
     </div>
 </div>
 
 <style>
-    .ai-message { margin-bottom:12px; padding:10px; background:#f0f8ff; border-radius:12px; }
-    .user-message { margin-bottom:12px; padding:10px; background:#ffeaa7; border-radius:12px; text-align:right; }
-    .recommend-card {
-        background: white; border-radius: 12px; padding: 15px; margin: 10px 0;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center;
+    .chat-container {
+        max-width: 800px;
     }
-    .loading { text-align:center; padding:20px; color:#999; }
+
+    .chat-box {
+        background: var(--surface);
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--border);
+        padding: 24px;
+        min-height: 400px;
+        max-height: 500px;
+        overflow-y: auto;
+        margin-bottom: 20px;
+        box-shadow: var(--shadow);
+    }
+
+    .chat-message {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 20px;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .chat-message.user {
+        flex-direction: row-reverse;
+    }
+
+    .chat-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .chat-avatar.ai {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+    }
+
+    .chat-avatar.user {
+        background: linear-gradient(135deg, var(--accent), var(--accent-light));
+        color: white;
+        font-weight: 600;
+    }
+
+    .chat-content {
+        max-width: 70%;
+    }
+
+    .chat-name {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+    }
+
+    .chat-message.user .chat-name {
+        text-align: right;
+    }
+
+    .chat-bubble {
+        padding: 14px 18px;
+        border-radius: var(--radius-lg);
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .chat-message.ai .chat-bubble {
+        background: var(--background);
+        color: var(--text-primary);
+        border-bottom-left-radius: 4px;
+    }
+
+    .chat-message.user .chat-bubble {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        border-bottom-right-radius: 4px;
+    }
+
+    .chat-input-area {
+        display: flex;
+        gap: 12px;
+        background: var(--surface);
+        border-radius: var(--radius-xl);
+        padding: 12px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+    }
+
+    .chat-input {
+        flex: 1;
+        padding: 14px 20px;
+        border: 2px solid var(--border);
+        border-radius: var(--radius-lg);
+        font-size: 14px;
+        outline: none;
+        transition: var(--transition);
+    }
+
+    .chat-input:focus {
+        border-color: var(--primary);
+    }
+
+    .loading-indicator {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 18px;
+        background: var(--background);
+        border-radius: var(--radius-lg);
+        color: var(--text-muted);
+        font-size: 14px;
+    }
+
+    .loading-dots {
+        display: flex;
+        gap: 4px;
+    }
+
+    .loading-dots span {
+        width: 8px;
+        height: 8px;
+        background: var(--primary);
+        border-radius: 50%;
+        animation: bounce 1.4s infinite both;
+    }
+
+    .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+    .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes bounce {
+        0%, 80%, 100% { transform: scale(0); }
+        40% { transform: scale(1); }
+    }
+
+    /* Recommendations */
+    #recommendationArea {
+        margin-top: 20px;
+    }
+
+    .recommendation-header {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 16px;
+    }
+
+    .recommend-card {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        padding: 20px;
+        margin-bottom: 12px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        transition: var(--transition);
+    }
+
+    .recommend-card:hover {
+        border-color: var(--primary);
+        transform: translateX(4px);
+    }
+
+    .recommend-info {
+        flex: 1;
+    }
+
+    .recommend-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+
+    .recommend-reason {
+        font-size: 13px;
+        color: var(--text-secondary);
+    }
+
+    .recommend-note {
+        font-size: 12px;
+        color: var(--primary);
+        margin-top: 4px;
+    }
+
+    .recommend-quantity {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-muted);
+        padding: 4px 12px;
+        background: var(--background);
+        border-radius: 20px;
+    }
 </style>
 
 <script>
 let currentRecommendations = [];
-let currentDirectOrder = false;   // 新增：是否自动下单
+let currentDirectOrder = false;
 
 function appendMessage(role, text) {
     const box = document.getElementById('chatBox');
     const div = document.createElement('div');
-    div.className = role === 'user' ? 'user-message' : 'ai-message';
-    div.innerHTML = `<strong>${role === 'user' ? '👤 你' : '🤖 助手'}：</strong> ${text}`;
+    div.className = `chat-message ${role}`;
+    
+    const avatarContent = role === 'user' 
+        ? '{{ current_user.username[0] }}'
+        : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 8V4H8"></path>
+            <rect x="8" y="8" width="8" height="8" rx="1"></rect>
+            <path d="M4 12h4"></path>
+            <path d="M16 12h4"></path>
+            <path d="M12 16v4"></path>
+           </svg>`;
+    
+    div.innerHTML = `
+        <div class="chat-avatar ${role}">${avatarContent}</div>
+        <div class="chat-content">
+            <div class="chat-name">${role === 'user' ? '你' : 'AI 助手'}</div>
+            <div class="chat-bubble">${text}</div>
+        </div>
+    `;
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
+}
+
+function showLoading() {
+    const box = document.getElementById('chatBox');
+    const loading = document.createElement('div');
+    loading.className = 'chat-message ai';
+    loading.id = 'loadingMsg';
+    loading.innerHTML = `
+        <div class="chat-avatar ai">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 8V4H8"></path>
+                <rect x="8" y="8" width="8" height="8" rx="1"></rect>
+            </svg>
+        </div>
+        <div class="chat-content">
+            <div class="loading-indicator">
+                <div class="loading-dots">
+                    <span></span><span></span><span></span>
+                </div>
+                <span>AI 正在为你挑选...</span>
+            </div>
+        </div>
+    `;
+    box.appendChild(loading);
+    box.scrollTop = box.scrollHeight;
+}
+
+function hideLoading() {
+    const loading = document.getElementById('loadingMsg');
+    if (loading) loading.remove();
 }
 
 async function sendMessage() {
     const input = document.getElementById('userInput');
     const message = input.value.trim();
     if (!message) return;
+    
     appendMessage('user', message);
     input.value = '';
-
-    const loading = document.createElement('div');
-    loading.className = 'loading';
-    loading.textContent = 'AI 正在为你挑选...';
-    document.getElementById('chatBox').appendChild(loading);
+    showLoading();
 
     try {
         const response = await fetch('/ai_assistant/chat', {
@@ -86,68 +442,70 @@ async function sendMessage() {
             body: JSON.stringify({message: message})
         });
         const data = await response.json();
-        loading.remove();
+        hideLoading();
 
         if (data.error) {
-            appendMessage('ai', `❌ ${data.error}`);
+            appendMessage('ai', `抱歉，出现了一些问题：${data.error}`);
             return;
         }
 
         const recs = data.recommendations;
         if (!recs || recs.length === 0) {
-            appendMessage('ai', '😕 没找到完全匹配的菜品，试试换个说法？');
+            appendMessage('ai', '抱歉，没找到完全匹配的菜品，试试换个说法？');
             return;
         }
 
         currentRecommendations = recs;
         currentDirectOrder = data.direct_order || false;
 
-        // 判断是否自动下单
         if (currentDirectOrder && recs.length === 1) {
-            // 自动下单（可能带备注）
             const item = recs[0];
             const orderItem = {
                 dish_id: item.dish_id,
                 quantity: item.quantity || 1,
                 note: item.note || ''
             };
-            appendMessage('ai', `🎯 已为你自动下单：${item.name} ${item.note ? '(' + item.note + ')' : ''}`);
+            appendMessage('ai', `好的！已为你自动下单：<strong>${item.name}</strong> ${item.note ? '(' + item.note + ')' : ''}`);
             await placeOrder([orderItem]);
             return;
         }
 
-        // 否则显示推荐
-        appendMessage('ai', `✨ 为你找到 ${recs.length} 个推荐：`);
+        appendMessage('ai', `为你找到 ${recs.length} 个推荐菜品：`);
         showRecommendations(recs);
     } catch (err) {
-        loading.remove();
-        appendMessage('ai', '❌ 网络错误，请稍后重试');
+        hideLoading();
+        appendMessage('ai', '网络错误，请稍后重试');
     }
 }
 
 function showRecommendations(recs) {
     const area = document.getElementById('recommendationArea');
-    area.innerHTML = '<h3>📋 推荐菜品</h3>';
+    area.innerHTML = '<div class="recommendation-header">推荐菜品</div>';
+    
     recs.forEach((r, index) => {
         const card = document.createElement('div');
         card.className = 'recommend-card';
         card.innerHTML = `
-            <div>
-                <strong>${r.name}</strong> x ${r.quantity || 1}
-                <br><small style="color:#666;">${r.reason || ''}</small>
-                ${r.note ? `<br><small style="color:#e67e22;">备注: ${r.note}</small>` : ''}
+            <div class="recommend-info">
+                <div class="recommend-name">${r.name}</div>
+                <div class="recommend-reason">${r.reason || ''}</div>
+                ${r.note ? `<div class="recommend-note">备注: ${r.note}</div>` : ''}
             </div>
-            <div style="display:flex; gap:5px;">
-                <button class="btn btn-sm" onclick="handleOrderSingle(${index})">下单此项</button>
-            </div>
+            <span class="recommend-quantity">x${r.quantity || 1}</span>
+            <button class="btn btn-primary btn-sm" onclick="handleOrderSingle(${index})">下单</button>
         `;
         area.appendChild(card);
     });
 
     const allBtn = document.createElement('button');
-    allBtn.className = 'btn btn-success';
-    allBtn.style = 'background:#27ae60; margin-top:10px;';
-    allBtn.textContent = '✅ 全部下单';
+    allBtn.className = 'btn btn-success btn-lg';
+    allBtn.style = 'width: 100%; margin-top: 12px;';
+    allBtn.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        全部下单
+    `;
     allBtn.onclick = () => handleOrderAll();
     area.appendChild(allBtn);
 }
@@ -231,23 +589,25 @@ async function placeOrder(items) {
         });
         const data = await res.json();
         if (data.success) {
-            appendMessage('ai', `✅ 已下单：${data.dishes.join(', ')}`);
+            appendMessage('ai', `下单成功！已为你点了：<strong>${data.dishes.join('、')}</strong>`);
             document.getElementById('recommendationArea').innerHTML = '';
             currentRecommendations = [];
         } else {
-            appendMessage('ai', '❌ 下单失败，请重试');
+            appendMessage('ai', '下单失败，请重试');
         }
     } catch (e) {
-        appendMessage('ai', '❌ 网络错误');
+        appendMessage('ai', '网络错误，下单失败');
     }
 }
 
 document.getElementById('userInput').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') sendMessage();
 });
+
 document.getElementById('noteModal').addEventListener('click', function(e) {
     if (e.target === this) closeNoteModal();
 });
+
 document.getElementById('noteText').addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
