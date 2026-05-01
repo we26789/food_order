@@ -7,9 +7,8 @@
             <a href="{{ url_for('index') }}">🍽️ 点菜</a>
             <a href="{{ url_for('recipe_recommend') }}">📖 菜谱推荐</a>
             <a href="{{ url_for('random_order') }}">🎲 随机点菜</a>
-            <a href="{{ url_for('ai_assistant') }}">🤖 智能点菜</a>
             <a href="{{ url_for('order_history') }}">📜 我的订单</a>
-            
+            <a href="{{ url_for('ai_assistant') }}">🤖 智能点菜</a>
         </div>
         <div class="user-info">
             {{ current_user.username }}<br>
@@ -19,25 +18,21 @@
     </div>
     <div class="main-content">
         <h2>🤖 智能点菜助手</h2>
-        <p style="color:#777; margin-bottom:20px;">告诉我你想吃什么，我帮你从菜单中推荐并下单</p>
+        <p style="color:#777; margin-bottom:20px;">告诉我你想吃什么，我帮你从菜单中推荐并下单（说“直接下单”可自动完成）</p>
 
-        <!-- 对话区 -->
         <div id="chatBox" style="border:1px solid #ddd; border-radius:16px; padding:20px; background:white; min-height:200px; margin-bottom:20px; max-height:400px; overflow-y:auto;">
             <div class="ai-message"><strong>🤖 助手：</strong> 你好！你想吃点什么？比如“来点辣的”、“清淡的午餐”</div>
         </div>
 
-        <!-- 输入区 -->
         <div style="display:flex; gap:10px;">
             <input type="text" id="userInput" placeholder="我想吃..." style="flex:1; padding:12px; border-radius:25px; border:1px solid #ddd;">
             <button class="btn" onclick="sendMessage()">发送</button>
         </div>
 
-        <!-- 推荐结果及下单按钮 -->
         <div id="recommendationArea" style="margin-top:20px;"></div>
     </div>
 </div>
 
-<!-- 备注弹窗 -->
 <div id="noteModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:3000; justify-content:center; align-items:center;">
     <div style="background:white; border-radius:16px; padding:25px; width:400px; max-width:90%;">
         <h3>📝 口味备注</h3>
@@ -53,20 +48,15 @@
     .ai-message { margin-bottom:12px; padding:10px; background:#f0f8ff; border-radius:12px; }
     .user-message { margin-bottom:12px; padding:10px; background:#ffeaa7; border-radius:12px; text-align:right; }
     .recommend-card {
-        background: white;
-        border-radius: 12px;
-        padding: 15px;
-        margin: 10px 0;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        background: white; border-radius: 12px; padding: 15px; margin: 10px 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center;
     }
     .loading { text-align:center; padding:20px; color:#999; }
 </style>
 
 <script>
 let currentRecommendations = [];
+let currentDirectOrder = false;   // 新增：是否自动下单
 
 function appendMessage(role, text) {
     const box = document.getElementById('chatBox');
@@ -76,12 +66,11 @@ function appendMessage(role, text) {
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
 }
-let isSending = false;
+
 async function sendMessage() {
     const input = document.getElementById('userInput');
     const message = input.value.trim();
     if (!message) return;
-    isSending = true;
     appendMessage('user', message);
     input.value = '';
 
@@ -111,14 +100,28 @@ async function sendMessage() {
         }
 
         currentRecommendations = recs;
+        currentDirectOrder = data.direct_order || false;
+
+        // 判断是否自动下单
+        if (currentDirectOrder && recs.length === 1) {
+            // 自动下单（可能带备注）
+            const item = recs[0];
+            const orderItem = {
+                dish_id: item.dish_id,
+                quantity: item.quantity || 1,
+                note: item.note || ''
+            };
+            appendMessage('ai', `🎯 已为你自动下单：${item.name} ${item.note ? '(' + item.note + ')' : ''}`);
+            await placeOrder([orderItem]);
+            return;
+        }
+
+        // 否则显示推荐
         appendMessage('ai', `✨ 为你找到 ${recs.length} 个推荐：`);
         showRecommendations(recs);
     } catch (err) {
         loading.remove();
         appendMessage('ai', '❌ 网络错误，请稍后重试');
-    }
-    finally {
-        isSending = false;
     }
 }
 
@@ -152,14 +155,12 @@ function showRecommendations(recs) {
 function handleOrderSingle(index) {
     const item = currentRecommendations[index];
     if (item.note && item.note.trim() !== '') {
-        // 已有备注，直接下单
         placeOrder([{
             dish_id: item.dish_id,
             quantity: item.quantity || 1,
             note: item.note
         }]);
     } else {
-        // 无备注，弹出备注框
         openNoteModalForSingle(index);
     }
 }
@@ -241,7 +242,6 @@ async function placeOrder(items) {
     }
 }
 
-// 键盘事件
 document.getElementById('userInput').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') sendMessage();
 });

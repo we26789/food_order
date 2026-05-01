@@ -448,7 +448,7 @@ def submit_random_order():
 @role_required('customer')
 def ai_assistant():
     return render_template('ai_assistant.html')
-
+    
 @app.route('/ai_assistant/chat', methods=['POST'])
 @role_required('customer')
 def ai_assistant_chat():
@@ -461,7 +461,7 @@ def ai_assistant_chat():
     if cache_key in ai_cache:
         return jsonify(ai_cache[cache_key])
 
-    # 构造完整的菜品列表（包含描述，让 AI 能区分面条、米饭等）
+    # 构造完整菜品列表（含描述）
     dishes = Dish.query.all()
     dish_items = []
     for d in dishes:
@@ -469,16 +469,20 @@ def ai_assistant_chat():
         dish_items.append(f"{d.id}. {d.name} - {desc}")
     dish_context = "\n".join(dish_items) if dish_items else "暂无菜品"
 
-    # 详细且严格的系统提示
-    system_prompt = """你是一个精确的家庭点菜 AI 助手。你需要根据用户的请求，从当前菜品列表中挑选菜品。
-
-要求：
-1. 只返回 JSON，格式：{"recommendations":[{"dish_id": ID, "name": "菜名", "quantity": 1, "reason": "简短理由", "note": "备注"}]}
-2. 严格遵循用户的数量要求。例如“要4个”就返回恰好4个，“要2个”返回2个。
-3. 严格遵守用户的排除条件。如果用户说“不要面”、“不吃猪肉”等，绝对不要选择含有该食材的菜品。
-4. 如果用户给出了统一的口味或要求（例如“不加葱”、“少盐”），请将该要求填入每个推荐菜品的 "note" 字段。
-5. 如果没有特殊的数量或排除要求，请推荐 2~3 个最匹配的菜品。
-6. 只返回 JSON，不要解释或任何其他文字。"""
+    system_prompt = (
+        "你是一个精确的家庭点菜 AI 助手。你需要根据用户的请求，从当前菜品列表中挑选菜品。\n"
+        "要求：\n"
+        "1. 只返回 JSON，格式：{\"recommendations\":[{\"dish_id\": ID, \"name\": \"菜名\", \"quantity\": 1, \"reason\": \"简短理由\", \"note\": \"备注\"}], \"direct_order\": false}\n"
+        "2. 严格遵循用户的数量要求。例如“要4个”就返回恰好4个，“要2个”返回2个。\n"
+        "3. 严格遵守用户的排除条件。如果用户说“不要面”、“不吃猪肉”等，绝对不要选择含有该食材的菜品。\n"
+        "4. 如果用户给出了统一的口味或要求（例如“不加葱”、“少盐”），请将该要求填入每个推荐菜品的 \"note\" 字段。\n"
+        "5. 如果用户明确表示“直接下单”、“帮我下单”、“立即下单”、“马上下单”等意图，则：\n"
+        "   - 只返回一个最匹配的菜品（即使没有指定数量）。\n"
+        "   - 将 \"direct_order\" 设为 true。\n"
+        "   - 如果用户同时给了备注（如“不要葱”），也填入 \"note\"。\n"
+        "6. 如果没有特殊的数量或排除要求，请推荐 2~3 个最匹配的菜品。\n"
+        "7. 只返回 JSON，不要解释或任何其他文字。"
+    )
 
     try:
         response = requests.post(
@@ -507,13 +511,14 @@ def ai_assistant_chat():
         for rec in result.get('recommendations', []):
             if 'note' not in rec:
                 rec['note'] = ''
+        # 确保 direct_order 字段存在
+        if 'direct_order' not in result:
+            result['direct_order'] = False
 
-        # 存入缓存
         ai_cache[cache_key] = result
         return jsonify(result)
     except Exception as e:
         return jsonify({'error': f'AI 服务暂时不可用：{str(e)}'}), 500
-
 
 @app.route('/ai_assistant/order', methods=['POST'])
 @role_required('customer')
