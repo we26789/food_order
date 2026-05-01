@@ -188,6 +188,33 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- 清空今日订单 -->
+        <div class="danger-zone">
+            <div class="danger-zone-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                <span>危险操作</span>
+            </div>
+            <div class="danger-zone-content">
+                <div class="danger-zone-info">
+                    <h4>清空今日订单</h4>
+                    <p>此操作将删除今日所有订单记录，不可恢复</p>
+                </div>
+                <form method="POST" action="{{ url_for('clear_orders') }}" onsubmit="return confirm('确定要删除今日所有订单吗？此操作不可恢复。');">
+                    <button type="submit" class="btn btn-danger">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                        清空今日订单
+                    </button>
+                </form>
+            </div>
+        </div>
         {% else %}
         <div class="empty-state card">
             <div class="empty-state-icon">
@@ -323,6 +350,48 @@
         gap: 8px;
     }
 
+    /* 危险操作区域 */
+    .danger-zone {
+        margin-top: 40px;
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        border: 2px solid rgba(239, 68, 68, 0.2);
+        overflow: hidden;
+    }
+
+    .danger-zone-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 20px;
+        background: rgba(239, 68, 68, 0.05);
+        color: var(--danger);
+        font-weight: 600;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .danger-zone-content {
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .danger-zone-info h4 {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+
+    .danger-zone-info p {
+        font-size: 13px;
+        color: var(--text-secondary);
+    }
+
     @media (max-width: 1200px) {
         .data-table th:nth-child(5),
         .data-table td:nth-child(5) {
@@ -342,6 +411,11 @@
 
         .action-buttons {
             flex-direction: column;
+        }
+
+        .danger-zone-content {
+            flex-direction: column;
+            text-align: center;
         }
     }
 </style>
