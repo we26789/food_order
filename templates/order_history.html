@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="app-layout">
-    <!-- Customer Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <div class="sidebar-logo">
@@ -18,71 +17,38 @@
                 </div>
             </div>
         </div>
-
         <nav class="sidebar-nav">
             <div class="nav-section">
                 <div class="nav-section-title">点餐服务</div>
                 <a href="{{ url_for('index') }}" class="nav-link">
-                    <span class="nav-link-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
-                            <path d="M7 2v20"></path>
-                            <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
-                        </svg>
-                    </span>
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path></svg></span>
                     <span>点菜</span>
                 </a>
                 <a href="{{ url_for('recipe_recommend') }}" class="nav-link">
-                    <span class="nav-link-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                        </svg>
-                    </span>
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></span>
                     <span>菜谱推荐</span>
                 </a>
                 <a href="{{ url_for('random_order') }}" class="nav-link">
-                    <span class="nav-link-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="1" y="1" width="6" height="6" rx="1"></rect>
-                            <rect x="17" y="1" width="6" height="6" rx="1"></rect>
-                            <rect x="9" y="9" width="6" height="6" rx="1"></rect>
-                            <rect x="1" y="17" width="6" height="6" rx="1"></rect>
-                            <rect x="17" y="17" width="6" height="6" rx="1"></rect>
-                        </svg>
-                    </span>
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg></span>
                     <span>随机点菜</span>
                 </a>
                 <a href="{{ url_for('ai_assistant') }}" class="nav-link">
-                    <span class="nav-link-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 8V4H8"></path>
-                            <rect x="8" y="8" width="8" height="8" rx="1"></rect>
-                            <path d="M4 12h4"></path>
-                            <path d="M16 12h4"></path>
-                            <path d="M12 16v4"></path>
-                        </svg>
-                    </span>
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8V4H8"></path><rect x="8" y="8" width="8" height="8" rx="1"></rect><path d="M4 12h4"></path><path d="M16 12h4"></path><path d="M12 16v4"></path></svg></span>
                     <span>智能点菜</span>
                 </a>
+                <a href="{{ url_for('customer_dashboard') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect></svg></span>
+                    <span>我的面板</span>
+                </a>
             </div>
-
             <div class="nav-section">
                 <div class="nav-section-title">我的订单</div>
                 <a href="{{ url_for('order_history') }}" class="nav-link active">
-                    <span class="nav-link-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                        </svg>
-                    </span>
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg></span>
                     <span>订单历史</span>
                 </a>
             </div>
         </nav>
-
         <div class="sidebar-footer">
             <div class="user-card">
                 <div class="user-avatar">{{ current_user.username[0] }}</div>
@@ -98,14 +64,12 @@
         </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
         <div class="page-header">
             <h1 class="page-title">我的订单</h1>
             <p class="page-subtitle">查看您的历史点餐记录</p>
         </div>
 
-        <!-- Date Filter -->
         <div class="filter-card">
             <form method="GET" action="{{ url_for('order_history') }}" class="filter-form">
                 <div class="filter-group">
@@ -114,10 +78,7 @@
                 </div>
                 <div class="filter-actions">
                     <button type="submit" class="btn btn-primary">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                         查看
                     </button>
                     <a href="?date={{ today }}" class="btn btn-outline">今天</a>
@@ -126,7 +87,6 @@
         </div>
 
         {% if orders %}
-        <!-- Orders Table -->
         <div class="table-container">
             <table class="data-table">
                 <thead>
@@ -142,36 +102,19 @@
                 <tbody>
                 {% for order in orders %}
                 <tr>
-                    <td>
-                        <span class="order-number">#{{ order.daily_seq }}</span>
-                    </td>
+                    <td><span class="order-number">#{{ order.daily_seq }}</span></td>
                     <td><strong>{{ order.dish.name }}</strong></td>
-                    <td>
-                        <span class="quantity-badge">x{{ order.quantity }}</span>
-                    </td>
-                    <td>
-                        <span class="order-note">{{ order.note or '-' }}</span>
-                    </td>
+                    <td><span class="quantity-badge">x{{ order.quantity }}</span></td>
+                    <td><span class="order-note">{{ order.note or '-' }}</span></td>
                     <td>{{ order.created_at.strftime('%H:%M') }}</td>
                     <td>
                         {% if order.status == 'pending' %}
-                            <span class="badge badge-pending">
-                                <span class="status-dot pending"></span>
-                                未出餐
-                            </span>
+                            <span class="badge badge-pending"><span class="status-dot pending"></span>未出餐</span>
                         {% elif order.status == 'completed' %}
-                            <span class="badge badge-completed">
-                                <span class="status-dot completed"></span>
-                                已出餐
-                            </span>
+                            <span class="badge badge-completed"><span class="status-dot completed"></span>已出餐</span>
                         {% elif order.status == 'rejected' %}
-                            <span class="badge badge-rejected">
-                                <span class="status-dot rejected"></span>
-                                已拒绝
-                            </span>
-                            {% if order.reject_reason %}
-                                <div class="reject-reason">{{ order.reject_reason }}</div>
-                            {% endif %}
+                            <span class="badge badge-rejected"><span class="status-dot rejected"></span>已拒绝</span>
+                            {% if order.reject_reason %}<div class="reject-reason">{{ order.reject_reason }}</div>{% endif %}
                         {% endif %}
                     </td>
                 </tr>
@@ -180,7 +123,6 @@
             </table>
         </div>
 
-        <!-- Order Summary -->
         <div class="order-summary">
             <div class="summary-item">
                 <span class="summary-label">总计订单</span>
@@ -190,7 +132,7 @@
         {% else %}
         <div class="empty-state card">
             <div class="empty-state-icon">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                     <polyline points="14 2 14 8 20 8"></polyline>
                 </svg>
@@ -204,143 +146,28 @@
 </div>
 
 <style>
-    .filter-card {
-        background: var(--surface);
-        border-radius: var(--radius-lg);
-        padding: 20px 24px;
-        margin-bottom: 24px;
-        box-shadow: var(--shadow);
-        border: 1px solid var(--border);
-    }
-
-    .filter-form {
-        display: flex;
-        align-items: flex-end;
-        gap: 16px;
-        flex-wrap: wrap;
-    }
-
-    .filter-group {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .filter-actions {
-        display: flex;
-        gap: 12px;
-    }
-
-    .order-number {
-        font-weight: 700;
-        color: var(--primary);
-        font-size: 15px;
-    }
-
-    .quantity-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 4px 12px;
-        background: rgba(26, 26, 46, 0.08);
-        border-radius: 20px;
-        font-weight: 600;
-        font-size: 13px;
-    }
-
-    .order-note {
-        color: var(--text-secondary);
-        font-size: 13px;
-    }
-
-    .status-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        margin-right: 6px;
-        display: inline-block;
-    }
-
-    .status-dot.pending {
-        background: var(--danger);
-        animation: pulse 2s infinite;
-    }
-
-    .status-dot.completed {
-        background: var(--success);
-    }
-
-    .status-dot.rejected {
-        background: var(--warning);
-    }
-
-    @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.5; }
-    }
-
-    .reject-reason {
-        font-size: 12px;
-        color: var(--warning);
-        margin-top: 4px;
-    }
-
-    .order-summary {
-        margin-top: 24px;
-        padding: 20px 24px;
-        background: var(--surface);
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow);
-        border: 1px solid var(--border);
-        display: flex;
-        justify-content: flex-end;
-    }
-
-    .summary-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .summary-label {
-        font-size: 14px;
-        color: var(--text-secondary);
-    }
-
-    .summary-value {
-        font-size: 18px;
-        font-weight: 700;
-        color: var(--primary);
-    }
-
-    /* 移动端适配 */
+    .filter-card { background: var(--surface); border-radius: var(--radius-lg); padding: 18px 22px; margin-bottom: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
+    .filter-form { display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap; }
+    .filter-group { display: flex; flex-direction: column; gap: 6px; }
+    .filter-actions { display: flex; gap: 10px; }
+    .order-number { font-weight: 700; color: var(--primary); font-size: 14px; }
+    .quantity-badge { display: inline-flex; padding: 3px 10px; background: var(--surface-hover); border-radius: 16px; font-weight: 600; font-size: 13px; }
+    .order-note { color: var(--text-secondary); font-size: 13px; }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; margin-right: 5px; display: inline-block; vertical-align: middle; }
+    .status-dot.pending { background: var(--danger); animation: pulse 2s infinite; }
+    .status-dot.completed { background: var(--success); }
+    .status-dot.rejected { background: var(--warning); }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .reject-reason { font-size: 11px; color: var(--warning); margin-top: 3px; }
+    .order-summary { margin-top: 20px; padding: 18px 22px; background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border); display: flex; justify-content: flex-end; }
+    .summary-item { display: flex; align-items: center; gap: 10px; }
+    .summary-label { font-size: 14px; color: var(--text-secondary); }
+    .summary-value { font-size: 18px; font-weight: 800; color: var(--primary); }
     @media (max-width: 768px) {
-        .filter-form {
-            flex-direction: column;
-            align-items: stretch;
-        }
-
-        .filter-actions {
-            flex-direction: column;
-        }
-
-        /* 确保表格可以水平滚动 */
-        .table-container {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .data-table {
-            min-width: 600px; /* 保证表格内容宽度，可横向滑动 */
-        }
-
-        .page-header {
-            margin-bottom: 20px;
-        }
-
-        .page-title {
-            font-size: 24px;
-        }
+        .filter-form { flex-direction: column; align-items: stretch; }
+        .filter-actions { flex-direction: column; }
+        .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .data-table { min-width: 600px; }
     }
 </style>
 {% endblock %}

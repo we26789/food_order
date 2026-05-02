@@ -1,0 +1,356 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                        <path d="M7 2v20"></path>
+                        <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div class="sidebar-logo-text">家庭点菜</div>
+                    <div class="sidebar-role">顾客端</div>
+                </div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">点餐服务</div>
+                <a href="{{ url_for('index') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path></svg></span>
+                    <span>点菜</span>
+                </a>
+                <a href="{{ url_for('recipe_recommend') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></span>
+                    <span>菜谱推荐</span>
+                </a>
+                <a href="{{ url_for('random_order') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg></span>
+                    <span>随机点菜</span>
+                </a>
+                <a href="{{ url_for('ai_assistant') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8V4H8"></path><rect x="8" y="8" width="8" height="8" rx="1"></rect><path d="M4 12h4"></path><path d="M16 12h4"></path><path d="M12 16v4"></path></svg></span>
+                    <span>智能点菜</span>
+                </a>
+                <a href="{{ url_for('customer_dashboard') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect></svg></span>
+                    <span>我的面板</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">AI 顾问</div>
+                <a href="{{ url_for('ai_nutrition') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg></span>
+                    <span>营养顾问</span>
+                </a>
+                <a href="{{ url_for('ai_meal_plan') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></span>
+                    <span>每周规划</span>
+                </a>
+                <a href="{{ url_for('ai_seasonal') }}" class="nav-link active">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></span>
+                    <span>时令顾问</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">我的订单</div>
+                <a href="{{ url_for('order_history') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></span>
+                    <span>订单历史</span>
+                </a>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">{{ current_user.username[0] }}</div>
+                <div class="user-info">
+                    <div class="user-name">{{ current_user.username }}</div>
+                    <div class="user-actions">
+                        <a href="{{ url_for('change_password') }}" class="user-action-link">修改密码</a>
+                        <span style="color: var(--text-muted);">|</span>
+                        <a href="{{ url_for('logout') }}" class="user-action-link">退出</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">时令食材顾问</h1>
+            <p class="page-subtitle">了解当季食材，获取时令饮食推荐</p>
+        </div>
+
+        <!-- Month Selector -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">选择月份</h3>
+                <span class="card-subtitle">查看当季时令食材和菜品推荐</span>
+            </div>
+            <div class="month-grid" id="monthGrid">
+                {% for m in range(1, 13) %}
+                <button class="month-btn {% if m == current_month %}active{% endif %}" data-month="{{ m }}" onclick="selectMonth(this)">
+                    {{ m }}月
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div id="seasonalLoading" class="card" style="display: none;">
+            <div class="loading-state">
+                <div class="loading-orbs">
+                    <div class="orb"></div>
+                    <div class="orb"></div>
+                    <div class="orb"></div>
+                </div>
+                <p>AI 正在查询时令食材...</p>
+            </div>
+        </div>
+
+        <!-- Result -->
+        <div id="seasonalResult" style="display: none;">
+            <!-- Season Header -->
+            <div class="season-banner" id="seasonBanner">
+                <div class="season-icon" id="seasonIcon"></div>
+                <div>
+                    <h2 class="season-title" id="seasonTitle"></h2>
+                    <p class="season-subtitle" id="seasonSubtitle"></p>
+                </div>
+            </div>
+
+            <!-- Seasonal Ingredients -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">时令食材</h3>
+                </div>
+                <div class="ingredients-grid" id="ingredientsGrid"></div>
+            </div>
+
+            <!-- Recommended Dishes -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">推荐菜品</h3>
+                </div>
+                <div class="dishes-list" id="dishesList"></div>
+            </div>
+
+            <!-- Health Tip -->
+            <div class="card tip-card">
+                <div class="tip-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="tip-title">健康建议</h3>
+                    <p class="tip-content" id="healthTip"></p>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+    .month-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .month-btn {
+        padding: 8px 18px;
+        border: 1.5px solid var(--border);
+        border-radius: 20px;
+        background: var(--surface);
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: var(--transition);
+        font-family: var(--font);
+    }
+
+    .month-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .month-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+    .loading-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 48px;
+        gap: 16px;
+        color: var(--text-muted);
+        font-size: 14px;
+    }
+
+    .loading-orbs { display: flex; gap: 8px; }
+    .loading-orbs .orb {
+        width: 12px; height: 12px; border-radius: 50%;
+        background: var(--primary);
+        animation: orbPulse 1.4s ease-in-out infinite;
+    }
+    .loading-orbs .orb:nth-child(2) { animation-delay: 0.2s; }
+    .loading-orbs .orb:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes orbPulse { 0%, 100% { transform: scale(0.6); opacity: 0.3; } 50% { transform: scale(1); opacity: 1; } }
+
+    .season-banner {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 24px;
+        background: linear-gradient(135deg, var(--primary-glow), var(--accent-glow));
+        border-radius: var(--radius-xl);
+        margin-bottom: 20px;
+        animation: cardIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes cardIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .season-icon { font-size: 42px; }
+    .season-title { font-size: 22px; font-weight: 700; margin-bottom: 3px; }
+    .season-subtitle { font-size: 14px; color: var(--text-secondary); }
+
+    .ingredients-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+    }
+
+    .ingredient-card {
+        background: var(--surface-hover);
+        border-radius: var(--radius-lg);
+        padding: 18px;
+        border: 1px solid var(--border-light);
+        text-align: center;
+        transition: var(--transition);
+        animation: cardIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .ingredient-card:hover { border-color: rgba(255, 107, 53, 0.2); transform: translateY(-2px); }
+    .ingredient-icon { font-size: 32px; margin-bottom: 8px; }
+    .ingredient-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .ingredient-benefit { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+
+    .dishes-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .dish-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 18px;
+        background: var(--surface-hover);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-light);
+        transition: var(--transition);
+        animation: cardIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .dish-row:hover { border-color: rgba(255, 107, 53, 0.2); transform: translateX(3px); }
+
+    .dish-dot {
+        width: 10px; height: 10px; border-radius: 50%;
+        background: var(--primary);
+        flex-shrink: 0;
+    }
+
+    .dish-row-info { flex: 1; }
+    .dish-row-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+    .dish-row-reason { font-size: 13px; color: var(--text-secondary); }
+
+    .tip-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        background: linear-gradient(135deg, var(--accent-glow), var(--primary-glow));
+        border: 1px solid var(--border-light);
+    }
+
+    .tip-icon { color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+    .tip-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+    .tip-content { font-size: 14px; line-height: 1.8; color: var(--text-secondary); white-space: pre-wrap; }
+
+    @media (max-width: 768px) {
+        .ingredients-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+</style>
+
+<script>
+let selectedMonth = new Date().getMonth() + 1;
+
+function selectMonth(el) {
+    document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    selectedMonth = parseInt(el.dataset.month);
+    loadSeasonal();
+}
+
+async function loadSeasonal() {
+    document.getElementById('seasonalResult').style.display = 'none';
+    document.getElementById('seasonalLoading').style.display = 'block';
+
+    try {
+        const res = await fetch('/ai/seasonal/recommend', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ month: selectedMonth.toString() })
+        });
+        const data = await res.json();
+        document.getElementById('seasonalLoading').style.display = 'none';
+
+        if (data.error) { alert(data.error); return; }
+
+        renderResult(data);
+        document.getElementById('seasonalResult').style.display = 'block';
+    } catch (e) {
+        document.getElementById('seasonalLoading').style.display = 'none';
+        alert('网络错误，请稍后重试');
+    }
+}
+
+function renderResult(data) {
+    const seasonIcons = { '春': '🌸', '夏': '☀️', '秋': '🍂', '冬': '❄️' };
+    const icon = seasonIcons[data.season] || '🌿';
+
+    document.getElementById('seasonIcon').textContent = icon;
+    document.getElementById('seasonTitle').textContent = `${data.month} · ${data.season}`;
+    document.getElementById('seasonSubtitle').textContent = `当季时令食材与饮食推荐`;
+
+    const ingredientsGrid = document.getElementById('ingredientsGrid');
+    ingredientsGrid.innerHTML = '';
+    (data.seasonal_ingredients || []).forEach((ing, i) => {
+        const card = document.createElement('div');
+        card.className = 'ingredient-card';
+        card.style.animationDelay = `${i * 0.06}s`;
+        card.innerHTML = `
+            <div class="ingredient-icon">${ing.icon || '🥬'}</div>
+            <div class="ingredient-name">${ing.name}</div>
+            <div class="ingredient-benefit">${ing.benefit}</div>
+        `;
+        ingredientsGrid.appendChild(card);
+    });
+
+    const dishesList = document.getElementById('dishesList');
+    dishesList.innerHTML = '';
+    (data.recommended_dishes || []).forEach((dish, i) => {
+        const row = document.createElement('div');
+        row.className = 'dish-row';
+        row.style.animationDelay = `${i * 0.06}s`;
+        row.innerHTML = `
+            <div class="dish-dot"></div>
+            <div class="dish-row-info">
+                <div class="dish-row-name">${dish.name}</div>
+                <div class="dish-row-reason">${dish.reason}</div>
+            </div>
+        `;
+        dishesList.appendChild(row);
+    });
+
+    document.getElementById('healthTip').textContent = data.health_tip || '';
+}
+
+// Auto-load current month
+loadSeasonal();
+</script>
+{% endblock %}

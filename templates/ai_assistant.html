@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="app-layout">
-    <!-- Customer Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <div class="sidebar-logo">
@@ -18,69 +17,38 @@
                 </div>
             </div>
         </div>
-
         <nav class="sidebar-nav">
             <div class="nav-section">
                 <div class="nav-section-title">点餐服务</div>
                 <a href="{{ url_for('index') }}" class="nav-link">
-                    <span class="nav-link-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
-                            <path d="M7 2v20"></path>
-                            <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
-                        </svg>
-                    </span>
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path></svg></span>
                     <span>点菜</span>
                 </a>
                 <a href="{{ url_for('recipe_recommend') }}" class="nav-link">
-                    <span class="nav-link-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                        </svg>
-                    </span>
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></span>
                     <span>菜谱推荐</span>
                 </a>
                 <a href="{{ url_for('random_order') }}" class="nav-link">
-                    <span class="nav-link-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="1" y="1" width="6" height="6" rx="1"></rect>
-                            <rect x="17" y="1" width="6" height="6" rx="1"></rect>
-                            <rect x="9" y="9" width="6" height="6" rx="1"></rect>
-                            <rect x="1" y="17" width="6" height="6" rx="1"></rect>
-                            <rect x="17" y="17" width="6" height="6" rx="1"></rect>
-                        </svg>
-                    </span>
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg></span>
                     <span>随机点菜</span>
                 </a>
                 <a href="{{ url_for('ai_assistant') }}" class="nav-link active">
-                    <span class="nav-link-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 8V4H8"></path>
-                            <rect x="8" y="8" width="8" height="8" rx="1"></rect>
-                            <path d="M4 12h4"></path>
-                            <path d="M16 12h4"></path>
-                            <path d="M12 16v4"></path>
-                        </svg>
-                    </span>
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8V4H8"></path><rect x="8" y="8" width="8" height="8" rx="1"></rect><path d="M4 12h4"></path><path d="M16 12h4"></path><path d="M12 16v4"></path></svg></span>
                     <span>智能点菜</span>
                 </a>
+                <a href="{{ url_for('customer_dashboard') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect></svg></span>
+                    <span>我的面板</span>
+                </a>
             </div>
-
             <div class="nav-section">
                 <div class="nav-section-title">我的订单</div>
                 <a href="{{ url_for('order_history') }}" class="nav-link">
-                    <span class="nav-link-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                        </svg>
-                    </span>
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></span>
                     <span>订单历史</span>
                 </a>
             </div>
         </nav>
-
         <div class="sidebar-footer">
             <div class="user-card">
                 <div class="user-avatar">{{ current_user.username[0] }}</div>
@@ -96,7 +64,6 @@
         </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
         <div class="page-header">
             <h1 class="page-title">智能点菜助手</h1>
@@ -104,7 +71,6 @@
         </div>
 
         <div class="chat-container">
-            <!-- Chat Box -->
             <div class="chat-box" id="chatBox">
                 <div class="chat-message ai">
                     <div class="chat-avatar ai">
@@ -123,18 +89,16 @@
                 </div>
             </div>
 
-            <!-- Input Area -->
             <div class="chat-input-area">
                 <input type="text" id="userInput" class="chat-input" placeholder="我想吃..." autocomplete="off">
                 <button class="btn btn-primary" onclick="sendMessage()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="22" y1="2" x2="11" y2="13"></line>
                         <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                     </svg>
                 </button>
             </div>
 
-            <!-- Recommendation Area -->
             <div id="recommendationArea"></div>
         </div>
     </main>
@@ -143,9 +107,7 @@
 <!-- Note Modal -->
 <div id="noteModal" class="modal-overlay">
     <div class="modal">
-        <div class="modal-header">
-            <h3 class="modal-title">口味备注</h3>
-        </div>
+        <div class="modal-header"><h3 class="modal-title">口味备注</h3></div>
         <div class="modal-body">
             <div class="form-group mb-0">
                 <label class="form-label">添加备注（可选）</label>
@@ -160,41 +122,28 @@
 </div>
 
 <style>
-    .chat-container {
-        max-width: 800px;
-    }
+    .chat-container { max-width: 780px; }
 
     .chat-box {
         background: var(--surface);
         border-radius: var(--radius-xl);
         border: 1px solid var(--border);
-        padding: 24px;
-        min-height: 400px;
-        max-height: 500px;
+        padding: 22px;
+        min-height: 380px;
+        max-height: 480px;
         overflow-y: auto;
-        margin-bottom: 20px;
-        box-shadow: var(--shadow);
+        margin-bottom: 16px;
+        box-shadow: var(--shadow-sm);
     }
 
-    .chat-message {
-        display: flex;
-        gap: 12px;
-        margin-bottom: 20px;
-        animation: fadeIn 0.3s ease;
-    }
+    .chat-message { display: flex; gap: 10px; margin-bottom: 18px; animation: chatIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    @keyframes chatIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .chat-message.user {
-        flex-direction: row-reverse;
-    }
+    .chat-message.user { flex-direction: row-reverse; }
 
     .chat-avatar {
-        width: 40px;
-        height: 40px;
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -202,41 +151,23 @@
         flex-shrink: 0;
     }
 
-    .chat-avatar.ai {
-        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-        color: white;
-    }
+    .chat-avatar.ai { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; }
+    .chat-avatar.user { background: linear-gradient(135deg, var(--accent), var(--accent-light)); color: white; font-weight: 600; font-size: 14px; }
 
-    .chat-avatar.user {
-        background: linear-gradient(135deg, var(--accent), var(--accent-light));
-        color: white;
-        font-weight: 600;
-    }
+    .chat-content { max-width: 72%; }
 
-    .chat-content {
-        max-width: 70%;
-    }
-
-    .chat-name {
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--text-muted);
-        margin-bottom: 4px;
-    }
-
-    .chat-message.user .chat-name {
-        text-align: right;
-    }
+    .chat-name { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 3px; }
+    .chat-message.user .chat-name { text-align: right; }
 
     .chat-bubble {
-        padding: 14px 18px;
+        padding: 12px 16px;
         border-radius: var(--radius-lg);
         font-size: 14px;
         line-height: 1.6;
     }
 
     .chat-message.ai .chat-bubble {
-        background: var(--background);
+        background: var(--surface-hover);
         color: var(--text-primary);
         border-bottom-left-radius: 4px;
     }
@@ -249,120 +180,76 @@
 
     .chat-input-area {
         display: flex;
-        gap: 12px;
+        gap: 10px;
         background: var(--surface);
         border-radius: var(--radius-xl);
-        padding: 12px;
-        box-shadow: var(--shadow);
+        padding: 10px;
+        box-shadow: var(--shadow-sm);
         border: 1px solid var(--border);
     }
 
     .chat-input {
         flex: 1;
-        padding: 14px 20px;
-        border: 2px solid var(--border);
+        padding: 12px 18px;
+        border: 1.5px solid var(--border);
         border-radius: var(--radius-lg);
         font-size: 14px;
         outline: none;
         transition: var(--transition);
+        font-family: var(--font);
     }
 
-    .chat-input:focus {
-        border-color: var(--primary);
-    }
+    .chat-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
 
     .loading-indicator {
         display: flex;
         align-items: center;
         gap: 8px;
-        padding: 14px 18px;
-        background: var(--background);
+        padding: 12px 16px;
+        background: var(--surface-hover);
         border-radius: var(--radius-lg);
         color: var(--text-muted);
-        font-size: 14px;
+        font-size: 13px;
     }
 
-    .loading-dots {
-        display: flex;
-        gap: 4px;
-    }
-
-    .loading-dots span {
-        width: 8px;
-        height: 8px;
-        background: var(--primary);
-        border-radius: 50%;
-        animation: bounce 1.4s infinite both;
-    }
-
+    .loading-dots { display: flex; gap: 4px; }
+    .loading-dots span { width: 7px; height: 7px; background: var(--primary); border-radius: 50%; animation: bounce 1.4s infinite both; }
     .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
     .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
-    @keyframes bounce {
-        0%, 80%, 100% { transform: scale(0); }
-        40% { transform: scale(1); }
-    }
+    #recommendationArea { margin-top: 16px; }
 
-    /* Recommendations */
-    #recommendationArea {
-        margin-top: 20px;
-    }
-
-    .recommendation-header {
-        font-size: 16px;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 16px;
-    }
+    .recommendation-header { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
 
     .recommend-card {
         background: var(--surface);
         border-radius: var(--radius-lg);
-        padding: 20px;
-        margin-bottom: 12px;
-        box-shadow: var(--shadow);
+        padding: 18px;
+        margin-bottom: 10px;
+        box-shadow: var(--shadow-sm);
         border: 1px solid var(--border);
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: 16px;
+        gap: 14px;
         transition: var(--transition);
     }
 
-    .recommend-card:hover {
-        border-color: var(--primary);
-        transform: translateX(4px);
-    }
+    .recommend-card:hover { border-color: rgba(255, 107, 53, 0.2); transform: translateX(3px); }
 
-    .recommend-info {
-        flex: 1;
-    }
-
-    .recommend-name {
-        font-size: 16px;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 4px;
-    }
-
-    .recommend-reason {
-        font-size: 13px;
-        color: var(--text-secondary);
-    }
-
-    .recommend-note {
-        font-size: 12px;
-        color: var(--primary);
-        margin-top: 4px;
-    }
+    .recommend-info { flex: 1; }
+    .recommend-name { font-size: 15px; font-weight: 600; margin-bottom: 3px; }
+    .recommend-reason { font-size: 13px; color: var(--text-secondary); }
+    .recommend-note { font-size: 12px; color: var(--primary); margin-top: 3px; }
 
     .recommend-quantity {
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 600;
         color: var(--text-muted);
-        padding: 4px 12px;
-        background: var(--background);
-        border-radius: 20px;
+        padding: 3px 10px;
+        background: var(--surface-hover);
+        border-radius: 16px;
     }
 </style>
 
@@ -374,17 +261,9 @@ function appendMessage(role, text) {
     const box = document.getElementById('chatBox');
     const div = document.createElement('div');
     div.className = `chat-message ${role}`;
-    
-    const avatarContent = role === 'user' 
+    const avatarContent = role === 'user'
         ? '{{ current_user.username[0] }}'
-        : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 8V4H8"></path>
-            <rect x="8" y="8" width="8" height="8" rx="1"></rect>
-            <path d="M4 12h4"></path>
-            <path d="M16 12h4"></path>
-            <path d="M12 16v4"></path>
-           </svg>`;
-    
+        : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8V4H8"></path><rect x="8" y="8" width="8" height="8" rx="1"></rect><path d="M4 12h4"></path><path d="M16 12h4"></path><path d="M12 16v4"></path></svg>`;
     div.innerHTML = `
         <div class="chat-avatar ${role}">${avatarContent}</div>
         <div class="chat-content">
@@ -402,39 +281,22 @@ function showLoading() {
     loading.className = 'chat-message ai';
     loading.id = 'loadingMsg';
     loading.innerHTML = `
-        <div class="chat-avatar ai">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 8V4H8"></path>
-                <rect x="8" y="8" width="8" height="8" rx="1"></rect>
-            </svg>
-        </div>
-        <div class="chat-content">
-            <div class="loading-indicator">
-                <div class="loading-dots">
-                    <span></span><span></span><span></span>
-                </div>
-                <span>AI 正在为你挑选...</span>
-            </div>
-        </div>
+        <div class="chat-avatar ai"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8V4H8"></path><rect x="8" y="8" width="8" height="8" rx="1"></rect></svg></div>
+        <div class="chat-content"><div class="loading-indicator"><div class="loading-dots"><span></span><span></span><span></span></div><span>AI 正在为你挑选...</span></div></div>
     `;
     box.appendChild(loading);
     box.scrollTop = box.scrollHeight;
 }
 
-function hideLoading() {
-    const loading = document.getElementById('loadingMsg');
-    if (loading) loading.remove();
-}
+function hideLoading() { const l = document.getElementById('loadingMsg'); if (l) l.remove(); }
 
 async function sendMessage() {
     const input = document.getElementById('userInput');
     const message = input.value.trim();
     if (!message) return;
-    
     appendMessage('user', message);
     input.value = '';
     showLoading();
-
     try {
         const response = await fetch('/ai_assistant/chat', {
             method: 'POST',
@@ -443,45 +305,25 @@ async function sendMessage() {
         });
         const data = await response.json();
         hideLoading();
-
-        if (data.error) {
-            appendMessage('ai', `抱歉，出现了一些问题：${data.error}`);
-            return;
-        }
-
+        if (data.error) { appendMessage('ai', `抱歉，出现了一些问题：${data.error}`); return; }
         const recs = data.recommendations;
-        if (!recs || recs.length === 0) {
-            appendMessage('ai', '抱歉，没找到完全匹配的菜品，试试换个说法？');
-            return;
-        }
-
+        if (!recs || recs.length === 0) { appendMessage('ai', '抱歉，没找到完全匹配的菜品，试试换个说法？'); return; }
         currentRecommendations = recs;
         currentDirectOrder = data.direct_order || false;
-
         if (currentDirectOrder && recs.length === 1) {
             const item = recs[0];
-            const orderItem = {
-                dish_id: item.dish_id,
-                quantity: item.quantity || 1,
-                note: item.note || ''
-            };
             appendMessage('ai', `好的！已为你自动下单：<strong>${item.name}</strong> ${item.note ? '(' + item.note + ')' : ''}`);
-            await placeOrder([orderItem]);
+            await placeOrder([{dish_id: item.dish_id, quantity: item.quantity || 1, note: item.note || ''}]);
             return;
         }
-
         appendMessage('ai', `为你找到 ${recs.length} 个推荐菜品：`);
         showRecommendations(recs);
-    } catch (err) {
-        hideLoading();
-        appendMessage('ai', '网络错误，请稍后重试');
-    }
+    } catch (err) { hideLoading(); appendMessage('ai', '网络错误，请稍后重试'); }
 }
 
 function showRecommendations(recs) {
     const area = document.getElementById('recommendationArea');
     area.innerHTML = '<div class="recommendation-header">推荐菜品</div>';
-    
     recs.forEach((r, index) => {
         const card = document.createElement('div');
         card.className = 'recommend-card';
@@ -496,16 +338,10 @@ function showRecommendations(recs) {
         `;
         area.appendChild(card);
     });
-
     const allBtn = document.createElement('button');
     allBtn.className = 'btn btn-success btn-lg';
-    allBtn.style = 'width: 100%; margin-top: 12px;';
-    allBtn.innerHTML = `
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-        全部下单
-    `;
+    allBtn.style = 'width: 100%; margin-top: 10px;';
+    allBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> 全部下单`;
     allBtn.onclick = () => handleOrderAll();
     area.appendChild(allBtn);
 }
@@ -513,69 +349,30 @@ function showRecommendations(recs) {
 function handleOrderSingle(index) {
     const item = currentRecommendations[index];
     if (item.note && item.note.trim() !== '') {
-        placeOrder([{
-            dish_id: item.dish_id,
-            quantity: item.quantity || 1,
-            note: item.note
-        }]);
-    } else {
-        openNoteModalForSingle(index);
-    }
+        placeOrder([{dish_id: item.dish_id, quantity: item.quantity || 1, note: item.note}]);
+    } else { openNoteModalForSingle(index); }
 }
 
 function handleOrderAll() {
     const allHaveNote = currentRecommendations.every(item => item.note && item.note.trim() !== '');
     if (allHaveNote) {
-        const items = currentRecommendations.map(item => ({
-            dish_id: item.dish_id,
-            quantity: item.quantity || 1,
-            note: item.note
-        }));
-        placeOrder(items);
-    } else {
-        openNoteModalForAll();
-    }
+        placeOrder(currentRecommendations.map(item => ({dish_id: item.dish_id, quantity: item.quantity || 1, note: item.note})));
+    } else { openNoteModalForAll(); }
 }
 
 let pendingSingleIndex = null;
-
-function openNoteModalForSingle(index) {
-    pendingSingleIndex = index;
-    document.getElementById('noteText').value = '';
-    document.getElementById('noteModal').style.display = 'flex';
-    document.getElementById('noteText').focus();
-}
-
-function openNoteModalForAll() {
-    pendingSingleIndex = 'all';
-    document.getElementById('noteText').value = '';
-    document.getElementById('noteModal').style.display = 'flex';
-    document.getElementById('noteText').focus();
-}
-
-function closeNoteModal() {
-    document.getElementById('noteModal').style.display = 'none';
-    pendingSingleIndex = null;
-}
+function openNoteModalForSingle(index) { pendingSingleIndex = index; document.getElementById('noteText').value = ''; document.getElementById('noteModal').style.display = 'flex'; document.getElementById('noteText').focus(); }
+function openNoteModalForAll() { pendingSingleIndex = 'all'; document.getElementById('noteText').value = ''; document.getElementById('noteModal').style.display = 'flex'; document.getElementById('noteText').focus(); }
+function closeNoteModal() { document.getElementById('noteModal').style.display = 'none'; pendingSingleIndex = null; }
 
 function submitWithNote() {
     const noteText = document.getElementById('noteText').value.trim();
     if (pendingSingleIndex === 'all') {
         const unifiedNote = noteText || 'AI推荐';
-        const items = currentRecommendations.map(item => ({
-            dish_id: item.dish_id,
-            quantity: item.quantity || 1,
-            note: unifiedNote
-        }));
-        placeOrder(items);
+        placeOrder(currentRecommendations.map(item => ({dish_id: item.dish_id, quantity: item.quantity || 1, note: unifiedNote})));
     } else if (pendingSingleIndex !== null && pendingSingleIndex >= 0) {
         const item = currentRecommendations[pendingSingleIndex];
-        const finalNote = noteText || item.note || 'AI推荐';
-        placeOrder([{
-            dish_id: item.dish_id,
-            quantity: item.quantity || 1,
-            note: finalNote
-        }]);
+        placeOrder([{dish_id: item.dish_id, quantity: item.quantity || 1, note: noteText || item.note || 'AI推荐'}]);
     }
     closeNoteModal();
 }
@@ -592,27 +389,12 @@ async function placeOrder(items) {
             appendMessage('ai', `下单成功！已为你点了：<strong>${data.dishes.join('、')}</strong>`);
             document.getElementById('recommendationArea').innerHTML = '';
             currentRecommendations = [];
-        } else {
-            appendMessage('ai', '下单失败，请重试');
-        }
-    } catch (e) {
-        appendMessage('ai', '网络错误，下单失败');
-    }
+        } else { appendMessage('ai', '下单失败，请重试'); }
+    } catch (e) { appendMessage('ai', '网络错误，下单失败'); }
 }
 
-document.getElementById('userInput').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') sendMessage();
-});
-
-document.getElementById('noteModal').addEventListener('click', function(e) {
-    if (e.target === this) closeNoteModal();
-});
-
-document.getElementById('noteText').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        submitWithNote();
-    }
-});
+document.getElementById('userInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') sendMessage(); });
+document.getElementById('noteModal').addEventListener('click', function(e) { if (e.target === this) closeNoteModal(); });
+document.getElementById('noteText').addEventListener('keydown', function(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitWithNote(); } });
 </script>
 {% endblock %}

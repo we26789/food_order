@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="app-layout">
-    <!-- Customer Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <div class="sidebar-logo">
@@ -18,69 +17,38 @@
                 </div>
             </div>
         </div>
-
         <nav class="sidebar-nav">
             <div class="nav-section">
                 <div class="nav-section-title">点餐服务</div>
                 <a href="{{ url_for('index') }}" class="nav-link">
-                    <span class="nav-link-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
-                            <path d="M7 2v20"></path>
-                            <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
-                        </svg>
-                    </span>
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path></svg></span>
                     <span>点菜</span>
                 </a>
                 <a href="{{ url_for('recipe_recommend') }}" class="nav-link">
-                    <span class="nav-link-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                        </svg>
-                    </span>
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></span>
                     <span>菜谱推荐</span>
                 </a>
                 <a href="{{ url_for('random_order') }}" class="nav-link active">
-                    <span class="nav-link-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="1" y="1" width="6" height="6" rx="1"></rect>
-                            <rect x="17" y="1" width="6" height="6" rx="1"></rect>
-                            <rect x="9" y="9" width="6" height="6" rx="1"></rect>
-                            <rect x="1" y="17" width="6" height="6" rx="1"></rect>
-                            <rect x="17" y="17" width="6" height="6" rx="1"></rect>
-                        </svg>
-                    </span>
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg></span>
                     <span>随机点菜</span>
                 </a>
                 <a href="{{ url_for('ai_assistant') }}" class="nav-link">
-                    <span class="nav-link-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 8V4H8"></path>
-                            <rect x="8" y="8" width="8" height="8" rx="1"></rect>
-                            <path d="M4 12h4"></path>
-                            <path d="M16 12h4"></path>
-                            <path d="M12 16v4"></path>
-                        </svg>
-                    </span>
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8V4H8"></path><rect x="8" y="8" width="8" height="8" rx="1"></rect><path d="M4 12h4"></path><path d="M16 12h4"></path><path d="M12 16v4"></path></svg></span>
                     <span>智能点菜</span>
                 </a>
+                <a href="{{ url_for('customer_dashboard') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect></svg></span>
+                    <span>我的面板</span>
+                </a>
             </div>
-
             <div class="nav-section">
                 <div class="nav-section-title">我的订单</div>
                 <a href="{{ url_for('order_history') }}" class="nav-link">
-                    <span class="nav-link-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                        </svg>
-                    </span>
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></span>
                     <span>订单历史</span>
                 </a>
             </div>
         </nav>
-
         <div class="sidebar-footer">
             <div class="user-card">
                 <div class="user-avatar">{{ current_user.username[0] }}</div>
@@ -96,7 +64,6 @@
         </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
         <div class="page-header">
             <h1 class="page-title">随机一日三餐</h1>
@@ -105,12 +72,10 @@
 
         {% if breakfast %}
         <div class="random-result-card">
-            <!-- Meals Grid -->
             <div class="meals-grid">
-                <!-- Breakfast -->
                 <div class="meal-card breakfast">
                     <div class="meal-icon">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="5"></circle>
                             <line x1="12" y1="1" x2="12" y2="3"></line>
                             <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -134,10 +99,9 @@
                     </form>
                 </div>
 
-                <!-- Lunch -->
                 <div class="meal-card lunch">
                     <div class="meal-icon">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="10"></circle>
                             <line x1="12" y1="16" x2="12" y2="12"></line>
                             <line x1="12" y1="8" x2="12.01" y2="8"></line>
@@ -155,10 +119,9 @@
                     </form>
                 </div>
 
-                <!-- Dinner -->
                 <div class="meal-card dinner">
                     <div class="meal-icon">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                         </svg>
                     </div>
@@ -175,10 +138,9 @@
                 </div>
             </div>
 
-            <!-- Actions -->
             <div class="random-actions">
                 <a href="{{ url_for('random_order') }}" class="btn btn-outline">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="23 4 23 10 17 10"></polyline>
                         <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
                     </svg>
@@ -191,7 +153,7 @@
                     <input type="hidden" name="dinner_id" value="{{ dinner.id }}">
                     <input type="hidden" name="note" class="note-input">
                     <button type="button" class="btn btn-success btn-lg" onclick="openNoteModal('form-all')">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="20 6 9 17 4 12"></polyline>
                         </svg>
                         一键下单三餐
@@ -202,12 +164,9 @@
         {% else %}
         <div class="empty-state card">
             <div class="empty-state-icon">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <rect x="1" y="1" width="6" height="6" rx="1"></rect>
-                    <rect x="17" y="1" width="6" height="6" rx="1"></rect>
-                    <rect x="9" y="9" width="6" height="6" rx="1"></rect>
-                    <rect x="1" y="17" width="6" height="6" rx="1"></rect>
-                    <rect x="17" y="17" width="6" height="6" rx="1"></rect>
+                <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
                 </svg>
             </div>
             <h3 class="empty-state-title">暂无随机数据</h3>
@@ -221,9 +180,7 @@
 <!-- Note Modal -->
 <div id="noteModal" class="modal-overlay">
     <div class="modal">
-        <div class="modal-header">
-            <h3 class="modal-title">口味备注</h3>
-        </div>
+        <div class="modal-header"><h3 class="modal-title">口味备注</h3></div>
         <div class="modal-body">
             <div class="form-group mb-0">
                 <label class="form-label">添加备注（可选）</label>
@@ -241,130 +198,67 @@
     .random-result-card {
         background: var(--surface);
         border-radius: var(--radius-xl);
-        padding: 32px;
-        box-shadow: var(--shadow-lg);
+        padding: 28px;
+        box-shadow: var(--shadow-md);
         border: 1px solid var(--border);
     }
 
     .meals-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 24px;
-        margin-bottom: 32px;
+        gap: 20px;
+        margin-bottom: 28px;
     }
 
     .meal-card {
-        background: var(--background);
+        background: var(--surface-hover);
         border-radius: var(--radius-lg);
-        padding: 28px;
+        padding: 26px;
         text-align: center;
-        border: 2px solid var(--border);
+        border: 1.5px solid var(--border);
         transition: var(--transition);
     }
 
-    .meal-card:hover {
-        transform: translateY(-4px);
-        box-shadow: var(--shadow-lg);
-    }
+    .meal-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
 
-    .meal-card.breakfast {
-        border-color: rgba(255, 193, 7, 0.3);
-    }
-
-    .meal-card.breakfast:hover {
-        border-color: #FFC107;
-        background: rgba(255, 193, 7, 0.05);
-    }
-
-    .meal-card.lunch {
-        border-color: rgba(255, 107, 53, 0.3);
-    }
-
-    .meal-card.lunch:hover {
-        border-color: var(--primary);
-        background: rgba(255, 107, 53, 0.05);
-    }
-
-    .meal-card.dinner {
-        border-color: rgba(103, 58, 183, 0.3);
-    }
-
-    .meal-card.dinner:hover {
-        border-color: #673AB7;
-        background: rgba(103, 58, 183, 0.05);
-    }
+    .meal-card.breakfast { border-color: rgba(255, 193, 7, 0.25); }
+    .meal-card.breakfast:hover { border-color: #FFC107; background: rgba(255, 193, 7, 0.04); }
+    .meal-card.lunch { border-color: rgba(255, 107, 53, 0.25); }
+    .meal-card.lunch:hover { border-color: var(--primary); background: var(--primary-glow); }
+    .meal-card.dinner { border-color: rgba(103, 58, 183, 0.25); }
+    .meal-card.dinner:hover { border-color: #673AB7; background: rgba(103, 58, 183, 0.04); }
 
     .meal-icon {
-        width: 64px;
-        height: 64px;
-        margin: 0 auto 16px;
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 14px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
     }
 
-    .breakfast .meal-icon {
-        background: linear-gradient(135deg, rgba(255, 193, 7, 0.2), rgba(255, 193, 7, 0.1));
-        color: #FFC107;
-    }
+    .breakfast .meal-icon { background: rgba(255, 193, 7, 0.15); color: #FFC107; }
+    .lunch .meal-icon { background: var(--primary-glow); color: var(--primary); }
+    .dinner .meal-icon { background: rgba(103, 58, 183, 0.12); color: #673AB7; }
 
-    .lunch .meal-icon {
-        background: linear-gradient(135deg, rgba(255, 107, 53, 0.2), rgba(255, 107, 53, 0.1));
-        color: var(--primary);
-    }
-
-    .dinner .meal-icon {
-        background: linear-gradient(135deg, rgba(103, 58, 183, 0.2), rgba(103, 58, 183, 0.1));
-        color: #673AB7;
-    }
-
-    .meal-label {
-        font-size: 12px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        color: var(--text-muted);
-        margin-bottom: 8px;
-    }
-
-    .meal-name {
-        font-size: 20px;
-        font-weight: 700;
-        color: var(--text-primary);
-        margin-bottom: 8px;
-    }
-
-    .meal-desc {
-        font-size: 14px;
-        color: var(--text-secondary);
-        margin-bottom: 20px;
-        line-height: 1.5;
-    }
+    .meal-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 6px; }
+    .meal-name { font-size: 19px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.3px; }
+    .meal-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 18px; line-height: 1.5; }
 
     .random-actions {
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 16px;
-        padding-top: 24px;
-        border-top: 1px solid var(--border);
+        gap: 14px;
+        padding-top: 22px;
+        border-top: 1px solid var(--border-light);
     }
 
-    @media (max-width: 900px) {
-        .meals-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
+    @media (max-width: 900px) { .meals-grid { grid-template-columns: 1fr; } }
     @media (max-width: 768px) {
-        .random-actions {
-            flex-direction: column;
-        }
-
-        .random-actions .btn {
-            width: 100%;
-        }
+        .random-actions { flex-direction: column; }
+        .random-actions .btn { width: 100%; }
     }
 </style>
 
@@ -378,29 +272,19 @@
         document.getElementById('noteText').focus();
     }
 
-    function closeNoteModal() {
-        document.getElementById('noteModal').style.display = 'none';
-        currentFormId = '';
-    }
+    function closeNoteModal() { document.getElementById('noteModal').style.display = 'none'; currentFormId = ''; }
 
     function submitWithNote() {
         if (!currentFormId) return;
         const form = document.getElementById(currentFormId);
-        const noteInput = form.querySelector('.note-input');
-        noteInput.value = document.getElementById('noteText').value.trim();
+        form.querySelector('.note-input').value = document.getElementById('noteText').value.trim();
         form.submit();
         closeNoteModal();
     }
 
-    document.getElementById('noteModal').addEventListener('click', function(e) {
-        if (e.target === this) closeNoteModal();
-    });
-
+    document.getElementById('noteModal').addEventListener('click', function(e) { if (e.target === this) closeNoteModal(); });
     document.getElementById('noteText').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            submitWithNote();
-        }
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitWithNote(); }
     });
 </script>
 {% endblock %}

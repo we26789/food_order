@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                        <path d="M7 2v20"></path>
+                        <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div class="sidebar-logo-text">家庭点菜</div>
+                    <div class="sidebar-role">顾客端</div>
+                </div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">点餐服务</div>
+                <a href="{{ url_for('index') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path></svg></span>
+                    <span>点菜</span>
+                </a>
+                <a href="{{ url_for('recipe_recommend') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></span>
+                    <span>菜谱推荐</span>
+                </a>
+                <a href="{{ url_for('random_order') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg></span>
+                    <span>随机点菜</span>
+                </a>
+                <a href="{{ url_for('ai_assistant') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8V4H8"></path><rect x="8" y="8" width="8" height="8" rx="1"></rect><path d="M4 12h4"></path><path d="M16 12h4"></path><path d="M12 16v4"></path></svg></span>
+                    <span>智能点菜</span>
+                </a>
+                <a href="{{ url_for('customer_dashboard') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect></svg></span>
+                    <span>我的面板</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">AI 顾问</div>
+                <a href="{{ url_for('ai_nutrition') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg></span>
+                    <span>营养顾问</span>
+                </a>
+                <a href="{{ url_for('ai_meal_plan') }}" class="nav-link active">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></span>
+                    <span>每周规划</span>
+                </a>
+                <a href="{{ url_for('ai_seasonal') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></span>
+                    <span>时令顾问</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">我的订单</div>
+                <a href="{{ url_for('order_history') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></span>
+                    <span>订单历史</span>
+                </a>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">{{ current_user.username[0] }}</div>
+                <div class="user-info">
+                    <div class="user-name">{{ current_user.username }}</div>
+                    <div class="user-actions">
+                        <a href="{{ url_for('change_password') }}" class="user-action-link">修改密码</a>
+                        <span style="color: var(--text-muted);">|</span>
+                        <a href="{{ url_for('logout') }}" class="user-action-link">退出</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">每周膳食规划</h1>
+            <p class="page-subtitle">AI 为你定制一周三餐，附带采购清单和饮食建议</p>
+        </div>
+
+        <!-- Input Section -->
+        <div class="card input-card">
+            <div class="card-header">
+                <h3 class="card-title">规划偏好</h3>
+            </div>
+            <div class="form-row">
+                <div class="form-group" style="flex: 1;">
+                    <label class="form-label">饮食偏好</label>
+                    <input type="text" id="preferences" class="form-input" placeholder="如：偏辣、少油、多素、不吃海鲜...">
+                </div>
+                <div class="form-group" style="width: 140px;">
+                    <label class="form-label">用餐人数</label>
+                    <input type="number" id="peopleCount" class="form-input" value="2" min="1" max="10">
+                </div>
+            </div>
+            <button class="btn btn-primary btn-lg" style="width: 100%;" onclick="generatePlan()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                生成膳食规划
+            </button>
+        </div>
+
+        <!-- Loading -->
+        <div id="planLoading" class="card" style="display: none;">
+            <div class="loading-state">
+                <div class="loading-orbs">
+                    <div class="orb"></div>
+                    <div class="orb"></div>
+                    <div class="orb"></div>
+                </div>
+                <p>AI 正在为你规划一周膳食...</p>
+            </div>
+        </div>
+
+        <!-- Result -->
+        <div id="planResult" style="display: none;">
+            <!-- Week Plan -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">一周膳食安排</h3>
+                </div>
+                <div class="week-grid" id="weekGrid"></div>
+            </div>
+
+            <!-- Shopping List & Tips -->
+            <div class="plan-extras">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">采购清单</h3>
+                    </div>
+                    <div class="shopping-list" id="shoppingList"></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">饮食建议</h3>
+                    </div>
+                    <div class="tips-content" id="tipsContent"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+    .input-card { margin-bottom: 20px; }
+
+    .form-row { display: flex; gap: 14px; align-items: flex-end; }
+
+    .loading-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 48px;
+        gap: 16px;
+        color: var(--text-muted);
+        font-size: 14px;
+    }
+
+    .loading-orbs { display: flex; gap: 8px; }
+    .loading-orbs .orb {
+        width: 12px; height: 12px; border-radius: 50%;
+        background: var(--primary);
+        animation: orbPulse 1.4s ease-in-out infinite;
+    }
+    .loading-orbs .orb:nth-child(2) { animation-delay: 0.2s; }
+    .loading-orbs .orb:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes orbPulse { 0%, 100% { transform: scale(0.6); opacity: 0.3; } 50% { transform: scale(1); opacity: 1; } }
+
+    .week-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 10px;
+    }
+
+    .day-card {
+        background: var(--surface-hover);
+        border-radius: var(--radius-lg);
+        padding: 16px 14px;
+        border: 1px solid var(--border-light);
+        animation: cardIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .day-card:nth-child(1) { animation-delay: 0s; }
+    .day-card:nth-child(2) { animation-delay: 0.05s; }
+    .day-card:nth-child(3) { animation-delay: 0.1s; }
+    .day-card:nth-child(4) { animation-delay: 0.15s; }
+    .day-card:nth-child(5) { animation-delay: 0.2s; }
+    .day-card:nth-child(6) { animation-delay: 0.25s; }
+    .day-card:nth-child(7) { animation-delay: 0.3s; }
+
+    @keyframes cardIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .day-name {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 14px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--primary-glow);
+        text-align: center;
+    }
+
+    .meal-slot { margin-bottom: 10px; }
+    .meal-label { font-size: 11px; color: var(--text-muted); font-weight: 600; margin-bottom: 3px; }
+    .meal-dish { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+
+    .plan-extras {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .shopping-list { display: flex; flex-wrap: wrap; gap: 8px; }
+    .shopping-tag {
+        padding: 6px 14px;
+        background: var(--surface-hover);
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+        border: 1px solid var(--border-light);
+    }
+
+    .tips-content {
+        font-size: 14px;
+        line-height: 1.8;
+        color: var(--text-secondary);
+        white-space: pre-wrap;
+    }
+
+    @media (max-width: 1024px) {
+        .week-grid { grid-template-columns: repeat(4, 1fr); }
+        .plan-extras { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+        .week-grid { grid-template-columns: repeat(2, 1fr); }
+        .form-row { flex-direction: column; }
+        .form-row .form-group { width: 100% !important; }
+    }
+</style>
+
+<script>
+async function generatePlan() {
+    const preferences = document.getElementById('preferences').value.trim();
+    const peopleCount = parseInt(document.getElementById('peopleCount').value) || 2;
+
+    document.getElementById('planResult').style.display = 'none';
+    document.getElementById('planLoading').style.display = 'block';
+
+    try {
+        const res = await fetch('/ai/meal_plan/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ preferences, people_count: peopleCount })
+        });
+        const data = await res.json();
+        document.getElementById('planLoading').style.display = 'none';
+
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+
+        renderWeekPlan(data.week_plan || []);
+        renderShoppingList(data.shopping_list || []);
+        renderTips(data.tips || '');
+        document.getElementById('planResult').style.display = 'block';
+    } catch (e) {
+        document.getElementById('planLoading').style.display = 'none';
+        alert('网络错误，请稍后重试');
+    }
+}
+
+function renderWeekPlan(weekPlan) {
+    const grid = document.getElementById('weekGrid');
+    grid.innerHTML = '';
+    weekPlan.forEach(day => {
+        const card = document.createElement('div');
+        card.className = 'day-card';
+        card.innerHTML = `
+            <div class="day-name">${day.day}</div>
+            <div class="meal-slot"><div class="meal-label">早餐</div><div class="meal-dish">${day.breakfast || '-'}</div></div>
+            <div class="meal-slot"><div class="meal-label">午餐</div><div class="meal-dish">${day.lunch || '-'}</div></div>
+            <div class="meal-slot"><div class="meal-label">晚餐</div><div class="meal-dish">${day.dinner || '-'}</div></div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+function renderShoppingList(items) {
+    const list = document.getElementById('shoppingList');
+    list.innerHTML = '';
+    items.forEach(item => {
+        const tag = document.createElement('span');
+        tag.className = 'shopping-tag';
+        tag.textContent = item;
+        list.appendChild(tag);
+    });
+}
+
+function renderTips(tips) {
+    document.getElementById('tipsContent').textContent = tips;
+}
+</script>
+{% endblock %}

@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="login-page">
+    <div class="login-bg">
+        <div class="bg-orb orb-1"></div>
+        <div class="bg-orb orb-2"></div>
+        <div class="bg-orb orb-3"></div>
+        <div class="bg-grid"></div>
+    </div>
+
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
@@ -22,7 +29,7 @@
                     <label class="form-label">用户名</label>
                     <div class="input-wrapper">
                         <span class="input-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                 <circle cx="12" cy="7" r="4"></circle>
                             </svg>
@@ -35,7 +42,7 @@
                     <label class="form-label">密码</label>
                     <div class="input-wrapper">
                         <span class="input-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                                 <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                             </svg>
@@ -46,7 +53,7 @@
 
                 <button type="submit" class="btn btn-primary btn-lg btn-block">
                     <span>登录系统</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                         <polyline points="12 5 19 12 12 19"></polyline>
                     </svg>
@@ -54,26 +61,18 @@
             </form>
 
             <div class="login-footer">
-                <div class="login-divider">
-                    <span>默认账号</span>
-                </div>
+                <div class="login-divider"><span>默认账号</span></div>
                 <div class="account-hints">
-                    <div class="account-hint">
+                    <div class="account-hint" onclick="fillAccount('Cooker','123456')">
                         <span class="hint-role cooker">厨师</span>
                         <span class="hint-info">Cooker / 123456</span>
                     </div>
-                    <div class="account-hint">
+                    <div class="account-hint" onclick="fillAccount('Customer','123456')">
                         <span class="hint-role customer">顾客</span>
                         <span class="hint-info">Customer / 123456</span>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="login-decoration">
-            <div class="deco-circle deco-1"></div>
-            <div class="deco-circle deco-2"></div>
-            <div class="deco-circle deco-3"></div>
         </div>
     </div>
 </div>
@@ -84,24 +83,81 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, #1A1A2E 0%, #252541 50%, #1A1A2E 100%);
+        background: var(--secondary);
         padding: 20px;
         position: relative;
         overflow: hidden;
+    }
+
+    .login-bg {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+    }
+
+    .bg-grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+        background-size: 60px 60px;
+    }
+
+    .bg-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+    }
+
+    .orb-1 {
+        width: 500px;
+        height: 500px;
+        background: rgba(255, 107, 53, 0.12);
+        top: -180px;
+        right: -120px;
+        animation: orbFloat 20s ease-in-out infinite;
+    }
+
+    .orb-2 {
+        width: 400px;
+        height: 400px;
+        background: rgba(16, 185, 129, 0.08);
+        bottom: -140px;
+        left: -100px;
+        animation: orbFloat 25s ease-in-out infinite reverse;
+    }
+
+    .orb-3 {
+        width: 250px;
+        height: 250px;
+        background: rgba(59, 130, 246, 0.08);
+        top: 40%;
+        left: 15%;
+        animation: orbFloat 18s ease-in-out infinite 5s;
+    }
+
+    @keyframes orbFloat {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(30px, -30px) scale(1.05); }
+        66% { transform: translate(-20px, 20px) scale(0.95); }
     }
 
     .login-container {
         position: relative;
         z-index: 10;
         width: 100%;
-        max-width: 440px;
+        max-width: 420px;
     }
 
     .login-card {
-        background: var(--surface);
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(24px) saturate(150%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: var(--radius-xl);
-        padding: 48px 40px;
-        box-shadow: var(--shadow-xl), 0 0 60px rgba(255, 107, 53, 0.15);
+        padding: 44px 36px;
+        box-shadow: 0 32px 64px rgba(0, 0, 0, 0.3);
         position: relative;
         overflow: hidden;
     }
@@ -112,14 +168,18 @@
         top: 0;
         left: 0;
         right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, var(--primary), var(--accent));
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary), var(--accent), var(--primary));
+        background-size: 200% 100%;
+        animation: shimmer 3s ease-in-out infinite;
     }
 
-    .login-header {
-        text-align: center;
-        margin-bottom: 36px;
+    @keyframes shimmer {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
     }
+
+    .login-header { text-align: center; margin-bottom: 32px; }
 
     .login-logo {
         display: flex;
@@ -128,61 +188,70 @@
     }
 
     .login-logo-icon {
-        width: 64px;
-        height: 64px;
+        width: 60px;
+        height: 60px;
         background: linear-gradient(135deg, var(--primary), var(--primary-dark));
         border-radius: var(--radius-lg);
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        box-shadow: 0 8px 24px rgba(255, 107, 53, 0.35);
+        box-shadow: 0 8px 28px rgba(255, 107, 53, 0.35);
     }
 
     .login-title {
         font-size: 26px;
-        font-weight: 700;
-        color: var(--text-primary);
-        margin-bottom: 8px;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 6px;
+        letter-spacing: -0.5px;
     }
 
     .login-subtitle {
         font-size: 14px;
-        color: var(--text-secondary);
+        color: rgba(148, 163, 184, 0.8);
     }
 
-    .login-form {
-        margin-bottom: 32px;
+    .login-form { margin-bottom: 28px; }
+
+    .login-form .form-label {
+        color: rgba(255,255,255,0.7);
     }
 
-    .input-wrapper {
-        position: relative;
+    .login-form .form-input {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1.5px solid rgba(255, 255, 255, 0.1);
+        color: white;
     }
+
+    .login-form .form-input::placeholder { color: rgba(148, 163, 184, 0.5); }
+
+    .login-form .form-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15);
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .input-wrapper { position: relative; }
 
     .input-icon {
         position: absolute;
-        left: 16px;
+        left: 14px;
         top: 50%;
         transform: translateY(-50%);
-        color: var(--text-muted);
+        color: rgba(148, 163, 184, 0.5);
         display: flex;
     }
 
-    .form-input.with-icon {
-        padding-left: 50px;
-    }
+    .form-input.with-icon { padding-left: 46px; }
 
-    .btn-block {
-        width: 100%;
-    }
+    .btn-block { width: 100%; }
 
-    .login-footer {
-        text-align: center;
-    }
+    .login-footer { text-align: center; }
 
     .login-divider {
         position: relative;
-        margin-bottom: 20px;
+        margin-bottom: 18px;
     }
 
     .login-divider::before {
@@ -192,22 +261,23 @@
         left: 0;
         right: 0;
         height: 1px;
-        background: var(--border);
+        background: rgba(255,255,255,0.08);
     }
 
     .login-divider span {
         position: relative;
-        background: var(--surface);
+        background: transparent;
         padding: 0 16px;
-        font-size: 12px;
-        color: var(--text-muted);
+        font-size: 11px;
+        color: rgba(148, 163, 184, 0.5);
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 1.5px;
+        font-weight: 600;
     }
 
     .account-hints {
         display: flex;
-        gap: 16px;
+        gap: 12px;
         justify-content: center;
     }
 
@@ -217,85 +287,47 @@
         align-items: center;
         gap: 6px;
         padding: 12px 20px;
-        background: var(--background);
+        background: rgba(255, 255, 255, 0.03);
         border-radius: var(--radius);
-        border: 1px solid var(--border);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .account-hint:hover {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.12);
+        transform: translateY(-1px);
     }
 
     .hint-role {
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding: 4px 10px;
-        border-radius: 12px;
+        letter-spacing: 0.8px;
+        padding: 3px 10px;
+        border-radius: 10px;
     }
 
-    .hint-role.cooker {
-        background: rgba(255, 107, 53, 0.1);
-        color: var(--primary);
-    }
-
-    .hint-role.customer {
-        background: rgba(22, 199, 154, 0.1);
-        color: var(--accent);
-    }
+    .hint-role.cooker { background: rgba(255, 107, 53, 0.15); color: var(--primary-light); }
+    .hint-role.customer { background: rgba(16, 185, 129, 0.15); color: var(--accent-light); }
 
     .hint-info {
-        font-size: 13px;
-        color: var(--text-secondary);
+        font-size: 12px;
+        color: rgba(148, 163, 184, 0.6);
         font-family: 'Courier New', monospace;
     }
 
-    /* Decorations */
-    .login-decoration {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: 1;
-    }
-
-    .deco-circle {
-        position: absolute;
-        border-radius: 50%;
-        opacity: 0.1;
-    }
-
-    .deco-1 {
-        width: 500px;
-        height: 500px;
-        background: var(--primary);
-        top: -200px;
-        right: -200px;
-    }
-
-    .deco-2 {
-        width: 400px;
-        height: 400px;
-        background: var(--accent);
-        bottom: -150px;
-        left: -150px;
-    }
-
-    .deco-3 {
-        width: 200px;
-        height: 200px;
-        background: var(--primary);
-        top: 50%;
-        left: 10%;
-    }
-
     @media (max-width: 480px) {
-        .login-card {
-            padding: 36px 24px;
-        }
-
-        .account-hints {
-            flex-direction: column;
-        }
+        .login-card { padding: 32px 24px; }
+        .account-hints { flex-direction: column; }
     }
 </style>
+
+<script>
+function fillAccount(username, password) {
+    document.querySelector('input[name="username"]').value = username;
+    document.querySelector('input[name="password"]').value = password;
+}
+</script>
 {% endblock %}

@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                        <path d="M7 2v20"></path>
+                        <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div class="sidebar-logo-text">家庭点菜</div>
+                    <div class="sidebar-role">顾客端</div>
+                </div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">点餐服务</div>
+                <a href="{{ url_for('index') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path></svg></span>
+                    <span>点菜</span>
+                </a>
+                <a href="{{ url_for('recipe_recommend') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></span>
+                    <span>菜谱推荐</span>
+                </a>
+                <a href="{{ url_for('random_order') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg></span>
+                    <span>随机点菜</span>
+                </a>
+                <a href="{{ url_for('ai_assistant') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8V4H8"></path><rect x="8" y="8" width="8" height="8" rx="1"></rect><path d="M4 12h4"></path><path d="M16 12h4"></path><path d="M12 16v4"></path></svg></span>
+                    <span>智能点菜</span>
+                </a>
+                <a href="{{ url_for('customer_dashboard') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect></svg></span>
+                    <span>我的面板</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">AI 顾问</div>
+                <a href="{{ url_for('ai_nutrition') }}" class="nav-link active">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg></span>
+                    <span>营养顾问</span>
+                </a>
+                <a href="{{ url_for('ai_meal_plan') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></span>
+                    <span>每周规划</span>
+                </a>
+                <a href="{{ url_for('ai_seasonal') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></span>
+                    <span>时令顾问</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">我的订单</div>
+                <a href="{{ url_for('order_history') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></span>
+                    <span>订单历史</span>
+                </a>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">{{ current_user.username[0] }}</div>
+                <div class="user-info">
+                    <div class="user-name">{{ current_user.username }}</div>
+                    <div class="user-actions">
+                        <a href="{{ url_for('change_password') }}" class="user-action-link">修改密码</a>
+                        <span style="color: var(--text-muted);">|</span>
+                        <a href="{{ url_for('logout') }}" class="user-action-link">退出</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">AI 营养顾问</h1>
+            <p class="page-subtitle">了解菜品的营养价值，获取专业的饮食建议</p>
+        </div>
+
+        <div class="nutrition-layout">
+            <!-- Dish Selector -->
+            <div class="card selector-card">
+                <div class="card-header">
+                    <h3 class="card-title">选择菜品</h3>
+                    <span class="card-subtitle">可多选，点击菜品切换选中状态</span>
+                </div>
+                <div class="dish-grid">
+                    {% for dish in dishes %}
+                    <button class="dish-chip" data-id="{{ dish.id }}" data-name="{{ dish.name }}" onclick="selectDish(this)">
+                        {{ dish.name }}
+                    </button>
+                    {% endfor %}
+                </div>
+                <button class="btn btn-primary btn-lg" style="width: 100%; margin-top: 18px;" onclick="analyzeNutrition()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                    开始分析
+                </button>
+            </div>
+
+            <!-- Result Area -->
+            <div class="card result-card" id="resultCard">
+                <div id="resultPlaceholder" class="result-placeholder">
+                    <div class="placeholder-icon">
+                        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                        </svg>
+                    </div>
+                    <h3 class="placeholder-title">选择菜品开始分析</h3>
+                    <p class="placeholder-desc">支持多选，AI 将为你分析每道菜品的营养成分、热量和健康建议</p>
+                </div>
+
+                <div id="resultLoading" class="result-loading" style="display: none;">
+                    <div class="loading-orbs">
+                        <div class="orb"></div>
+                        <div class="orb"></div>
+                        <div class="orb"></div>
+                    </div>
+                    <p>AI 正在分析营养成分...</p>
+                </div>
+
+                <div id="resultContent" style="display: none;"></div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+    .nutrition-layout { display: grid; grid-template-columns: 340px 1fr; gap: 20px; }
+
+    .selector-card { height: fit-content; }
+
+    .dish-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .dish-chip {
+        padding: 8px 16px;
+        border: 1.5px solid var(--border);
+        border-radius: 20px;
+        background: var(--surface);
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: var(--transition);
+        font-family: var(--font);
+    }
+
+    .dish-chip:hover { border-color: var(--primary); color: var(--primary); }
+    .dish-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+    .result-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 20px;
+        text-align: center;
+    }
+
+    .placeholder-icon { color: var(--text-muted); margin-bottom: 16px; opacity: 0.4; }
+    .placeholder-title { font-size: 17px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+    .placeholder-desc { font-size: 13px; color: var(--text-muted); max-width: 300px; }
+
+    .result-loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 20px;
+        gap: 16px;
+        color: var(--text-muted);
+        font-size: 14px;
+    }
+
+    .loading-orbs { display: flex; gap: 8px; }
+    .loading-orbs .orb {
+        width: 12px; height: 12px; border-radius: 50%;
+        background: var(--primary);
+        animation: orbPulse 1.4s ease-in-out infinite;
+    }
+    .loading-orbs .orb:nth-child(2) { animation-delay: 0.2s; }
+    .loading-orbs .orb:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes orbPulse { 0%, 100% { transform: scale(0.6); opacity: 0.3; } 50% { transform: scale(1); opacity: 1; } }
+
+    .result-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .result-dish-name { font-size: 20px; font-weight: 700; }
+    .result-badge {
+        padding: 4px 12px;
+        background: var(--primary-glow);
+        color: var(--primary);
+        border-radius: 16px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .result-body {
+        font-size: 14px;
+        line-height: 1.8;
+        color: var(--text-secondary);
+        white-space: pre-wrap;
+    }
+
+    .dish-result-card {
+        background: var(--surface);
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+    }
+    .dish-result-card:last-child { margin-bottom: 0; }
+
+    .nutrition-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 12px;
+        margin: 16px 0;
+    }
+    .nutrition-item {
+        background: var(--bg, #f8f9fa);
+        border-radius: 8px;
+        padding: 12px;
+        text-align: center;
+    }
+    .nutrition-item .label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+    .nutrition-item .value { font-size: 15px; font-weight: 600; color: var(--text); }
+
+    .health-score-bar {
+        display: flex; align-items: center; gap: 10px; margin: 12px 0;
+    }
+    .health-score-bar .score-track {
+        flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;
+    }
+    .health-score-bar .score-fill {
+        height: 100%; border-radius: 4px; transition: width 0.6s ease;
+    }
+    .health-score-bar .score-label { font-size: 14px; font-weight: 700; min-width: 60px; }
+
+    .advice-section { margin-top: 14px; }
+    .advice-section h4 { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+    .advice-section ul { margin: 0; padding-left: 18px; }
+    .advice-section li { font-size: 13px; color: var(--text-secondary); margin-bottom: 3px; }
+
+    @media (max-width: 1024px) {
+        .nutrition-layout { grid-template-columns: 1fr; }
+    }
+</style>
+
+<script>
+function selectDish(el) {
+    el.classList.toggle('active');
+}
+
+async function analyzeNutrition() {
+    const chips = document.querySelectorAll('.dish-chip.active');
+    if (chips.length === 0) return;
+
+    const dishIds = Array.from(chips).map(c => parseInt(c.dataset.id));
+
+    document.getElementById('resultPlaceholder').style.display = 'none';
+    document.getElementById('resultContent').style.display = 'none';
+    document.getElementById('resultLoading').style.display = 'flex';
+
+    try {
+        const res = await fetch('/ai/nutrition/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ dish_ids: dishIds })
+        });
+        const data = await res.json();
+        document.getElementById('resultLoading').style.display = 'none';
+        if (data.error) {
+            document.getElementById('resultPlaceholder').style.display = 'flex';
+            return;
+        }
+        renderResults(data.results || []);
+        document.getElementById('resultContent').style.display = 'block';
+    } catch (e) {
+        document.getElementById('resultLoading').style.display = 'none';
+        document.getElementById('resultPlaceholder').style.display = 'flex';
+    }
+}
+
+function scoreColor(score) {
+    if (score >= 7) return '#22c55e';
+    if (score >= 4) return '#f59e0b';
+    return '#ef4444';
+}
+
+function renderResults(results) {
+    const container = document.getElementById('resultContent');
+    container.innerHTML = '';
+    results.forEach(r => {
+        const card = document.createElement('div');
+        card.className = 'dish-result-card';
+        const sc = scoreColor(r.health_score || 0);
+        card.innerHTML = `
+            <div class="result-header">
+                <h3 class="result-dish-name">${r.dish_name || ''}</h3>
+                <span class="result-badge">AI 分析</span>
+            </div>
+            <div class="nutrition-grid">
+                <div class="nutrition-item"><div class="label">热量</div><div class="value">${r.calories || '-'}</div></div>
+                <div class="nutrition-item"><div class="label">蛋白质</div><div class="value">${r.protein || '-'}</div></div>
+                <div class="nutrition-item"><div class="label">脂肪</div><div class="value">${r.fat || '-'}</div></div>
+                <div class="nutrition-item"><div class="label">碳水</div><div class="value">${r.carbs || '-'}</div></div>
+                <div class="nutrition-item"><div class="label">膳食纤维</div><div class="value">${r.fiber || '-'}</div></div>
+            </div>
+            <div class="health-score-bar">
+                <span class="score-label" style="color:${sc}">${r.health_score || 0}/10</span>
+                <div class="score-track"><div class="score-fill" style="width:${(r.health_score||0)*10}%;background:${sc}"></div></div>
+            </div>
+            ${(r.tips && r.tips.length) ? `<div class="advice-section"><h4>饮食建议</h4><ul>${r.tips.map(t=>`<li>${t}</li>`).join('')}</ul></div>` : ''}
+            ${(r.good_for && r.good_for.length) ? `<div class="advice-section"><h4>适合人群</h4><ul>${r.good_for.map(t=>`<li>${t}</li>`).join('')}</ul></div>` : ''}
+            ${(r.avoid_if && r.avoid_if.length) ? `<div class="advice-section"><h4>注意事项</h4><ul>${r.avoid_if.map(t=>`<li>${t}</li>`).join('')}</ul></div>` : ''}
+        `;
+        container.appendChild(card);
+    });
+}
+</script>
+{% endblock %}

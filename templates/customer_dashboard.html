@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                        <path d="M7 2v20"></path>
+                        <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div class="sidebar-logo-text">家庭点菜</div>
+                    <div class="sidebar-role">顾客端</div>
+                </div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">点餐服务</div>
+                <a href="{{ url_for('index') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path></svg></span>
+                    <span>点菜</span>
+                </a>
+                <a href="{{ url_for('recipe_recommend') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></span>
+                    <span>菜谱推荐</span>
+                </a>
+                <a href="{{ url_for('random_order') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg></span>
+                    <span>随机点菜</span>
+                </a>
+                <a href="{{ url_for('ai_assistant') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8V4H8"></path><rect x="8" y="8" width="8" height="8" rx="1"></rect><path d="M4 12h4"></path><path d="M16 12h4"></path><path d="M12 16v4"></path></svg></span>
+                    <span>智能点菜</span>
+                </a>
+                <a href="{{ url_for('customer_dashboard') }}" class="nav-link active">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect></svg></span>
+                    <span>我的面板</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">AI 顾问</div>
+                <a href="{{ url_for('ai_nutrition') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg></span>
+                    <span>营养顾问</span>
+                </a>
+                <a href="{{ url_for('ai_meal_plan') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></span>
+                    <span>每周规划</span>
+                </a>
+                <a href="{{ url_for('ai_seasonal') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></span>
+                    <span>时令顾问</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">我的订单</div>
+                <a href="{{ url_for('order_history') }}" class="nav-link">
+                    <span class="nav-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></span>
+                    <span>订单历史</span>
+                </a>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">{{ current_user.username[0] }}</div>
+                <div class="user-info">
+                    <div class="user-name">{{ current_user.username }}</div>
+                    <div class="user-actions">
+                        <a href="{{ url_for('change_password') }}" class="user-action-link">修改密码</a>
+                        <span style="color: var(--text-muted);">|</span>
+                        <a href="{{ url_for('logout') }}" class="user-action-link">退出</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">我的面板</h1>
+            <p class="page-subtitle">{{ current_user.username }}，欢迎回来</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: var(--primary-glow); color: var(--primary);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ today_orders|length }}</div>
+                    <div class="stat-label">今日订单</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: var(--success-light); color: var(--success);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ completed_count }}</div>
+                    <div class="stat-label">已出餐</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: var(--warning-light); color: var(--warning);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ pending_count }}</div>
+                    <div class="stat-label">待出餐</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: var(--info-light); color: var(--info);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ favorites|length }}</div>
+                    <div class="stat-label">收藏菜品</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="section-header">
+            <h2 class="section-title">快速操作</h2>
+        </div>
+        <div class="quick-actions">
+            <a href="{{ url_for('index') }}" class="action-card">
+                <div class="action-icon" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark));">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                        <path d="M7 2v20"></path>
+                        <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+                    </svg>
+                </div>
+                <span class="action-label">去点菜</span>
+            </a>
+            <a href="{{ url_for('random_order') }}" class="action-card">
+                <div class="action-icon" style="background: linear-gradient(135deg, #673AB7, #9575CD);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                    </svg>
+                </div>
+                <span class="action-label">随机点菜</span>
+            </a>
+            <a href="{{ url_for('ai_assistant') }}" class="action-card">
+                <div class="action-icon" style="background: linear-gradient(135deg, var(--accent), var(--accent-light));">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M12 8V4H8"></path>
+                        <rect x="8" y="8" width="8" height="8" rx="1"></rect>
+                        <path d="M4 12h4"></path>
+                        <path d="M16 12h4"></path>
+                        <path d="M12 16v4"></path>
+                    </svg>
+                </div>
+                <span class="action-label">AI 点菜</span>
+            </a>
+            <a href="{{ url_for('ai_nutrition') }}" class="action-card">
+                <div class="action-icon" style="background: linear-gradient(135deg, #E91E63, #F48FB1);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                    </svg>
+                </div>
+                <span class="action-label">营养分析</span>
+            </a>
+        </div>
+
+        <!-- Favorites -->
+        {% if favorites %}
+        <div class="section-header">
+            <h2 class="section-title">我的收藏</h2>
+        </div>
+        <div class="favorites-grid">
+            {% for fav in favorites %}
+            <div class="fav-card">
+                {% if fav.dish.image_url %}
+                    {% if fav.dish.image_url.startswith('http') %}
+                        <img src="{{ fav.dish.image_url }}" alt="{{ fav.dish.name }}" class="fav-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop';">
+                    {% else %}
+                        <img src="{{ url_for('static', filename=fav.dish.image_url) }}" alt="{{ fav.dish.name }}" class="fav-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop';">
+                    {% endif %}
+                {% else %}
+                    <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop" alt="{{ fav.dish.name }}" class="fav-img">
+                {% endif %}
+                <div class="fav-info">
+                    <div class="fav-name">{{ fav.dish.name }}</div>
+                    <div class="fav-desc">{{ fav.dish.description or '暂无描述' }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Recent Orders -->
+        {% if recent_orders %}
+        <div class="section-header">
+            <h2 class="section-title">最近订单</h2>
+            <a href="{{ url_for('order_history') }}" class="btn btn-ghost btn-sm">查看全部</a>
+        </div>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr><th>单号</th><th>菜品</th><th>数量</th><th>时间</th><th>状态</th></tr>
+                </thead>
+                <tbody>
+                {% for order in recent_orders %}
+                <tr>
+                    <td><span class="order-number">#{{ order.daily_seq }}</span></td>
+                    <td><strong>{{ order.dish.name }}</strong></td>
+                    <td><span class="quantity-badge">x{{ order.quantity }}</span></td>
+                    <td>{{ order.created_at.strftime('%m-%d %H:%M') }}</td>
+                    <td>
+                        {% if order.status == 'pending' %}<span class="badge badge-pending">未出餐</span>
+                        {% elif order.status == 'completed' %}<span class="badge badge-completed">已出餐</span>
+                        {% else %}<span class="badge badge-rejected">已拒绝</span>{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </main>
+</div>
+
+<style>
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; margin-top: 8px; }
+    .section-title { font-size: 18px; font-weight: 700; }
+
+    .quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 32px; }
+
+    .action-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        padding: 22px 16px;
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+        text-decoration: none;
+        color: var(--text-primary);
+    }
+
+    .action-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); color: var(--text-primary); }
+
+    .action-icon { width: 48px; height: 48px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; }
+    .action-label { font-size: 13px; font-weight: 600; }
+
+    .favorites-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin-bottom: 32px; }
+
+    .fav-card {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+    }
+
+    .fav-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+    .fav-img { width: 100%; height: 140px; object-fit: cover; }
+    .fav-info { padding: 14px; }
+    .fav-name { font-size: 15px; font-weight: 600; margin-bottom: 3px; }
+    .fav-desc { font-size: 12px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .order-number { font-weight: 700; color: var(--primary); font-size: 14px; }
+    .quantity-badge { display: inline-flex; padding: 3px 10px; background: var(--surface-hover); border-radius: 16px; font-weight: 600; font-size: 13px; }
+
+    @media (max-width: 1024px) { .stats-grid, .quick-actions { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 768px) { .stats-grid, .quick-actions { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
